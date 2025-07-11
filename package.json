@@ -1,0 +1,41 @@
+{
+  "name": "web-environment",
+  "productName": "Web Environment",
+  "module": "start.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@unocss/preset-web-fonts": "^66.1.1",
+    "electron": "^36.4.0"
+  },
+  "bin": {
+    "wenv": "./back/bin/wenv.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@elysiajs/static": "^1.3.0",
+    "@iconify-json/fa6-regular": "^1.2.3",
+    "@iconify-json/fa6-solid": "^1.2.3",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@types/yargs": "^17.0.33",
+    "chalk": "^5.4.1",
+    "classnames": "^2.5.1",
+    "directory-tree": "^3.5.2",
+    "elysia": "^1.3.4",
+    "prettier": "^3.5.3",
+    "svelte": "^5.28.2",
+    "svelte-portal": "^2.2.1",
+    "svooltip": "^0.9.0",
+    "unocss": "^66.1.1",
+    "unplugin-auto-import": "^19.2.0",
+    "unplugin-icons": "^22.1.0",
+    "vite": "^6.3.5",
+    "vite-plugin-svelte-md": "^0.1.7",
+    "yargs": "^17.7.2"
+  }
+}
