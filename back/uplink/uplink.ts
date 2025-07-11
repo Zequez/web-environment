@@ -1,9 +1,11 @@
 import chalk from 'chalk'
-
+import { type ServerWebSocket } from 'bun'
 import { UPLINK_PORT, VITE_PORT } from '../ports'
-import { type UplinkCmd, run } from './commands'
+// import { type UplinkCmd, run } from './commands'
 
 const allowed = ['http://localhost:2332']
+
+// const clients = new Set<ServerWebSocket>()
 
 function start() {
   const server = Bun.serve({
@@ -20,25 +22,30 @@ function start() {
         })
       }
 
-      const parsedBody = await req.text()
-      const data = JSON.parse(parsedBody) as UplinkCmd
-      console.log('🔻 Uplink:\n', chalk.yellow(JSON.stringify(data, null, 2)))
-      const startTime = Date.now()
-      const result = await run(data)
-      const endTime = Date.now()
-      console.log('🟩 Uplink:\n', chalk.green(JSON.stringify(result, null, 2)))
-      console.log(
-        chalk.gray(
-          `🕒 Tempo de execução: ${((endTime - startTime) / 1000).toFixed(2)}s`,
-        ),
-      )
+      console.log('Upgrading?')
+      if (server.upgrade(req)) {
+        console.log('UpGRADING!')
+        return // Bun will handle the upgrade
+      }
 
-      return new Response(JSON.stringify(result), {
-        headers: {
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': allowed.join(', '),
-        },
-      })
+      return new Response('Upgrade failed', { status: 500 })
+    },
+    websocket: {
+      message(ws, message) {
+        ws.send(message) // echo back the message
+      },
+      open(ws) {
+        console.log('Client connected')
+        // clients.add(ws)
+      },
+
+      close(ws) {
+        console.log('Client disconnected')
+        // clients.delete(ws)
+      },
+      drain(ws) {
+        console.log('Client drain?')
+      },
     },
   })
 
