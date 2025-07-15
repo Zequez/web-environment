@@ -85,6 +85,16 @@ export function startReposMonitor() {
       }
       await Bun.$`cd ${repoPath} && git remote add origin ${resolvedUrl}`
       repo.status = ['git-full', resolvedUrl]
+      await pullRepo(name)
+    }
+  }
+
+  async function pullRepo(name: string) {
+    const repo = repos.find((r) => r.name === name)
+    if (repo && repo.status[0] === 'git-full') {
+      const repoPath = join('./repos', name)
+      await Bun.$`cd ${repoPath} && git pull origin main`
+      console.log('Repo pulled')
     }
   }
 
