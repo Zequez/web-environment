@@ -58,6 +58,7 @@
     ...c:
       | [type: 'add-repo', name: string]
       | [type: 'init-repo-git', name: string]
+      | [type: 'remove-repo', name: string]
   ) {
     switch (c[0]) {
       case 'add-repo': {
@@ -66,6 +67,12 @@
       }
       case 'init-repo-git': {
         send(['init-repo-git', c[1]])
+        break
+      }
+      case 'remove-repo': {
+        if (confirm('Repo will be moved to trash')) {
+          send(['remove-repo', c[1]])
+        }
         break
       }
     }
@@ -179,7 +186,7 @@
       {#if repo.name}
         <button
           class="flexcs hover:text-red-5"
-          onclick={() => removeRepo(repo.name!)}
+          onclick={() => cmd('remove-repo', repo.name!)}
         >
           <TrashIcon />
         </button>

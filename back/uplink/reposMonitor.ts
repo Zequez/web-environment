@@ -2,6 +2,7 @@ import { readdir, stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { Repo } from './messages'
 import { mkdir } from 'fs/promises'
+import trash from 'trash'
 
 // Assumes "main" branch and "origin" remote
 
@@ -63,9 +64,19 @@ export function startReposMonitor() {
     }
   }
 
+  async function remove(name: string) {
+    const repo = repos.find((r) => r.name === name)
+    if (repo) {
+      const repoPath = join('./repos', name)
+      await trash(repoPath)
+      repos = repos.filter((r) => r.name !== name)
+    }
+  }
+
   return {
     refresh,
     add,
+    remove,
     initGit,
     get repos() {
       return repos

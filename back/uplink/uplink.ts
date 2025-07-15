@@ -59,6 +59,11 @@ function start() {
               sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
+            case 'remove-repo': {
+              await reposMonitor.remove(cmd[1])
+              sendMsg(ws, ['repos-list', reposMonitor.repos])
+              break
+            }
           }
         } catch (e) {
           console.log('Invalid message', message)
