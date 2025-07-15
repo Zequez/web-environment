@@ -1,21 +1,28 @@
 <script lang="ts">
+  import { cx } from '@/center/utils'
   import FolderIcon from '~icons/fa6-solid/folder-open'
   import InternetIcon from '~icons/fa6-solid/globe'
 
   const p: {
     onCancel: () => void
-    onConfirm: (name: string, remote: string) => void
+    onConfirm: (name: string) => void
+    takenNames: string[]
   } = $props()
 
   let name = $state('')
-  let remote = $state('')
+  let nameIsTaken = $derived(name && p.takenNames.includes(name))
+  let nameIsValid = $derived(name && !nameIsTaken)
 
   function handleSubmit(ev: Event) {
     ev.preventDefault()
     ev.stopPropagation()
-    if (name && remote) {
-      p.onConfirm(name, remote)
+    if (nameIsValid) {
+      p.onConfirm(name)
+      name = ''
     }
+    // if (name && remote) {
+    //   p.onConfirm(name, remote)
+    // }
   }
 </script>
 
@@ -23,27 +30,32 @@
   <FolderIcon />
   <input
     bind:value={name}
-    class="rounded-md h8 px2 b b-black/10 outline-green-500"
+    class={cx('rounded-md h8 px2 outline-green-500 flex-grow', {
+      'b b-black/10 outline-green-500': !nameIsTaken,
+      'b b-red-500 outline-red-500': nameIsTaken,
+    })}
     placeholder="Name"
   />
-  <InternetIcon />
-  <input
+  <!-- <InternetIcon /> -->
+  <!-- <input
     bind:value={remote}
     class="rounded-md h8 px2 b b-black/10 outline-green-500 flex-grow"
     placeholder="Remote URL"
-  />
+  /> -->
   <button
     type="submit"
-    disabled={!name || !remote}
-    class="bg-green-500 text-white h8 flexcc px2 rounded-md b b-black/10 hover:bg-green-400 disabled:(saturate-0 hover:bg-green-500 opacity-50)"
+    disabled={!nameIsValid}
+    class={cx(
+      'bg-green-500 text-white h8 flexcc px2 rounded-md b b-black/10  hover:bg-green-400 disabled:(saturate-0 hover:bg-green-500 opacity-50)',
+    )}
   >
-    Confirm
+    Add
   </button>
-  <button
+  <!-- <button
     type="button"
     onclick={() => p.onCancel()}
     class="bg-red-500 text-white h8 flexcc px2 rounded-md b b-black/10 hover:bg-red-400"
   >
     Cancel
-  </button>
+  </button> -->
 </form>

@@ -6,11 +6,12 @@
   import TrashIcon from '~icons/fa6-solid/trash'
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
-  import type { BackMsg, Repo } from '@back/uplink/messages'
+  import type { BackMsg, FrontMsg, Repo } from '@back/uplink/messages'
 
   let repos: Repo[] = $state<Repo[]>([])
   let repos2: Repo2[] = $state<Repo2[]>([])
   let showAddRepo = $state(false)
+  let socket = $state<WebSocket>(null!)
 
   type Repo2 = {
     remote: string
@@ -25,8 +26,8 @@
     | 'synced'
     | 'unknown'
 
-  $effect(() => {
-    const socket = new WebSocket(`ws://localhost:${UPLINK_PORT}`)
+  onMount(() => {
+    socket = new WebSocket(`ws://localhost:${UPLINK_PORT}`)
 
     socket.addEventListener('message', (event) => {
       try {
@@ -44,13 +45,34 @@
       console.log(`Socket message!`, event.data)
     })
 
-    setTimeout(() => {
-      socket.send('ping')
-    }, 1000)
+    // setTimeout(() => {
+    //   socket.send('ping')
+    // }, 1000)
   })
 
-  function addRepo(name: string, remote: string) {
-    console.log('Adding repo!', name, remote)
+  function send(msg: FrontMsg) {
+    socket.send(JSON.stringify(msg))
+  }
+
+  function cmd(
+    ...c:
+      | [type: 'add-repo', name: string]
+      | [type: 'init-repo-git', name: string]
+  ) {
+    switch (c[0]) {
+      case 'add-repo': {
+        send(['add-repo', c[1]])
+        break
+      }
+      case 'init-repo-git': {
+        send(['init-repo-git', c[1]])
+        break
+      }
+    }
+  }
+
+  function addRepo(name: string) {
+    console.log('Adding repo!', name)
     showAddRepo = false
   }
 
@@ -130,7 +152,10 @@
       </button>
 
       {#if repo.status[0] === 'dir'}
-        <button class="bg-green-500 text-white px1 rounded-md">
+        <button
+          onclick={() => cmd('init-repo-git', repo.name!)}
+          class="bg-green-500 text-white px1 rounded-md"
+        >
           Initialize repo
         </button>
       {:else if repo.status[0] === 'git'}
@@ -162,18 +187,10 @@
     </div>
   {/each}
   <div class="p2">
-    {#if showAddRepo}
-      <AddRepoInput
-        onConfirm={addRepo}
-        onCancel={() => (showAddRepo = false)}
-      />
-    {:else}
-      <button
-        class="rounded-md bg-green-500 text-white w-full h10 flexcc b b-black/10 hover:bg-green-400"
-        onclick={() => (showAddRepo = true)}
-      >
-        Add Repository
-      </button>
-    {/if}
+    <AddRepoInput
+      takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
+      onConfirm={(name) => cmd('add-repo', name)}
+      onCancel={() => (showAddRepo = false)}
+    />
   </div>
 </div>

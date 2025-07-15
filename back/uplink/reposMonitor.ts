@@ -1,6 +1,7 @@
 import { readdir, stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { Repo } from './messages'
+import { mkdir } from 'fs/promises'
 
 // Assumes "main" branch and "origin" remote
 
@@ -39,8 +40,33 @@ export function startReposMonitor() {
     repos = outputRepos
   }
 
+  async function add(name: string) {
+    console.log('Creating repo!', name)
+    const safePath = name.replace(/[^a-z0-9\-_]/gi, '')
+    const repoPath = join('./repos', safePath)
+    if (!(await exists(repoPath))) {
+      await mkdir(repoPath)
+      await Bun.$`cd ${repoPath} && git init`
+      repos.push({
+        name: safePath,
+        status: ['git'],
+      })
+    }
+  }
+
+  async function initGit(name: string) {
+    const repo = repos.find((r) => r.name === name)
+    if (repo && repo.status[0] === 'dir') {
+      const repoPath = join('./repos', name)
+      await Bun.$`cd ${repoPath} && git init`
+      repo.status = ['git']
+    }
+  }
+
   return {
     refresh,
+    add,
+    initGit,
     get repos() {
       return repos
     },

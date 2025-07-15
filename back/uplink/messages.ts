@@ -4,3 +4,7 @@ export type Repo = {
 }
 
 export type BackMsg = ['repos-list', repos: Repo[]]
+
+export type FrontMsg =
+  | ['add-repo', name: string]
+  | ['init-repo-git', name: string]

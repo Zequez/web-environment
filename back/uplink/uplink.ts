@@ -6,7 +6,7 @@ import startReposWatch from './repos'
 import { readdir, stat, exists } from 'fs/promises'
 import { join } from 'path'
 import { startReposMonitor } from './reposMonitor'
-import { type BackMsg } from './messages'
+import { type BackMsg, type FrontMsg } from './messages'
 
 const allowed = ['http://localhost:2332']
 
@@ -43,9 +43,27 @@ function start() {
       return new Response('Upgrade failed', { status: 500 })
     },
     websocket: {
-      message(ws, message) {
-        console.log('🔽', message)
-        ws.send(message) // echo back the message
+      async message(ws, message) {
+        try {
+          const cmd = JSON.parse(message.toString()) as FrontMsg
+          console.log('🔽', cmd)
+
+          switch (cmd[0]) {
+            case 'add-repo': {
+              await reposMonitor.add(cmd[1])
+              sendMsg(ws, ['repos-list', reposMonitor.repos])
+              break
+            }
+            case 'init-repo-git': {
+              await reposMonitor.initGit(cmd[1])
+              sendMsg(ws, ['repos-list', reposMonitor.repos])
+              break
+            }
+          }
+        } catch (e) {
+          console.log('Invalid message', message)
+        }
+        // ws.send(message) // echo back the message
       },
       async open(ws) {
         console.log('Client connected')
