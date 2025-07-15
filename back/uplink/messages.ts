@@ -1,7 +1,14 @@
 export type Repo = {
   name: string | null
-  status: ['dir'] | ['git'] | ['git-full', remote: string]
+  status:
+    | ['unknown']
+    | ['invalid']
+    | ['dir']
+    | ['git']
+    | ['git-full', remote: string, sync: SyncStatus]
 }
+
+export type SyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
 export type BackMsg = ['repos-list', repos: Repo[]]
 

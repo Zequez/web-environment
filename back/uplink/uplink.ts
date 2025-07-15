@@ -12,6 +12,8 @@ const allowed = ['http://localhost:2332']
 
 // const clients = new Set<ServerWebSocket>()
 
+const clientsSubscriptions = new Map<ServerWebSocket<any>, () => void>()
+
 function sendMsg(ws: ServerWebSocket<any>, msg: BackMsg) {
   console.log('🟩', msg)
   return ws.send(JSON.stringify(msg))
@@ -51,22 +53,18 @@ function start() {
           switch (cmd[0]) {
             case 'add-repo': {
               await reposMonitor.add(cmd[1])
-              sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
             case 'init-repo-git': {
               await reposMonitor.initGit(cmd[1])
-              sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
             case 'remove-repo': {
               await reposMonitor.remove(cmd[1])
-              sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
             case 'add-remote': {
               await reposMonitor.addRemote(cmd[1], cmd[2])
-              sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
           }
@@ -78,12 +76,16 @@ function start() {
       async open(ws) {
         console.log('Client connected')
         await reposMonitor.refresh()
-
-        sendMsg(ws, ['repos-list', reposMonitor.repos])
+        const subscription = reposMonitor.subscribe((repos) => {
+          sendMsg(ws, ['repos-list', repos])
+        })
+        clientsSubscriptions.set(ws, subscription)
       },
 
       close(ws) {
         console.log('Client disconnected')
+        const unsub = clientsSubscriptions.get(ws)
+        if (unsub) unsub()
         // clients.delete(ws)
       },
       drain(ws) {

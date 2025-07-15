@@ -1,150 +1,123 @@
 import { readdir, stat, exists } from 'fs/promises'
 import { join } from 'path'
-import type { Repo } from './messages'
+import type { Repo, SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
 import trash from 'trash'
+import { ActiveRepo } from './ActiveRepo'
 
 // Assumes "main" branch and "origin" remote
 
 export function startReposMonitor() {
-  let repos: Repo[] = []
+  let R = new Map<string | null, ActiveRepo>()
+  let subscribers: ((repos: Repo[]) => void)[] = []
 
+  R.set(null, new ActiveRepo(null))
+
+  function outputRepos() {
+    return [...R.values()]
+      .map((v) => v.toJSON())
+      .filter((r) => r.status[0] !== 'unknown' && r.status[0] !== 'invalid')
+  }
+
+  function subscribe(cb: (repos: Repo[]) => void) {
+    console.log('SUBSCRIBING!')
+    subscribers.push(cb)
+    cb(outputRepos())
+    return () => unsubscribe(cb)
+  }
+
+  function unsubscribe(cb: (repos: Repo[]) => void) {
+    console.log('UNSUBSCRIBING!')
+    subscribers = subscribers.filter((c) => c !== cb)
+  }
+
+  function notify() {
+    for (let cb of subscribers) {
+      cb(outputRepos())
+    }
+  }
+
+  // This will later be "initialize" and the refreshing
+  // will be done fine-grained by watching the filesystem
+  // and subscribing to Github events or setting up a polling
+  // interval
   async function refresh() {
     console.log('Refreshing repos')
     const reposPaths = await readdir('./repos')
 
-    const outputRepos: Repo[] = []
-
-    const mainframePath = join('./')
-    outputRepos.push({
-      name: null,
-      status: await analyzeGitRepo(mainframePath),
-    })
-
+    let noLongerExists = [...R.keys()].filter((r) => r !== null)
     for (let repo of reposPaths) {
-      const repoPath = join('./repos', repo)
-      const result = await analyzeRepoPath(repoPath)
-      if (result === 'dir') {
-        outputRepos.push({
-          name: repo,
-          status: ['dir'],
-        })
-      } else if (result === 'git') {
-        const result = await analyzeGitRepo(repoPath)
-        outputRepos.push({
-          name: repo,
-          status: result,
-        })
+      noLongerExists = noLongerExists.filter((r) => r !== repo)
+      if (!R.has(repo)) {
+        const activeRepo = new ActiveRepo(repo)
+        R.set(activeRepo.name, activeRepo)
       }
     }
 
-    repos = outputRepos
+    noLongerExists.forEach((repo) => {
+      R.delete(repo)
+    })
+
+    for (let repo of R.values()) {
+      await repo.analyze()
+    }
   }
 
   async function add(name: string) {
     console.log('Creating repo!', name)
-    const safePath = name.replace(/[^a-z0-9\-_]/gi, '')
-    const repoPath = join('./repos', safePath)
-    if (!(await exists(repoPath))) {
-      await mkdir(repoPath)
-      await Bun.$`cd ${repoPath} && git init`
-      repos.push({
-        name: safePath,
-        status: ['git'],
-      })
+    const activeRepo = new ActiveRepo(name)
+    if (!R.has(activeRepo.name)) {
+      R.set(activeRepo.name, activeRepo)
+      await activeRepo.init()
+      notify()
     }
   }
 
   async function initGit(name: string) {
-    const repo = repos.find((r) => r.name === name)
-    if (repo && repo.status[0] === 'dir') {
-      const repoPath = join('./repos', name)
-      await Bun.$`cd ${repoPath} && git init`
-      repo.status = ['git']
+    const repo = R.get(name)
+    if (repo) {
+      await repo.initGit()
+      notify()
     }
   }
 
   async function remove(name: string) {
-    const repo = repos.find((r) => r.name === name)
+    const repo = R.get(name)
     if (repo) {
-      const repoPath = join('./repos', name)
-      await trash(repoPath)
-      repos = repos.filter((r) => r.name !== name)
+      await repo.trash()
+      R.delete(repo.name)
+      notify()
     }
   }
 
   async function addRemote(name: string, url: string) {
-    const repo = repos.find((r) => r.name === name)
-    if (repo && repo.status[0] === 'git') {
-      const repoPath = join('./repos', name)
-      let resolvedUrl = url
-      if (url.startsWith('https://github.com/')) {
-        if (!url.endsWith('.git')) {
-          resolvedUrl = `${url}.git`
-        }
-      }
-      await Bun.$`cd ${repoPath} && git remote add origin ${resolvedUrl}`
-      repo.status = ['git-full', resolvedUrl]
-      await pullRepo(name)
+    const repo = R.get(name)
+    if (repo) {
+      await repo.addRemote(url)
+      notify()
     }
   }
 
-  async function pullRepo(name: string) {
-    const repo = repos.find((r) => r.name === name)
-    if (repo && repo.status[0] === 'git-full') {
-      const repoPath = join('./repos', name)
-      await Bun.$`cd ${repoPath} && git pull origin main`
-      console.log('Repo pulled')
-    }
-  }
+  // async function fetchRepo(name: string) {
+  //   const repo = repos.find((r) => r.name === name)
+  //   if (repo && repo.status[0] === 'git-full') {
+  //     const repoPath = join('./repos', name)
+  //     await Bun.$`cd ${repoPath} && git fetch origin`
+  //     console.log('Repo fetched')
+  //   }
+  // }
 
   return {
     refresh,
+    subscribe,
     add,
     remove,
     initGit,
     addRemote,
     get repos() {
-      return repos
+      return R
     },
   }
 }
 
 // Private
-
-async function analyzeRepoPath(
-  repoPath: string,
-): Promise<null | 'dir' | 'git'> {
-  const stats = await stat(repoPath)
-  if (stats.isDirectory()) {
-    // console.log(`${repoPath} is directory`)
-    const gitPath = join(repoPath, '.git')
-    if ((await exists(gitPath)) && (await stat(gitPath)).isDirectory()) {
-      // console.log(`${repoPath} is git repo`)
-      return 'git'
-    } else {
-      // console.log(`${repoPath} is not git repo`)
-      return 'dir'
-    }
-  } else {
-    return null
-  }
-}
-
-async function analyzeGitRepo(
-  repoPath: string,
-): Promise<['git'] | ['git-full', remote: string]> {
-  // Read origin URL from .git/config
-  try {
-    const url =
-      await Bun.$`cd ${repoPath} && git config --get remote.origin.url`
-
-    const remote = url.text().trim()
-    // console.log('Remote', remote)
-
-    return ['git-full', remote]
-  } catch (err) {
-    // console.log('Repo has no remote')
-    return ['git']
-  }
-}

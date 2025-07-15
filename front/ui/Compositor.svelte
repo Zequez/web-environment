@@ -6,7 +6,12 @@
   import TrashIcon from '~icons/fa6-solid/trash'
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
-  import type { BackMsg, FrontMsg, Repo } from '@back/uplink/messages'
+  import type {
+    BackMsg,
+    FrontMsg,
+    Repo,
+    SyncStatus,
+  } from '@back/uplink/messages'
   import AddRemoteInput from './AddRemoteInput.svelte'
   import { type ElectronBridge } from '@back/electron/preload'
 
@@ -22,12 +27,7 @@
     syncStatus: RepoSyncStatus
   }
 
-  type RepoSyncStatus =
-    | 'local-updated'
-    | 'remote-updated'
-    | 'conflict'
-    | 'synced'
-    | 'unknown'
+  type RepoSyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
   onMount(() => {
     socket = new WebSocket(`ws://localhost:${UPLINK_PORT}`)
@@ -126,23 +126,25 @@
 {/if} -->
 <div class="">
   {#each repos as repo}
-    {@const syncStatus: string = 'unknown'}
+    {@const syncStatus = repo.status[0] === 'git-full' ? repo.status[2] : null}
     <div
       class={cx('flex space-x-4 mb2 px2', {
         'b-b-1 py2 bg-gray-200': !repo.name,
       })}
     >
       <div class="rounded-md w6 h6 flexcc">
-        {#if syncStatus === 'local-updated'}
-          <span title="Local updated">🟡⬆️</span>
-        {:else if syncStatus === 'remote-updated'}
-          <span title="Local updated">🟡⬇️</span>
-        {:else if syncStatus === 'conflict'}
-          <span title="Local updated">⚠️</span>
-        {:else if syncStatus === 'synced'}
-          <span title="Local updated">🟢</span>
+        {#if !syncStatus}
+          <span></span>
+        {:else if syncStatus === 'ahead'}
+          <span title="Ahead" class="whitespace-nowrap">🔼</span>
+        {:else if syncStatus === 'behind'}
+          <span title="Behind" class="whitespace-nowrap">🔻</span>
+        {:else if syncStatus === 'diverged'}
+          <span title="Diverged">⚠️</span>
+        {:else if syncStatus === 'in-sync'}
+          <span title="In-sync">✅</span>
         {:else}
-          <span title="Local updated">❓</span>
+          <span title="Unknown">❓</span>
         {/if}
       </div>
       <button
