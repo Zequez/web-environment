@@ -73,11 +73,27 @@ export function startReposMonitor() {
     }
   }
 
+  async function addRemote(name: string, url: string) {
+    const repo = repos.find((r) => r.name === name)
+    if (repo && repo.status[0] === 'git') {
+      const repoPath = join('./repos', name)
+      let resolvedUrl = url
+      if (url.startsWith('https://github.com/')) {
+        if (!url.endsWith('.git')) {
+          resolvedUrl = `${url}.git`
+        }
+      }
+      await Bun.$`cd ${repoPath} && git remote add origin ${resolvedUrl}`
+      repo.status = ['git-full', resolvedUrl]
+    }
+  }
+
   return {
     refresh,
     add,
     remove,
     initGit,
+    addRemote,
     get repos() {
       return repos
     },

@@ -64,6 +64,11 @@ function start() {
               sendMsg(ws, ['repos-list', reposMonitor.repos])
               break
             }
+            case 'add-remote': {
+              await reposMonitor.addRemote(cmd[1], cmd[2])
+              sendMsg(ws, ['repos-list', reposMonitor.repos])
+              break
+            }
           }
         } catch (e) {
           console.log('Invalid message', message)

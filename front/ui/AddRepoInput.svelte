@@ -1,10 +1,8 @@
 <script lang="ts">
   import { cx } from '@/center/utils'
   import FolderIcon from '~icons/fa6-solid/folder-open'
-  import InternetIcon from '~icons/fa6-solid/globe'
 
   const p: {
-    onCancel: () => void
     onConfirm: (name: string) => void
     takenNames: string[]
   } = $props()
@@ -20,9 +18,6 @@
       p.onConfirm(name)
       name = ''
     }
-    // if (name && remote) {
-    //   p.onConfirm(name, remote)
-    // }
   }
 </script>
 
@@ -36,12 +31,6 @@
     })}
     placeholder="Name"
   />
-  <!-- <InternetIcon /> -->
-  <!-- <input
-    bind:value={remote}
-    class="rounded-md h8 px2 b b-black/10 outline-green-500 flex-grow"
-    placeholder="Remote URL"
-  /> -->
   <button
     type="submit"
     disabled={!nameIsValid}
@@ -51,11 +40,4 @@
   >
     Add
   </button>
-  <!-- <button
-    type="button"
-    onclick={() => p.onCancel()}
-    class="bg-red-500 text-white h8 flexcc px2 rounded-md b b-black/10 hover:bg-red-400"
-  >
-    Cancel
-  </button> -->
 </form>

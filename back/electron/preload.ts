@@ -1,8 +1,14 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
+export type ElectronBridge = {
+  openFolder: (path: string | null) => void
+  openExternal: (url: string) => void
+}
+
 contextBridge.exposeInMainWorld('electronAPI', {
-  openFolder: (path: string) => ipcRenderer.invoke('open-folder', path),
-})
+  openFolder: (name: string | null) => ipcRenderer.invoke('open-folder', name),
+  openExternal: (url: string) => ipcRenderer.invoke('open-external', url),
+} satisfies ElectronBridge)
 
 console.log('Preload loaded')
 

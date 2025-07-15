@@ -7,10 +7,13 @@
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
   import type { BackMsg, FrontMsg, Repo } from '@back/uplink/messages'
+  import AddRemoteInput from './AddRemoteInput.svelte'
+  import { type ElectronBridge } from '@back/electron/preload'
+
+  const electronAPI = (window as any).electronAPI as ElectronBridge
 
   let repos: Repo[] = $state<Repo[]>([])
   let repos2: Repo2[] = $state<Repo2[]>([])
-  let showAddRepo = $state(false)
   let socket = $state<WebSocket>(null!)
 
   type Repo2 = {
@@ -59,6 +62,7 @@
       | [type: 'add-repo', name: string]
       | [type: 'init-repo-git', name: string]
       | [type: 'remove-repo', name: string]
+      | [type: 'add-remote', name: string, url: string]
   ) {
     switch (c[0]) {
       case 'add-repo': {
@@ -75,24 +79,15 @@
         }
         break
       }
+      case 'add-remote': {
+        send(['add-remote', c[1], c[2]])
+        break
+      }
     }
   }
 
-  function addRepo(name: string) {
-    console.log('Adding repo!', name)
-    showAddRepo = false
-  }
-
-  function removeRepo(name: string) {}
-
-  function syncRepo(name: string) {}
-
-  function renameRepo(name: string, newName: string) {}
-
-  function changeRepoRemote(name: string, remote: string) {}
-
   function openOnFileExplorer(name: string | null) {
-    ;(window as any).electronAPI.openFolder(name)
+    electronAPI.openFolder(name)
   }
 
   // function setRepo(name: string, {title: string, name: string, remote: string}) {
@@ -166,21 +161,17 @@
           Initialize repo
         </button>
       {:else if repo.status[0] === 'git'}
-        <div>
-          <input placeholder="Remote URL" class="rounded-md px1" type="text" />
-          <button class="bg-green-500 text-white px1 rounded-md">
-            Add remote
-          </button>
-        </div>
+        <AddRemoteInput
+          onConfirm={(url) => cmd('add-remote', repo.name!, url)}
+        />
       {:else if repo.status[0] === 'git-full'}
-        <a
+        <button
           class="text-blue-4 hover:text-blue-5 underline flexcs"
-          href={repo.status[1]}
-          target="_blank"
+          onclick={electronAPI.openExternal.bind(null, repo.status[1])}
         >
           <InternetIcon class="mr2" />
           {repo.status[1].replace('https://', '')}
-        </a>
+        </button>
       {/if}
 
       {#if repo.name}
@@ -197,7 +188,6 @@
     <AddRepoInput
       takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
       onConfirm={(name) => cmd('add-repo', name)}
-      onCancel={() => (showAddRepo = false)}
     />
   </div>
 </div>

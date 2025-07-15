@@ -18,6 +18,10 @@ ipcMain.handle('open-folder', async (event: any, name: any) => {
   await shell.openPath(result)
 })
 
+ipcMain.handle('open-external', async (event: any, url: any) => {
+  await shell.openExternal(url)
+})
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 800,
