@@ -177,5 +177,6 @@ dist
 
 land/*
 www/*
+repos/*
 
 back/electron/dist

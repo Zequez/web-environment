@@ -86,6 +86,7 @@ export async function generateConfig({
       alias: {
         '@': path.resolve(__dirname, './front'),
         '@@': path.resolve(__dirname, './land'),
+        '@back': path.resolve(__dirname, './back'),
       },
     },
     build: {

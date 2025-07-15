@@ -1,13 +1,25 @@
 import chalk from 'chalk'
 import { type ServerWebSocket } from 'bun'
+import { watch } from 'fs'
 import { UPLINK_PORT, VITE_PORT } from '../ports'
-// import { type UplinkCmd, run } from './commands'
+import startReposWatch from './repos'
+import { readdir, stat, exists } from 'fs/promises'
+import { join } from 'path'
+import { startReposMonitor } from './reposMonitor'
+import { type BackMsg } from './messages'
 
 const allowed = ['http://localhost:2332']
 
 // const clients = new Set<ServerWebSocket>()
 
+function sendMsg(ws: ServerWebSocket<any>, msg: BackMsg) {
+  console.log('🟩', msg)
+  return ws.send(JSON.stringify(msg))
+}
+
 function start() {
+  const reposMonitor = startReposMonitor()
+
   const server = Bun.serve({
     port: UPLINK_PORT,
     async fetch(req) {
@@ -24,7 +36,7 @@ function start() {
 
       console.log('Upgrading?')
       if (server.upgrade(req)) {
-        console.log('UpGRADING!')
+        console.log('Upgraded!')
         return // Bun will handle the upgrade
       }
 
@@ -32,11 +44,14 @@ function start() {
     },
     websocket: {
       message(ws, message) {
+        console.log('🔽', message)
         ws.send(message) // echo back the message
       },
-      open(ws) {
+      async open(ws) {
         console.log('Client connected')
-        // clients.add(ws)
+        await reposMonitor.refresh()
+
+        sendMsg(ws, ['repos-list', reposMonitor.repos])
       },
 
       close(ws) {
@@ -52,6 +67,28 @@ function start() {
   console.log(
     `O servidor de uplink está em execução  http://localhost:${UPLINK_PORT}`,
   )
+  // ;(async () => {
+  //   await startReposWatch()
+  // })()
+
+  // function monitor() {
+  //   /**
+  //    * Watch repos/* directories
+  //    * And also the mainframe root directory
+  //    * For each directory check if:
+  //    * - It's a directory
+  //    * - It's a Git repo
+  //    * - Compare with remote: synced, local-updated, remote-updated, conflict
+  //    *
+  //    *
+  //    */
+
+  //   watch('./repos', { recursive: true }, async (eventType, fileName) => {
+  //     console.log(`📝 Arquivo modificado: ${fileName}`)
+  //   })
+  // }
+
+  // monitor()
 
   return server
 }

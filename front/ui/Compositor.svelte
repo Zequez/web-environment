@@ -4,14 +4,15 @@
   import FolderIcon from '~icons/fa6-solid/folder-open'
   import InternetIcon from '~icons/fa6-solid/globe'
   import TrashIcon from '~icons/fa6-solid/trash'
-  import AddRepoDialog from './AddRepoInput.svelte'
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
+  import type { BackMsg, Repo } from '@back/uplink/messages'
 
   let repos: Repo[] = $state<Repo[]>([])
+  let repos2: Repo2[] = $state<Repo2[]>([])
   let showAddRepo = $state(false)
 
-  type Repo = {
+  type Repo2 = {
     remote: string
     name: string | null
     syncStatus: RepoSyncStatus
@@ -28,6 +29,18 @@
     const socket = new WebSocket(`ws://localhost:${UPLINK_PORT}`)
 
     socket.addEventListener('message', (event) => {
+      try {
+        const data = JSON.parse(event.data) as BackMsg
+        console.log('🔻', data)
+        switch (data[0]) {
+          case 'repos-list': {
+            repos = data[1]
+          }
+        }
+      } catch (e) {
+        console.log('Invalid data', e)
+        return
+      }
       console.log(`Socket message!`, event.data)
     })
 
@@ -35,10 +48,6 @@
       socket.send('ping')
     }, 1000)
   })
-
-  function pollRepos() {
-    // Remote call that retrieves all the repos and their sync status
-  }
 
   function addRepo(name: string, remote: string) {
     console.log('Adding repo!', name, remote)
@@ -65,26 +74,26 @@
 
   // }
 
-  onMount(() => {
-    repos = [
-      {
-        remote: 'https://github.com/zequez/web-environment',
-        name: null,
-        syncStatus: 'unknown',
-      },
-      {
-        remote: 'https://github.com/zequez/ezequielschwartzman.org',
-        name: 'ezequiel',
-        syncStatus: 'unknown',
-      },
+  // onMount(() => {
+  //   repos2 = [
+  //     {
+  //       remote: 'https://github.com/zequez/web-environment',
+  //       name: null,
+  //       syncStatus: 'unknown',
+  //     },
+  //     {
+  //       remote: 'https://github.com/zequez/ezequielschwartzman.org',
+  //       name: 'ezequiel',
+  //       syncStatus: 'unknown',
+  //     },
 
-      {
-        remote: 'https://github.com/zequez/chloe',
-        name: 'chloe',
-        syncStatus: 'unknown',
-      },
-    ]
-  })
+  //     {
+  //       remote: 'https://github.com/zequez/chloe',
+  //       name: 'chloe',
+  //       syncStatus: 'unknown',
+  //     },
+  //   ]
+  // })
 </script>
 
 <!--
@@ -93,19 +102,20 @@
 {/if} -->
 <div class="">
   {#each repos as repo}
+    {@const syncStatus: string = 'unknown'}
     <div
       class={cx('flex space-x-4 mb2 px2', {
         'b-b-1 py2 bg-gray-200': !repo.name,
       })}
     >
       <div class="rounded-md w6 h6 flexcc">
-        {#if repo.syncStatus === 'local-updated'}
+        {#if syncStatus === 'local-updated'}
           <span title="Local updated">🟡⬆️</span>
-        {:else if repo.syncStatus === 'remote-updated'}
+        {:else if syncStatus === 'remote-updated'}
           <span title="Local updated">🟡⬇️</span>
-        {:else if repo.syncStatus === 'conflict'}
+        {:else if syncStatus === 'conflict'}
           <span title="Local updated">⚠️</span>
-        {:else if repo.syncStatus === 'synced'}
+        {:else if syncStatus === 'synced'}
           <span title="Local updated">🟢</span>
         {:else}
           <span title="Local updated">❓</span>
@@ -119,14 +129,27 @@
         {repo.name ? `/${repo.name}` : '(mainframe)'}
       </button>
 
-      <a
-        class="text-blue-4 hover:text-blue-5 underline flexcs"
-        href={repo.remote}
-        target="_blank"
-      >
-        <InternetIcon class="mr2" />
-        {repo.remote.replace('https://', '')}
-      </a>
+      {#if repo.status[0] === 'dir'}
+        <button class="bg-green-500 text-white px1 rounded-md">
+          Initialize repo
+        </button>
+      {:else if repo.status[0] === 'git'}
+        <div>
+          <input placeholder="Remote URL" class="rounded-md px1" type="text" />
+          <button class="bg-green-500 text-white px1 rounded-md">
+            Add remote
+          </button>
+        </div>
+      {:else if repo.status[0] === 'git-full'}
+        <a
+          class="text-blue-4 hover:text-blue-5 underline flexcs"
+          href={repo.status[1]}
+          target="_blank"
+        >
+          <InternetIcon class="mr2" />
+          {repo.status[1].replace('https://', '')}
+        </a>
+      {/if}
 
       {#if repo.name}
         <button
