@@ -4,6 +4,7 @@ import type { Repo, SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
 import trash from 'trash'
 import chalk from 'chalk'
+import * as git from './git'
 
 export class ActiveRepo implements Repo {
   name: string | null
@@ -20,11 +21,11 @@ export class ActiveRepo implements Repo {
 
   async analyze() {
     console.log(chalk.green('ANALYZING'), this.name)
-    const result = await analyzeRepoPath(this.path)
+    const result = await git.analyzePath(this.path)
     if (result === 'dir') {
       this.status = ['dir']
     } else if (result === 'git') {
-      const result = await analyzeGitRepo(this.path)
+      const result = await git.analyzeRepo(this.path)
       this.status = result
       await this.analyzeSyncStatus()
     } else {
@@ -33,84 +34,52 @@ export class ActiveRepo implements Repo {
   }
 
   async init() {
-    await mkdir(this.path)
-    await Bun.$`cd ${this.path} && git init`
-    this.status = ['git']
+    if (this.status[0] === 'invalid') {
+      await mkdir(this.path)
+      this.status = ['dir']
+      await this.initGit()
+    }
   }
 
   async initGit() {
     if (this.status[0] === 'dir') {
-      await Bun.$`cd ${this.path} && git init`
+      await git.init(this.path)
       this.status = ['git']
     }
   }
 
   async trash() {
     await trash(this.path)
-    this.status = ['unknown']
+    this.status = ['invalid']
   }
 
   async addRemote(url: string) {
     if (this.status[0] === 'git') {
-      let resolvedUrl = url
-      if (url.startsWith('https://github.com/')) {
-        if (!url.endsWith('.git')) {
-          resolvedUrl = `${url}.git`
-        }
-      }
-      await Bun.$`cd ${this.path} && git remote add origin ${resolvedUrl}`
+      const resolvedUrl = await git.addRemote(this.path, url)
       this.status = ['git-full', resolvedUrl, 'unknown']
-      await this.pull()
-    }
-  }
-
-  async pull() {
-    if (this.status[0] === 'git-full') {
-      await Bun.$`cd ${this.path} && git pull origin main`
-      this.status[2] = 'in-sync'
+      await git.pull(this.path)
+      this.status = ['git-full', resolvedUrl, 'in-sync']
     }
   }
 
   async analyzeSyncStatus() {
     console.log('Analyzing sync status!')
     if (this.status[0] === 'git-full') {
-      const unresolvedConflicts = await hasUnresolvedMergeConflicts(this.path)
+      const unresolvedConflicts = await git.hasUnresolvedMergeConflicts(
+        this.path,
+      )
       if (unresolvedConflicts) {
-        await abortMerge(this.path)
+        await git.abortMerge(this.path)
       }
-      const fetchHeadStat = await stat(join(this.path, '.git/FETCH_HEAD'))
-      const fetchedSecondsAgo =
-        (new Date().getTime() - fetchHeadStat.mtimeMs) / 1000
+      const lastFetchedAt = await git.lastFetchedAt(this.path)
+      const fetchedSecondsAgo = (new Date().getTime() - lastFetchedAt) / 1000
       console.log('LAST FETCH MS', fetchedSecondsAgo)
       if (fetchedSecondsAgo > 60 * 1) {
-        await Bun.$`cd ${this.path} && git fetch`
+        await git.fetch(this.path)
       }
-      const changes = await Bun.$`cd ${this.path} && git status --short`
-      this.uncommittedChanges = !(changes.text().trim() === '')
-      const zeroLocalCommits = await zeroCommits(this.path, 'local')
-      const zeroRemoteCommits = await zeroCommits(this.path, 'remote')
-      if (zeroLocalCommits && zeroRemoteCommits) {
-        this.status[2] = this.uncommittedChanges ? 'ahead' : 'in-sync'
-      } else if (zeroLocalCommits) {
-        this.status[2] = this.uncommittedChanges ? 'diverged' : 'behind'
-      } else if (zeroRemoteCommits) {
-        this.status[2] = 'ahead'
-      } else {
-        const status =
-          await Bun.$`cd ${this.path} && git rev-list --left-right --count HEAD...origin/main`
-        const parsedStatus = status.text().trim().split(/\s+/)
-        console.log('STATUS', parsedStatus)
-        const [ahead, behind] = parsedStatus.map((v) => parseInt(v, 10))
-        if (behind && ahead) {
-          this.status[2] = 'diverged'
-        } else if (behind) {
-          this.status[2] = this.uncommittedChanges ? 'diverged' : 'behind'
-        } else if (ahead) {
-          this.status[2] = 'ahead'
-        } else {
-          this.status[2] = this.uncommittedChanges ? 'ahead' : 'in-sync'
-        }
-      }
+      const [status, uncommittedChanges] = await git.assesSyncStatus(this.path)
+      this.uncommittedChanges = uncommittedChanges
+      this.status[2] = status
     }
   }
 
@@ -118,21 +87,15 @@ export class ActiveRepo implements Repo {
     if (this.status[0] === 'git-full') {
       const syncStatus = this.status[2]
       if (this.uncommittedChanges) {
-        await Bun.$`cd ${this.path} && git add -A && git commit -m "Auto-commit ${new Date().toISOString()}" && git push`
+        await git.autoCommit(this.path)
       }
 
       if (syncStatus === 'ahead') {
-        await Bun.$`cd ${this.path} && git push --set-upstream origin main`
+        await git.push(this.path)
       } else if (syncStatus === 'behind') {
-        await Bun.$`cd ${this.path} && git pull origin main`
+        await git.pull(this.path)
       } else if (syncStatus === 'diverged') {
-        try {
-          await Bun.$`cd ${this.path} && git merge --no-edit origin/main`
-          this.mergeConflicts = false
-        } catch (e) {
-          await abortMerge(this.path)
-          this.mergeConflicts = true
-        }
+        this.mergeConflicts = !(await git.attemptAutomerge(this.path))
       }
 
       await this.analyzeSyncStatus()
@@ -145,63 +108,5 @@ export class ActiveRepo implements Repo {
       status: this.status,
       mergeConflicts: this.mergeConflicts,
     }
-  }
-}
-
-async function abortMerge(repoPath: string) {
-  return await Bun.$`cd ${repoPath} && git merge --abort`
-}
-
-async function hasUnresolvedMergeConflicts(repoPath: string) {
-  const output = await Bun.$`cd ${repoPath} && git ls-files -u`
-  console.log('REPO PATH MERGE UNRESOLVED', repoPath, output.text())
-  return output.text().trim() !== ''
-}
-
-async function zeroCommits(repoPath: string, target: 'remote' | 'local') {
-  const tragetRef =
-    target === 'remote' ? 'refs/remotes/origin/main' : 'refs/heads/main'
-  try {
-    await Bun.$`cd ${repoPath} && git show-ref --verify --quiet ${tragetRef}`
-    return false
-  } catch (e) {
-    return true
-  }
-}
-
-async function analyzeRepoPath(
-  repoPath: string,
-): Promise<null | 'dir' | 'git'> {
-  const stats = await stat(repoPath)
-  if (stats.isDirectory()) {
-    // console.log(`${repoPath} is directory`)
-    const gitPath = join(repoPath, '.git')
-    if ((await exists(gitPath)) && (await stat(gitPath)).isDirectory()) {
-      // console.log(`${repoPath} is git repo`)
-      return 'git'
-    } else {
-      // console.log(`${repoPath} is not git repo`)
-      return 'dir'
-    }
-  } else {
-    return null
-  }
-}
-
-async function analyzeGitRepo(
-  repoPath: string,
-): Promise<['git'] | ['git-full', remote: string, sync: SyncStatus]> {
-  // Read origin URL from .git/config
-  try {
-    const url =
-      await Bun.$`cd ${repoPath} && git config --get remote.origin.url`
-
-    const remote = url.text().trim()
-    // console.log('Remote', remote)
-
-    return ['git-full', remote, 'unknown']
-  } catch (err) {
-    // console.log('Repo has no remote')
-    return ['git']
   }
 }
