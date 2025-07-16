@@ -11,6 +11,8 @@ export function startReposMonitor() {
   let R = new Map<string | null, ActiveRepo>()
   let subscribers: ((repos: Repo[]) => void)[] = []
 
+  ActiveRepo.setStatusChangeNotify(() => notify())
+
   R.set(null, new ActiveRepo(null))
 
   function outputRepos() {

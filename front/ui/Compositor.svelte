@@ -132,7 +132,7 @@
   <AddRepoDialog onCancel={() => (showAddRepo = false)} />
 {/if} -->
 <div class="">
-  {#each repos as repo}
+  {#each repos as repo (repo.name)}
     {@const syncStatus = repo.status[0] === 'git-full' ? repo.status[2] : null}
     <div
       class={cx('flex space-x-4 mb2 px2', {

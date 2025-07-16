@@ -12,7 +12,7 @@ function sanitizeRepoName(name: string) {
 
 export class ActiveRepo implements Repo {
   name: string | null
-  status: Repo['status'] = ['unknown']
+  _status: Repo['status'] = ['unknown']
   path: string
   uncommittedChanges: boolean = false
   mergeConflicts: boolean = false
@@ -21,6 +21,27 @@ export class ActiveRepo implements Repo {
     const safeName = name ? name.replace(/[^a-z0-9\-_]/gi, '') : null
     this.name = safeName
     this.path = name ? join('./repos', name) : join('./')
+  }
+
+  get status() {
+    return this._status
+  }
+
+  setStatus(...status: Repo['status']) {
+    this._status = status
+    ActiveRepo.statusChangeNotify()
+  }
+
+  setSyncStatus(syncStatus: SyncStatus) {
+    if (this.status[0] === 'git-full') {
+      this.setStatus(this.status[0], this.status[1], syncStatus)
+    }
+  }
+
+  static statusChangeNotify = () => {}
+
+  static setStatusChangeNotify(cb: () => void) {
+    ActiveRepo.statusChangeNotify = cb
   }
 
   static async create(name: string) {
@@ -46,10 +67,10 @@ export class ActiveRepo implements Repo {
     const remoteUrl = await git.remoteUrl(this.path)
 
     if (remoteUrl) {
-      this.status = ['git-full', remoteUrl, 'unknown']
+      this.setStatus('git-full', remoteUrl, 'unknown')
       await this.analyzeSyncStatus()
     } else {
-      this.status = ['git']
+      this.setStatus('git')
     }
 
     // console.log(chalk.green('ANALYZING'), this.name)
@@ -82,36 +103,21 @@ export class ActiveRepo implements Repo {
       }
       const [status, uncommittedChanges] = await git.assesSyncStatus(this.path)
       this.uncommittedChanges = uncommittedChanges
-      this.status[2] = status
+      this.setSyncStatus(status)
     }
   }
 
-  // async init() {
-  //   if (this.status[0] === 'invalid') {
-  //     await mkdir(this.path)
-  //     this.status = ['dir']
-  //     await this.initGit()
-  //   }
-  // }
-
-  // async initGit() {
-  //   if (this.status[0] === 'dir') {
-  //     await git.init(this.path)
-  //     this.status = ['git']
-  //   }
-  // }
-
   async trash() {
     await trash(this.path)
-    this.status = ['unknown']
+    this.setStatus('unknown')
   }
 
   async addRemote(url: string) {
     if (this.status[0] === 'git') {
       const resolvedUrl = await git.addRemote(this.path, url)
-      this.status = ['git-full', resolvedUrl, 'unknown']
+      this.setStatus('git-full', resolvedUrl, 'unknown')
       await git.pull(this.path)
-      this.status = ['git-full', resolvedUrl, 'in-sync']
+      this.setSyncStatus('in-sync')
     }
   }
 

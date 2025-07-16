@@ -3,6 +3,7 @@
   import DownloadIcon from '~icons/fa6-solid/download'
   import CheckIcon from '~icons/fa6-solid/check'
   import CodeMergeIcon from '~icons/fa6-solid/code-merge'
+  import RotateIcon from '~icons/fa6-solid/rotate'
   import type { SyncStatus } from '@back/uplink/messages'
   import { cx } from '@/center/utils'
 
@@ -20,7 +21,9 @@
           ? DownloadIcon
           : status === 'diverged'
             ? CodeMergeIcon
-            : null,
+            : status === 'unknown'
+              ? RotateIcon
+              : null,
   )
 
   let text = $derived(
@@ -32,7 +35,9 @@
           ? 'Behind'
           : status === 'diverged'
             ? 'Diverged'
-            : null,
+            : status === 'unknown'
+              ? 'Fetching'
+              : null,
   )
 
   let actionable = $derived(
@@ -48,7 +53,9 @@
           ? 'Pull'
           : status === 'diverged'
             ? 'Merge'
-            : null,
+            : status === 'unknown'
+              ? 'Fetching'
+              : null,
   )
 
   let color = $derived(
@@ -60,7 +67,9 @@
           ? 'bg-red-500'
           : status === 'diverged'
             ? 'bg-yellow-400'
-            : null,
+            : status === 'unknown'
+              ? 'bg-gray-400'
+              : null,
   )
 </script>
 
@@ -85,7 +94,11 @@
     {:else}
       <div class="absolute z-20 inset-0.25 rounded-[4px] bg-white/95"></div>
     {/if}
-    <Icon class="w-4 relative z-30 text-xs flexcc" />
+    <Icon
+      class={cx('w-4 relative z-30 text-xs flexcc', {
+        'animate-spin': status === 'unknown',
+      })}
+    />
     <span class="relative z-30 inline-block flex-grow text-center text-sm">
       {action}
     </span>
