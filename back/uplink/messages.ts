@@ -2,6 +2,8 @@ export type Repo = {
   name: string | null
   status: ['unknown'] | ['git'] | ['git-full', remote: string, sync: SyncStatus]
   mergeConflicts: boolean
+  fetching: boolean
+  lastFetchedAt: number
 }
 
 export type SyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
@@ -14,3 +16,5 @@ export type FrontMsg =
   | ['remove-repo', name: string]
   | ['add-remote', name: string, remote: string]
   | ['sync', name: string | null]
+  | ['fetch', name: string | null]
+  | ['fetch-all']

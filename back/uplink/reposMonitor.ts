@@ -4,12 +4,15 @@ import type { Repo, SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
 import trash from 'trash'
 import { ActiveRepo } from './ActiveRepo'
+import { debounce } from '@/center/utils'
 
 // Assumes "main" branch and "origin" remote
 
 export function startReposMonitor() {
   let R = new Map<string | null, ActiveRepo>()
   let subscribers: ((repos: Repo[]) => void)[] = []
+
+  const notify = debounce(actuallyNotify, 100)
 
   ActiveRepo.setStatusChangeNotify(() => notify())
 
@@ -33,7 +36,7 @@ export function startReposMonitor() {
     subscribers = subscribers.filter((c) => c !== cb)
   }
 
-  function notify() {
+  function actuallyNotify() {
     for (let cb of subscribers) {
       cb(outputRepos())
     }
@@ -58,9 +61,7 @@ export function startReposMonitor() {
 
     await cleanNonExistantRepos()
 
-    for (let repo of R.values()) {
-      await repo.analyze()
-    }
+    await Promise.all(Array.from(R.values()).map((r) => r.analyze()))
   }
 
   async function cleanNonExistantRepos() {
@@ -114,6 +115,15 @@ export function startReposMonitor() {
     }
   }
 
+  async function fetch(name: string | null) {
+    const repo = R.get(name)
+    if (repo) {
+      await repo.fetch()
+    }
+  }
+
+  async function fetchAll(name: string) {}
+
   function sanitizeRepoName(name: string) {
     return name.replace(/[^a-z0-9\-_]/gi, '')
   }
@@ -129,6 +139,7 @@ export function startReposMonitor() {
 
   return {
     refresh,
+    fetch,
     subscribe,
     add,
     remove,

@@ -77,6 +77,14 @@ function start() {
               await reposMonitor.sync(cmd[1])
               break
             }
+            case 'fetch': {
+              await reposMonitor.fetch(cmd[1])
+              break
+            }
+            case 'fetch-all': {
+              // await reposMonitor.fetchAll()
+              break
+            }
           }
         } catch (e) {
           console.log('Server', e)

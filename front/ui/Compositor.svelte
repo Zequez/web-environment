@@ -16,6 +16,7 @@
   import AddRemoteInput from './AddRemoteInput.svelte'
   import { type ElectronBridge } from '@back/electron/preload'
   import SyncButton from './SyncButton.svelte'
+  import FetchedButton from './FetchedButton.svelte'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -66,6 +67,7 @@
       | [type: 'remove-repo', name: string]
       | [type: 'add-remote', name: string, url: string]
       | [type: 'sync', name: string | null]
+      | [type: 'fetch', name: string | null]
   ) {
     switch (c[0]) {
       case 'add-repo': {
@@ -88,6 +90,10 @@
       }
       case 'sync': {
         send(['sync', c[1]])
+        break
+      }
+      case 'fetch': {
+        send(['fetch', c[1]])
         break
       }
     }
@@ -165,6 +171,11 @@
           <span title="Unknown">❓</span>
         {/if} -->
       </div>
+      <FetchedButton
+        lastFetchedAt={repo.lastFetchedAt}
+        isFetching={repo.fetching}
+        onFetch={() => cmd('fetch', repo.name)}
+      />
       <button
         class="flex-grow flexcs hover:text-blue-5"
         onclick={() => openOnFileExplorer(repo.name)}

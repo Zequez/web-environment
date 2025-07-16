@@ -13,6 +13,8 @@ function sanitizeRepoName(name: string) {
 export class ActiveRepo implements Repo {
   name: string | null
   _status: Repo['status'] = ['unknown']
+  _fetching: boolean = false
+  lastFetchedAt: number = 0
   path: string
   uncommittedChanges: boolean = false
   mergeConflicts: boolean = false
@@ -29,6 +31,15 @@ export class ActiveRepo implements Repo {
 
   setStatus(...status: Repo['status']) {
     this._status = status
+    ActiveRepo.statusChangeNotify()
+  }
+
+  get fetching() {
+    return this._fetching
+  }
+
+  setFetching(fetching: boolean) {
+    this._fetching = fetching
     ActiveRepo.statusChangeNotify()
   }
 
@@ -95,16 +106,26 @@ export class ActiveRepo implements Repo {
       if (unresolvedConflicts) {
         await git.abortMerge(this.path)
       }
-      const lastFetchedAt = await git.lastFetchedAt(this.path)
-      const fetchedSecondsAgo = (new Date().getTime() - lastFetchedAt) / 1000
-      console.log('LAST FETCH MS', fetchedSecondsAgo)
-      if (fetchedSecondsAgo > 60 * 1) {
-        await git.fetch(this.path)
-      }
+      this.lastFetchedAt = await git.lastFetchedAt(this.path)
+      // const fetchedSecondsAgo =
+      //   (new Date().getTime() - this.lastFetchedAt) / 1000
+      // console.log('LAST FETCH MS', fetchedSecondsAgo)
+      // if (fetchedSecondsAgo > 60 * 1) {
+      //   this.setFetching(true)
+      //   await git.fetch(this.path)
+      //   this.setFetching(false)
+      // }
       const [status, uncommittedChanges] = await git.assesSyncStatus(this.path)
       this.uncommittedChanges = uncommittedChanges
       this.setSyncStatus(status)
     }
+  }
+
+  async fetch() {
+    this.setFetching(true)
+    await git.fetch(this.path)
+    this.setFetching(false)
+    await this.analyzeSyncStatus()
   }
 
   async trash() {
@@ -116,8 +137,10 @@ export class ActiveRepo implements Repo {
     if (this.status[0] === 'git') {
       const resolvedUrl = await git.addRemote(this.path, url)
       this.setStatus('git-full', resolvedUrl, 'unknown')
+      this.setFetching(true)
       await git.pull(this.path)
-      this.setSyncStatus('in-sync')
+      this.setFetching(false)
+      this.analyzeSyncStatus()
     }
   }
 
@@ -145,6 +168,8 @@ export class ActiveRepo implements Repo {
       name: this.name,
       status: this.status,
       mergeConflicts: this.mergeConflicts,
+      fetching: this.fetching,
+      lastFetchedAt: this.lastFetchedAt,
     }
   }
 }
