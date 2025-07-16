@@ -1,29 +1,54 @@
 import { stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { SyncStatus } from './messages'
+import { mkdir } from 'fs/promises'
 
-export async function analyzePath(
-  repoPath: string,
-): Promise<null | 'dir' | 'git'> {
-  const stats = await stat(repoPath)
-  if (stats.isDirectory()) {
-    // console.log(`${repoPath} is directory`)
-    const gitPath = join(repoPath, '.git')
-    if ((await exists(gitPath)) && (await stat(gitPath)).isDirectory()) {
-      // console.log(`${repoPath} is git repo`)
-      return 'git'
-    } else {
-      // console.log(`${repoPath} is not git repo`)
-      return 'dir'
-    }
-  } else {
-    return null
+export async function ensurePathIsRepo(repoPath: string) {
+  if (!(await exists(repoPath))) {
+    await mkdir(repoPath, { recursive: true })
   }
+
+  const stats = await stat(repoPath)
+  if (!stats.isDirectory()) {
+    return false
+  }
+
+  if (!(await isGitRepo(repoPath))) {
+    await init(repoPath)
+  }
+
+  return true
 }
 
-export async function analyzeRepo(
-  repoPath: string,
-): Promise<['git'] | ['git-full', remote: string, sync: SyncStatus]> {
+// export async function analyzePath(
+//   repoPath: string,
+// ): Promise<null | 'invalid' | 'is-available' | 'is-dir' | 'dir-git'> {
+//   if (!await exists(repoPath)) {
+//     return 'no-dir';
+//   }
+
+//   const stats = await stat(repoPath)
+//   if (stats.isDirectory()) {
+//     // console.log(`${repoPath} is directory`)
+//     const gitPath = join(repoPath, '.git')
+//     if ((await exists(gitPath)) && (await stat(gitPath)).isDirectory()) {
+//       // console.log(`${repoPath} is git repo`)
+//       return 'dir-git'
+//     } else {
+//       // console.log(`${repoPath} is not git repo`)
+//       return 'dir'
+//     }
+//   } else {
+//     if (stats.isFile()) {
+//       return 'file'
+//     } else {
+//       return 'no-dir'
+//     }
+//     return null
+//   }
+// }
+
+export async function remoteUrl(repoPath: string): Promise<null | string> {
   // Read origin URL from .git/config
   try {
     const url =
@@ -32,10 +57,10 @@ export async function analyzeRepo(
     const remote = url.text().trim()
     // console.log('Remote', remote)
 
-    return ['git-full', remote, 'unknown']
+    return remote
   } catch (err) {
     // console.log('Repo has no remote')
-    return ['git']
+    return null
   }
 }
 
@@ -43,7 +68,6 @@ export async function aheadBehind(repoPath: string) {
   const status =
     await Bun.$`cd ${repoPath} && git rev-list --left-right --count HEAD...origin/main`
   const parsedStatus = status.text().trim().split(/\s+/)
-  console.log('STATUS', parsedStatus)
   const [ahead, behind] = parsedStatus.map((v) => parseInt(v, 10))
 
   return [ahead, behind]
@@ -155,4 +179,19 @@ export async function zeroCommits(
   } catch (e) {
     return true
   }
+}
+
+export async function isGitRepo(repoPath: string) {
+  const stats = await stat(repoPath)
+  if (!stats.isDirectory()) {
+    return false
+  }
+
+  const gitPath = join(repoPath, '.git')
+  if (!(await exists(gitPath))) {
+    return false
+  }
+
+  const gitStats = await stat(join(repoPath, '.git'))
+  return gitStats.isDirectory()
 }

@@ -173,14 +173,7 @@
         {repo.name ? repo.name : '(mainframe)'}
       </button>
 
-      {#if repo.status[0] === 'dir'}
-        <button
-          onclick={() => cmd('init-repo-git', repo.name!)}
-          class="bg-green-500 text-white px1 rounded-md"
-        >
-          Initialize repo
-        </button>
-      {:else if repo.status[0] === 'git'}
+      {#if repo.status[0] === 'git'}
         <AddRemoteInput
           onConfirm={(url) => cmd('add-remote', repo.name!, url)}
         />

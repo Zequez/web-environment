@@ -16,7 +16,7 @@ export function startReposMonitor() {
   function outputRepos() {
     return [...R.values()]
       .map((v) => v.toJSON())
-      .filter((r) => r.status[0] !== 'unknown' && r.status[0] !== 'invalid')
+      .filter((r) => r.status[0] !== 'unknown')
   }
 
   function subscribe(cb: (repos: Repo[]) => void) {
@@ -45,39 +45,44 @@ export function startReposMonitor() {
     console.log('Refreshing repos')
     const reposPaths = await readdir('./repos')
 
-    let noLongerExists = [...R.keys()].filter((r) => r !== null)
     for (let repo of reposPaths) {
-      noLongerExists = noLongerExists.filter((r) => r !== repo)
       if (!R.has(repo)) {
-        const activeRepo = new ActiveRepo(repo)
-        R.set(activeRepo.name, activeRepo)
+        const aRepo = await ActiveRepo.create(repo)
+        if (aRepo) {
+          R.set(repo, aRepo)
+        }
       }
     }
 
-    noLongerExists.forEach((repo) => {
-      R.delete(repo)
-    })
+    await cleanNonExistantRepos()
 
     for (let repo of R.values()) {
       await repo.analyze()
     }
   }
 
-  async function add(name: string) {
-    console.log('Creating repo!', name)
-    const activeRepo = new ActiveRepo(name)
-    if (!R.has(activeRepo.name)) {
-      R.set(activeRepo.name, activeRepo)
-      await activeRepo.init()
-      notify()
+  async function cleanNonExistantRepos() {
+    for (let repo of R.values()) {
+      if (!(await exists(repo.path))) {
+        R.delete(repo.name)
+      }
     }
   }
 
-  async function initGit(name: string) {
-    const repo = R.get(name)
-    if (repo) {
-      await repo.initGit()
-      notify()
+  async function add(name: string) {
+    const sanitizedName = sanitizeRepoName(name)
+    console.log('Creating repo!', sanitizedName)
+    if (!R.has(sanitizedName)) {
+      const newRepo = await ActiveRepo.create(sanitizedName)
+      if (newRepo) {
+        await newRepo.analyze()
+        console.log('Repo created!', sanitizedName, newRepo)
+        R.set(sanitizedName, newRepo)
+        notify()
+        return true
+      } else {
+        return false
+      }
     }
   }
 
@@ -107,6 +112,10 @@ export function startReposMonitor() {
     }
   }
 
+  function sanitizeRepoName(name: string) {
+    return name.replace(/[^a-z0-9\-_]/gi, '')
+  }
+
   // async function fetchRepo(name: string) {
   //   const repo = repos.find((r) => r.name === name)
   //   if (repo && repo.status[0] === 'git-full') {
@@ -122,7 +131,6 @@ export function startReposMonitor() {
     add,
     remove,
     sync,
-    initGit,
     addRemote,
     get repos() {
       return R

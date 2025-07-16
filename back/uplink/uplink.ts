@@ -61,10 +61,10 @@ function start() {
               await reposMonitor.add(cmd[1])
               break
             }
-            case 'init-repo-git': {
-              await reposMonitor.initGit(cmd[1])
-              break
-            }
+            // case 'init-repo-git': {
+            //   await reposMonitor.initGit(cmd[1])
+            //   break
+            // }
             case 'remove-repo': {
               await reposMonitor.remove(cmd[1])
               break

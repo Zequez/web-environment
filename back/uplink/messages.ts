@@ -1,11 +1,6 @@
 export type Repo = {
   name: string | null
-  status:
-    | ['unknown']
-    | ['invalid']
-    | ['dir']
-    | ['git']
-    | ['git-full', remote: string, sync: SyncStatus]
+  status: ['unknown'] | ['git'] | ['git-full', remote: string, sync: SyncStatus]
   mergeConflicts: boolean
 }
 

@@ -6,6 +6,10 @@ import trash from 'trash'
 import chalk from 'chalk'
 import * as git from './git'
 
+function sanitizeRepoName(name: string) {
+  return name.replace(/[^a-z0-9\-_]/gi, '')
+}
+
 export class ActiveRepo implements Repo {
   name: string | null
   status: Repo['status'] = ['unknown']
@@ -19,47 +23,46 @@ export class ActiveRepo implements Repo {
     this.path = name ? join('./repos', name) : join('./')
   }
 
+  static async create(name: string) {
+    const repo = new ActiveRepo(name)
+    if (await git.ensurePathIsRepo(repo.path)) {
+      return repo
+    } else {
+      return null
+    }
+  }
+
   async analyze() {
     console.log(chalk.green('ANALYZING'), this.name)
-    const result = await git.analyzePath(this.path)
-    if (result === 'dir') {
-      this.status = ['dir']
-    } else if (result === 'git') {
-      const result = await git.analyzeRepo(this.path)
-      this.status = result
+
+    if (this.status[0] === 'unknown') {
+      if (!(await git.isGitRepo(this.path))) {
+        if (!(await git.ensurePathIsRepo(this.path))) {
+          throw 'ActiveRepo could not be initialized'
+        }
+      }
+    }
+
+    const remoteUrl = await git.remoteUrl(this.path)
+
+    if (remoteUrl) {
+      this.status = ['git-full', remoteUrl, 'unknown']
       await this.analyzeSyncStatus()
     } else {
-      this.status = ['invalid']
-    }
-  }
-
-  async init() {
-    if (this.status[0] === 'invalid') {
-      await mkdir(this.path)
-      this.status = ['dir']
-      await this.initGit()
-    }
-  }
-
-  async initGit() {
-    if (this.status[0] === 'dir') {
-      await git.init(this.path)
       this.status = ['git']
     }
-  }
 
-  async trash() {
-    await trash(this.path)
-    this.status = ['invalid']
-  }
-
-  async addRemote(url: string) {
-    if (this.status[0] === 'git') {
-      const resolvedUrl = await git.addRemote(this.path, url)
-      this.status = ['git-full', resolvedUrl, 'unknown']
-      await git.pull(this.path)
-      this.status = ['git-full', resolvedUrl, 'in-sync']
-    }
+    // console.log(chalk.green('ANALYZING'), this.name)
+    // const result = await git.analyzePath(this.path)
+    // if (result === 'dir') {
+    //   this.status = ['dir']
+    // } else if (result === 'git') {
+    //   const result = await git.remoteUrl(this.path)
+    //   this.status = result
+    //   await this.analyzeSyncStatus()
+    // } else {
+    //   this.status = ['invalid']
+    // }
   }
 
   async analyzeSyncStatus() {
@@ -80,6 +83,35 @@ export class ActiveRepo implements Repo {
       const [status, uncommittedChanges] = await git.assesSyncStatus(this.path)
       this.uncommittedChanges = uncommittedChanges
       this.status[2] = status
+    }
+  }
+
+  // async init() {
+  //   if (this.status[0] === 'invalid') {
+  //     await mkdir(this.path)
+  //     this.status = ['dir']
+  //     await this.initGit()
+  //   }
+  // }
+
+  // async initGit() {
+  //   if (this.status[0] === 'dir') {
+  //     await git.init(this.path)
+  //     this.status = ['git']
+  //   }
+  // }
+
+  async trash() {
+    await trash(this.path)
+    this.status = ['unknown']
+  }
+
+  async addRemote(url: string) {
+    if (this.status[0] === 'git') {
+      const resolvedUrl = await git.addRemote(this.path, url)
+      this.status = ['git-full', resolvedUrl, 'unknown']
+      await git.pull(this.path)
+      this.status = ['git-full', resolvedUrl, 'in-sync']
     }
   }
 
