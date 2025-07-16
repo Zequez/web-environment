@@ -6,6 +6,7 @@ export type Repo = {
     | ['dir']
     | ['git']
     | ['git-full', remote: string, sync: SyncStatus]
+  mergeConflicts: boolean
 }
 
 export type SyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
@@ -17,3 +18,4 @@ export type FrontMsg =
   | ['init-repo-git', name: string]
   | ['remove-repo', name: string]
   | ['add-remote', name: string, remote: string]
+  | ['sync', name: string | null]

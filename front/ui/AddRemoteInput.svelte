@@ -21,7 +21,7 @@
   <input
     bind:value={remote}
     class={'rounded-md h8 px2 b b-black/10 outline-green-500 flex-grow'}
-    placeholder="Name"
+    placeholder="Remote Git repo"
   />
   <button
     type="submit"

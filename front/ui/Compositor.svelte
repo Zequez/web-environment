@@ -4,6 +4,7 @@
   import FolderIcon from '~icons/fa6-solid/folder-open'
   import InternetIcon from '~icons/fa6-solid/globe'
   import TrashIcon from '~icons/fa6-solid/trash'
+
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
   import type {
@@ -14,6 +15,7 @@
   } from '@back/uplink/messages'
   import AddRemoteInput from './AddRemoteInput.svelte'
   import { type ElectronBridge } from '@back/electron/preload'
+  import SyncButton from './SyncButton.svelte'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -63,6 +65,7 @@
       | [type: 'init-repo-git', name: string]
       | [type: 'remove-repo', name: string]
       | [type: 'add-remote', name: string, url: string]
+      | [type: 'sync', name: string | null]
   ) {
     switch (c[0]) {
       case 'add-repo': {
@@ -81,6 +84,10 @@
       }
       case 'add-remote': {
         send(['add-remote', c[1], c[2]])
+        break
+      }
+      case 'sync': {
+        send(['sync', c[1]])
         break
       }
     }
@@ -132,8 +139,19 @@
         'b-b-1 py2 bg-gray-200': !repo.name,
       })}
     >
-      <div class="rounded-md w6 h6 flexcc">
-        {#if !syncStatus}
+      <div class="rounded-md flexcc relative">
+        <SyncButton
+          status={syncStatus}
+          onAction={() => cmd('sync', repo.name)}
+        />
+        {#if repo.mergeConflicts}
+          <div
+            class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
+          >
+            Merge conflict
+          </div>
+        {/if}
+        <!-- {#if !syncStatus}
           <span></span>
         {:else if syncStatus === 'ahead'}
           <span title="Ahead" class="whitespace-nowrap">🔼</span>
@@ -145,14 +163,14 @@
           <span title="In-sync">✅</span>
         {:else}
           <span title="Unknown">❓</span>
-        {/if}
+        {/if} -->
       </div>
       <button
         class="flex-grow flexcs hover:text-blue-5"
         onclick={() => openOnFileExplorer(repo.name)}
       >
         <FolderIcon class="mr2" />
-        {repo.name ? `/${repo.name}` : '(mainframe)'}
+        {repo.name ? repo.name : '(mainframe)'}
       </button>
 
       {#if repo.status[0] === 'dir'}

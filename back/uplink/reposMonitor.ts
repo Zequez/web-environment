@@ -98,6 +98,15 @@ export function startReposMonitor() {
     }
   }
 
+  async function sync(name: string | null) {
+    const repo = R.get(name)
+    if (repo) {
+      await repo.sync()
+      // await repo.pull()
+      notify()
+    }
+  }
+
   // async function fetchRepo(name: string) {
   //   const repo = repos.find((r) => r.name === name)
   //   if (repo && repo.status[0] === 'git-full') {
@@ -112,6 +121,7 @@ export function startReposMonitor() {
     subscribe,
     add,
     remove,
+    sync,
     initGit,
     addRemote,
     get repos() {

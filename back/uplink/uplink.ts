@@ -46,10 +46,16 @@ function start() {
     },
     websocket: {
       async message(ws, message) {
+        let cmd: FrontMsg = null!
         try {
-          const cmd = JSON.parse(message.toString()) as FrontMsg
+          cmd = JSON.parse(message.toString()) as FrontMsg
           console.log('🔽', cmd)
+        } catch (e) {
+          console.log('Invalid message', message)
+          return
+        }
 
+        try {
           switch (cmd[0]) {
             case 'add-repo': {
               await reposMonitor.add(cmd[1])
@@ -67,9 +73,13 @@ function start() {
               await reposMonitor.addRemote(cmd[1], cmd[2])
               break
             }
+            case 'sync': {
+              await reposMonitor.sync(cmd[1])
+              break
+            }
           }
         } catch (e) {
-          console.log('Invalid message', message)
+          console.log('Server', e)
         }
         // ws.send(message) // echo back the message
       },

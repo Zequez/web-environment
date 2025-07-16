@@ -9,6 +9,8 @@ export class ActiveRepo implements Repo {
   name: string | null
   status: Repo['status'] = ['unknown']
   path: string
+  uncommittedChanges: boolean = false
+  mergeConflicts: boolean = false
 
   constructor(name: string | null) {
     const safeName = name ? name.replace(/[^a-z0-9\-_]/gi, '') : null
@@ -72,21 +74,25 @@ export class ActiveRepo implements Repo {
   async analyzeSyncStatus() {
     console.log('Analyzing sync status!')
     if (this.status[0] === 'git-full') {
+      const unresolvedConflicts = await hasUnresolvedMergeConflicts(this.path)
+      if (unresolvedConflicts) {
+        await abortMerge(this.path)
+      }
       const fetchHeadStat = await stat(join(this.path, '.git/FETCH_HEAD'))
       const fetchedSecondsAgo =
         (new Date().getTime() - fetchHeadStat.mtimeMs) / 1000
       console.log('LAST FETCH MS', fetchedSecondsAgo)
-      if (fetchedSecondsAgo > 60 * 5) {
+      if (fetchedSecondsAgo > 60 * 1) {
         await Bun.$`cd ${this.path} && git fetch`
       }
       const changes = await Bun.$`cd ${this.path} && git status --short`
-      const uncommittedChanges = !(changes.text().trim() === '')
+      this.uncommittedChanges = !(changes.text().trim() === '')
       const zeroLocalCommits = await zeroCommits(this.path, 'local')
       const zeroRemoteCommits = await zeroCommits(this.path, 'remote')
       if (zeroLocalCommits && zeroRemoteCommits) {
-        this.status[2] = uncommittedChanges ? 'ahead' : 'in-sync'
+        this.status[2] = this.uncommittedChanges ? 'ahead' : 'in-sync'
       } else if (zeroLocalCommits) {
-        this.status[2] = uncommittedChanges ? 'diverged' : 'behind'
+        this.status[2] = this.uncommittedChanges ? 'diverged' : 'behind'
       } else if (zeroRemoteCommits) {
         this.status[2] = 'ahead'
       } else {
@@ -98,19 +104,58 @@ export class ActiveRepo implements Repo {
         if (behind && ahead) {
           this.status[2] = 'diverged'
         } else if (behind) {
-          this.status[2] = uncommittedChanges ? 'diverged' : 'behind'
+          this.status[2] = this.uncommittedChanges ? 'diverged' : 'behind'
         } else if (ahead) {
           this.status[2] = 'ahead'
         } else {
-          this.status[2] = uncommittedChanges ? 'ahead' : 'in-sync'
+          this.status[2] = this.uncommittedChanges ? 'ahead' : 'in-sync'
         }
       }
     }
   }
 
-  toJSON(): Repo {
-    return { name: this.name, status: this.status }
+  async sync() {
+    if (this.status[0] === 'git-full') {
+      const syncStatus = this.status[2]
+      if (this.uncommittedChanges) {
+        await Bun.$`cd ${this.path} && git add -A && git commit -m "Auto-commit ${new Date().toISOString()}" && git push`
+      }
+
+      if (syncStatus === 'ahead') {
+        await Bun.$`cd ${this.path} && git push --set-upstream origin main`
+      } else if (syncStatus === 'behind') {
+        await Bun.$`cd ${this.path} && git pull origin main`
+      } else if (syncStatus === 'diverged') {
+        try {
+          await Bun.$`cd ${this.path} && git merge --no-edit origin/main`
+          this.mergeConflicts = false
+        } catch (e) {
+          await abortMerge(this.path)
+          this.mergeConflicts = true
+        }
+      }
+
+      await this.analyzeSyncStatus()
+    }
   }
+
+  toJSON(): Repo {
+    return {
+      name: this.name,
+      status: this.status,
+      mergeConflicts: this.mergeConflicts,
+    }
+  }
+}
+
+async function abortMerge(repoPath: string) {
+  return await Bun.$`cd ${repoPath} && git merge --abort`
+}
+
+async function hasUnresolvedMergeConflicts(repoPath: string) {
+  const output = await Bun.$`cd ${repoPath} && git ls-files -u`
+  console.log('REPO PATH MERGE UNRESOLVED', repoPath, output.text())
+  return output.text().trim() !== ''
 }
 
 async function zeroCommits(repoPath: string, target: 'remote' | 'local') {
