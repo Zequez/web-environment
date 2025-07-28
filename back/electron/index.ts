@@ -2,7 +2,7 @@ import { watch } from 'fs'
 import { ChildProcess, spawn } from 'child_process'
 import fs from 'fs'
 import { build } from 'vite'
-import viteBuildConfig from './electron/vite.config.ts'
+import viteBuildConfig from './vite.config.ts'
 
 export function startElectron() {
   // Rename ""./node_modules/electron/dist/Electron.app"

@@ -1,8 +1,8 @@
 import { createServer } from 'vite'
-import { generateConfig } from '../vite.config'
+import viteConfig from '../vite.config'
 
 export async function startVite() {
-  const viteConfig = await generateConfig({ landRoot: '', build: false })
+  // const viteConfig = await generateConfig({ landRoot: '', build: false })
   const server = await createServer(viteConfig)
   await server.listen()
   console.log(`🚀 Dev server running at ${server.resolvedUrls?.local?.[0]}`)

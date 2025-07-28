@@ -37,7 +37,8 @@
   "include": [
     "front",
     "land",
-    "back"
-  ],
+    "back",
+    "wrapper"
+, "vite.config.wrapper.ts"  ],
   "exclude": ["node_modules"]
 }

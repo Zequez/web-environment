@@ -12,6 +12,8 @@ function stringToPort(str: string): number {
   return minPort + (Math.abs(hash) % (maxPort - minPort))
 }
 
-export const VITE_PORT = stringToPort(name) // 18214
-export const UPLINK_PORT = VITE_PORT + 1
-export const AI_PORT = VITE_PORT + 2
+const BASE_PORT = stringToPort(name) // 18214
+export const VITE_PORT = BASE_PORT + 0
+export const UPLINK_PORT = BASE_PORT + 1
+export const WRAPPER_PORT = BASE_PORT + 2
+export const FILES_SERVER_PORT = BASE_PORT + 3

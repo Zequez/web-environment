@@ -4,15 +4,11 @@
   import FolderIcon from '~icons/fa6-solid/folder-open'
   import InternetIcon from '~icons/fa6-solid/globe'
   import TrashIcon from '~icons/fa6-solid/trash'
+  import OpenIcon from '~icons/fa6-solid/square-arrow-up-right'
 
   import AddRepoInput from './AddRepoInput.svelte'
   import { UPLINK_PORT } from '../../back/ports'
-  import type {
-    BackMsg,
-    FrontMsg,
-    Repo,
-    SyncStatus,
-  } from '@back/uplink/messages'
+  import type { BackMsg, FrontMsg, Repo } from '@back/uplink/messages'
   import AddRemoteInput from './AddRemoteInput.svelte'
   import { type ElectronBridge } from '@back/electron/preload'
   import SyncButton from './SyncButton.svelte'
@@ -21,14 +17,7 @@
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
   let repos: Repo[] = $state<Repo[]>([])
-  let repos2: Repo2[] = $state<Repo2[]>([])
   let socket = $state<WebSocket>(null!)
-
-  type Repo2 = {
-    remote: string
-    name: string | null
-    syncStatus: RepoSyncStatus
-  }
 
   type RepoSyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
@@ -50,10 +39,6 @@
       }
       console.log(`Socket message!`, event.data)
     })
-
-    // setTimeout(() => {
-    //   socket.send('ping')
-    // }, 1000)
   })
 
   function send(msg: FrontMsg) {
@@ -102,41 +87,8 @@
   function openOnFileExplorer(name: string | null) {
     electronAPI.openFolder(name)
   }
-
-  // function setRepo(name: string, {title: string, name: string, remote: string}) {
-
-  // }
-
-  // function setRepoConfig(name: string) {
-
-  // }
-
-  // onMount(() => {
-  //   repos2 = [
-  //     {
-  //       remote: 'https://github.com/zequez/web-environment',
-  //       name: null,
-  //       syncStatus: 'unknown',
-  //     },
-  //     {
-  //       remote: 'https://github.com/zequez/ezequielschwartzman.org',
-  //       name: 'ezequiel',
-  //       syncStatus: 'unknown',
-  //     },
-
-  //     {
-  //       remote: 'https://github.com/zequez/chloe',
-  //       name: 'chloe',
-  //       syncStatus: 'unknown',
-  //     },
-  //   ]
-  // })
 </script>
 
-<!--
-{#if showAddRepo}
-  <AddRepoDialog onCancel={() => (showAddRepo = false)} />
-{/if} -->
 <div class="">
   {#each repos as repo (repo.name)}
     {@const syncStatus = repo.status[0] === 'git-full' ? repo.status[2] : null}
@@ -157,19 +109,6 @@
             Merge conflict
           </div>
         {/if}
-        <!-- {#if !syncStatus}
-          <span></span>
-        {:else if syncStatus === 'ahead'}
-          <span title="Ahead" class="whitespace-nowrap">🔼</span>
-        {:else if syncStatus === 'behind'}
-          <span title="Behind" class="whitespace-nowrap">🔻</span>
-        {:else if syncStatus === 'diverged'}
-          <span title="Diverged">⚠️</span>
-        {:else if syncStatus === 'in-sync'}
-          <span title="In-sync">✅</span>
-        {:else}
-          <span title="Unknown">❓</span>
-        {/if} -->
       </div>
       <FetchedButton
         lastFetchedAt={repo.lastFetchedAt}
@@ -199,6 +138,12 @@
       {/if}
 
       {#if repo.name}
+        <button
+          class="flexcs hover:text-blue-5"
+          onclick={() => electronAPI.openView(repo.name)}
+        >
+          <OpenIcon />
+        </button>
         <button
           class="flexcs hover:text-red-5"
           onclick={() => cmd('remove-repo', repo.name!)}
