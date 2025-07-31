@@ -4,9 +4,9 @@ import fs from 'fs'
 import { build } from 'vite'
 import viteBuildConfig from './vite.config.ts'
 
-export function startElectron() {
+export async function startElectron() {
   // Rename ""./node_modules/electron/dist/Electron.app"
-  // to "Web Substrate.app"
+  // So it shows up like that on the Mac dock
 
   function renameElectronApp() {
     const electronAppPath = './node_modules/electron/dist/Electron.app'
@@ -21,12 +21,11 @@ export function startElectron() {
   // To ./electron/dist/main.js and ./electron/dist/preload.js
 
   async function watchAndCompileElectronStuff() {
-    watch(
+    const watcher = watch(
       './back/electron/',
       { recursive: true },
       async (eventType, fileName) => {
         if (fileName && fileName.endsWith('.ts')) {
-          console.log(`📝 Arquivo modificado FRAME: ${fileName}`)
           await compileElectronStuff()
           restartElectron()
         }
@@ -34,6 +33,7 @@ export function startElectron() {
     )
     await compileElectronStuff()
     restartElectron()
+    return watcher
   }
 
   // Compile ./electron/main.ts and ./electron/preload.ts using Bun to ./electron/dist
@@ -50,25 +50,43 @@ export function startElectron() {
 
   // Start or restart electron process
 
-  let electronServerProcess: ChildProcess | null = null
+  let electronServerProcess: ReturnType<
+    typeof Bun.spawn<{
+      stdout: 'inherit'
+      stderr: 'inherit'
+    }>
+  > | null = null
   function restartElectron() {
-    // `VITE_DEV_SERVER_URL=http://localhost:2332 ./node_modules/electron/dist/Web\ Substrate.app/Contents/MacOS/Electron front/electron-main.js ./back/electron/dist/main.js --args`
     if (electronServerProcess) {
       electronServerProcess.kill()
     }
-    electronServerProcess = spawn(
-      './node_modules/electron/dist/Web Substrate.app/Contents/MacOS/Electron',
-      ['./back/electron/dist/main.js', '--args'],
+    electronServerProcess = Bun.spawn(
+      [
+        './node_modules/electron/dist/Web Substrate.app/Contents/MacOS/Electron',
+        './back/electron/dist/main.js',
+        '--args',
+      ],
       {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          VITE_DEV_SERVER_URL: 'http://localhost:2332',
-        },
+        stdout: 'inherit',
+        stderr: 'inherit',
       },
     )
   }
 
   renameElectronApp()
-  watchAndCompileElectronStuff()
+  const watcher = await watchAndCompileElectronStuff()
+
+  return {
+    kill: () => {
+      electronServerProcess?.kill()
+      watcher.close()
+    },
+    get exited() {
+      if (electronServerProcess === null) {
+        return Promise.resolve(true)
+      } else {
+        return electronServerProcess.exited
+      }
+    },
+  }
 }

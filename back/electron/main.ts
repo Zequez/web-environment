@@ -1,10 +1,15 @@
 import { app, BrowserWindow, nativeImage, ipcMain, shell } from 'electron'
 import { fileURLToPath } from 'url'
 import path from 'path'
-import { VITE_PORT, WRAPPER_PORT } from '@back/ports'
+import {
+  UI_REPOS_PORT,
+  UI_PORT_FOR_REPO,
+  SERVER_VITE_SPINNER_PORT,
+} from '@/center/ports'
 
-const VITE_DEV_SERVER_URL = 'http://localhost:' + VITE_PORT
-const WRAPPER_DEV_SERVER_URL = 'http://localhost:' + WRAPPER_PORT
+const VITE_DEV_SERVER_URL = 'http://localhost:' + UI_REPOS_PORT
+
+console.log('VITE_DEV_SERVER_URL', VITE_DEV_SERVER_URL)
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -40,7 +45,11 @@ ipcMain.handle('open-view', async (event: any, repo: string | null) => {
   })
   // // The Web Substrate has no production version
   // console.log(process.env.VITE_DEV_SERVER_URL)
-  win.loadURL(WRAPPER_DEV_SERVER_URL + '/' + repo)
+  const result = await fetch(
+    `http://localhost:${SERVER_VITE_SPINNER_PORT}/${repo}`,
+  )
+  const url = await result.text()
+  win.loadURL(url)
 })
 
 function createWindow() {
@@ -53,7 +62,7 @@ function createWindow() {
       contextIsolation: true,
       webviewTag: true, // ✅ allows <webview> tag
     },
-    icon: './front/public/favicon.png',
+    icon: './assets/favicon.png',
   })
   // // The Web Substrate has no production version
   // console.log(process.env.VITE_DEV_SERVER_URL)
@@ -65,7 +74,7 @@ app.disableHardwareAcceleration()
 app
   .whenReady()
   .then(() => {
-    const image = nativeImage.createFromPath('./front/public/dock-icon.png')
+    const image = nativeImage.createFromPath('./assets/dock-icon.png')
     // On OSX
     if (app.dock) {
       app.dock.setIcon(image)

@@ -1,8 +1,5 @@
-import { readdir, stat, exists } from 'fs/promises'
-import { join } from 'path'
-import type { Repo, SyncStatus } from './messages'
-import { mkdir } from 'fs/promises'
-import trash from 'trash'
+import { readdir, exists } from 'fs/promises'
+import type { Repo } from './messages'
 import { ActiveRepo } from './ActiveRepo'
 import { debounce } from '@/center/utils'
 
@@ -49,6 +46,8 @@ export function startReposMonitor() {
   async function refresh() {
     console.log('Refreshing repos')
     const reposPaths = await readdir('./repos')
+
+    console.log('REPOS PATH!', reposPaths)
 
     for (let repo of reposPaths) {
       if (!R.has(repo)) {

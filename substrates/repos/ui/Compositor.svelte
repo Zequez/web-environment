@@ -7,10 +7,14 @@
   import OpenIcon from '~icons/fa6-solid/square-arrow-up-right'
 
   import AddRepoInput from './AddRepoInput.svelte'
-  import { UPLINK_PORT } from '../../back/ports'
-  import type { BackMsg, FrontMsg, Repo } from '@back/uplink/messages'
+  import { SERVER_GIT_PORT } from '../../../center/ports'
+  import type {
+    BackMsg,
+    FrontMsg,
+    Repo,
+  } from '@/back/servers/git-server/messages'
   import AddRemoteInput from './AddRemoteInput.svelte'
-  import { type ElectronBridge } from '@back/electron/preload'
+  import { type ElectronBridge } from '@/back/electron/preload'
   import SyncButton from './SyncButton.svelte'
   import FetchedButton from './FetchedButton.svelte'
 
@@ -22,7 +26,7 @@
   type RepoSyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
   onMount(() => {
-    socket = new WebSocket(`ws://localhost:${UPLINK_PORT}`)
+    socket = new WebSocket(`ws://localhost:${SERVER_GIT_PORT}`)
 
     socket.addEventListener('message', (event) => {
       try {

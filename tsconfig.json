@@ -29,16 +29,17 @@
 
 
     "paths": {
-      "@/*": ["./front/*"],
-      "@@/*": ["./land/*"],
-      "@back/*": ["./back/*"]
+      "@/*": ["./*"],
+      "@@/*": ["./repos/*"],
+      "@/back/*": ["./back/*"],
     }
   },
   "include": [
     "front",
     "land",
     "back",
-    "wrapper"
-, "vite.config.wrapper.ts"  ],
+    "wrapper",
+    "substrates",
+    "vite.config.wrapper.ts", "center/ports.ts", "center/ports.ts", "center", "center"  ],
   "exclude": ["node_modules"]
 }
