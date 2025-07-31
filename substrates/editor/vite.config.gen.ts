@@ -12,6 +12,9 @@ export default (repo: string, port: number) => {
     },
     root: './substrates/editor',
     plugins: [svelte(), UnoCSS(), Icons({ compiler: 'svelte' })],
+    define: {
+      __REPO__: JSON.stringify(repo),
+    },
     resolve: {
       alias: {
         '@@@': path.resolve(__dirname, `../../repos/${repo}`),

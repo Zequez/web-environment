@@ -33,8 +33,8 @@ ipcMain.handle('open-external', async (event: any, url: any) => {
 
 ipcMain.handle('open-view', async (event: any, repo: string | null) => {
   const win = new BrowserWindow({
-    width: 800,
-    height: 500,
+    width: 1500,
+    height: 1000,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'), // optional
       nodeIntegration: false,

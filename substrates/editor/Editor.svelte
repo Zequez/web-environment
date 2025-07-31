@@ -10,7 +10,7 @@
 
   let socket = $state<WebSocket>(null!)
   let dirTree = $state<DirectoryTree>(null!)
-  const repo = document.location.pathname.slice(1)
+  const repo = __REPO__
 
   let selected = $state<string | null>(null)
   let entrypoint = $state<string | null>(null)
