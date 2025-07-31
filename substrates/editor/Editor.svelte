@@ -6,21 +6,15 @@
   import { cx } from '@/center/utils'
   import { type BackMsg, type FrontMsg } from '@/back/servers/files-server'
 
-  import { htmlToDataString } from './compiler'
-
   let socket = $state<WebSocket>(null!)
   let dirTree = $state<DirectoryTree>(null!)
   const repo = __REPO__
 
   let selected = $state<string | null>(null)
-  let entrypoint = $state<string | null>(null)
   let filesBuffers = $state<{ [key: string]: string }>({})
   let filesEditBuffer = $state<{ [key: string]: string }>({})
   let resolvedSelected = $derived(
     selected && (filesEditBuffer[selected] || filesBuffers[selected]),
-  )
-  let resolvedEntrypoint = $derived(
-    entrypoint && (filesEditBuffer[entrypoint] || filesBuffers[entrypoint]),
   )
 
   function sortTree(tree: DirectoryTree): DirectoryTree {
@@ -43,6 +37,10 @@
     return newTree
   }
 
+  function sendMsg(msg: FrontMsg) {
+    socket.send(JSON.stringify(msg))
+  }
+
   onMount(() => {
     console.log('EDITOR MOUNT')
 
@@ -54,11 +52,29 @@
         console.log('🔻', data)
         switch (data[0]) {
           case 'files-tree': {
-            dirTree = sortTree(data[1])
+            const [, tree] = data
+            dirTree = sortTree(tree)
+            if (!selected) {
+              const indexFile = dirTree.children!.find(({ name }) =>
+                name.match(/index/),
+              )
+              const newSelected = indexFile || dirTree.children?.[0] || null
+              if (newSelected) {
+                pickFile(newSelected.path)
+              }
+            }
             break
           }
           case 'file-content': {
-            filesBuffers[data[1]] = data[2]
+            const [, name, content] = data
+            filesBuffers[name] = content
+            if (filesEditBuffer[name]) {
+              if (filesBuffers[name] !== filesEditBuffer[name]) {
+                alert('Conflict!')
+              } else {
+                delete filesEditBuffer[name]
+              }
+            }
             break
           }
         }
@@ -72,10 +88,7 @@
 
   function pickFile(path: string) {
     selected = path
-    if (path.endsWith('.html')) {
-      entrypoint = path
-    }
-    socket.send(JSON.stringify(['read-file', path]))
+    sendMsg(['read-file', path])
   }
 
   function updateFile(path: string, content: string) {
@@ -83,7 +96,25 @@
     filesEditBuffer[path] = content
     // socket.send(JSON.stringify(['write-file', path, content]))
   }
+
+  function saveFiles() {
+    for (const [path, content] of Object.entries(filesEditBuffer)) {
+      sendMsg(['write-file', path, content])
+    }
+  }
+
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
+  function handleKeydown(event: KeyboardEvent) {
+    if (isMac ? event.metaKey : event.ctrlKey) {
+      if (event.key === 's') {
+        saveFiles()
+        // updateFile(selected!, htmlToDataString(resolvedSelected))
+      }
+    }
+  }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#snippet filesTree(children: DirectoryTree[], depth: number = 0)}
   {#each children as { path, name, children: subChildren }}
@@ -91,7 +122,6 @@
       class={cx(
         'relative px2 py.5 hover:bg-black/10 block w-full text-left whitespace-nowrap overflow-hidden text-ellipsis',
         { 'bg-blue-300/30': selected === path },
-        { underline: entrypoint === path },
       )}
       onclick={subChildren ? () => {} : () => pickFile(path)}
     >
@@ -139,12 +169,6 @@
   </div>
   <!-- <div>Blocks content</div> -->
   <div class="w-40% flex-shrink-0">
-    {#if entrypoint && typeof filesBuffers[entrypoint] === 'string'}
-      <iframe
-        title={entrypoint}
-        class="w-40% flex-shrink-0"
-        src={htmlToDataString(resolvedEntrypoint!)}
-      ></iframe>
-    {/if}
+    <iframe title="Preview" class="w-40% flex-shrink-0" src="/"></iframe>
   </div>
 </div>

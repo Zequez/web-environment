@@ -49,7 +49,7 @@ ipcMain.handle('open-view', async (event: any, repo: string | null) => {
     `http://localhost:${SERVER_VITE_SPINNER_PORT}/${repo}`,
   )
   const url = await result.text()
-  win.loadURL(url)
+  win.loadURL(url + 'editor.html')
 })
 
 function createWindow() {

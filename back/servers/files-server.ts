@@ -1,6 +1,12 @@
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_FILES_PORT } from '../../center/ports'
-import { existsSync, watch, type FSWatcher, readFileSync } from 'fs'
+import {
+  existsSync,
+  watch,
+  type FSWatcher,
+  readFileSync,
+  writeFileSync,
+} from 'fs'
 import dirTree, { type DirectoryTree } from 'directory-tree'
 import { isBinary } from '../../node_modules/istextorbinary' // I have no idea why using istextorbinary throws TypeScript off
 
@@ -10,7 +16,7 @@ export type BackMsg =
   | ['files-tree', DirectoryTree]
   | ['file-content', path: string, content: string]
 export type FrontMsg =
-  | ['write-file']
+  | ['write-file', filePath: string, content: string]
   | ['move-file']
   | ['delete-file']
   | ['read-file', filePath: string]
@@ -26,6 +32,9 @@ function start() {
 
       switch (msg[0]) {
         case 'write-file':
+          const [, path, content] = msg
+          writeFileSync(path, content)
+          break
         case 'move-file':
         case 'delete-file':
           break
