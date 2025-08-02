@@ -2,6 +2,7 @@ import { watch } from 'fs'
 import fs from 'fs'
 import { build } from 'vite'
 import viteBuildConfig from './vite.config.ts'
+import { APP_NAME } from './config.ts'
 
 export async function startElectron() {
   // Rename ""./node_modules/electron/dist/Electron.app"
@@ -9,7 +10,7 @@ export async function startElectron() {
 
   function renameElectronApp() {
     const electronAppPath = './node_modules/electron/dist/Electron.app'
-    const webSubstrateAppPath = './node_modules/electron/dist/Web Substrate.app'
+    const webSubstrateAppPath = `./node_modules/electron/dist/${APP_NAME}.app`
 
     if (fs.existsSync(electronAppPath)) {
       fs.renameSync(electronAppPath, webSubstrateAppPath)
@@ -61,7 +62,7 @@ export async function startElectron() {
     }
     electronServerProcess = Bun.spawn(
       [
-        './node_modules/electron/dist/Web Substrate.app/Contents/MacOS/Electron',
+        `./node_modules/electron/dist/${APP_NAME}.app/Contents/MacOS/Electron`,
         './back/electron/dist/main.js',
         '--args',
       ],

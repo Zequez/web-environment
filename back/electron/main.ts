@@ -1,11 +1,14 @@
 import { app, BrowserWindow, nativeImage, ipcMain, shell } from 'electron'
+import contextMenu from 'electron-context-menu'
 import { fileURLToPath } from 'url'
 import path from 'path'
-import {
-  UI_REPOS_PORT,
-  UI_PORT_FOR_REPO,
-  SERVER_VITE_SPINNER_PORT,
-} from '@/center/ports'
+
+import { UI_REPOS_PORT, SERVER_VITE_SPINNER_PORT } from '@/center/ports'
+import { APP_NAME } from './config'
+
+contextMenu({
+  showSaveImageAs: true,
+})
 
 const VITE_DEV_SERVER_URL = 'http://localhost:' + UI_REPOS_PORT
 
@@ -54,8 +57,8 @@ ipcMain.handle('open-view', async (event: any, repo: string | null) => {
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 500,
+    width: 1200,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'), // optional
       nodeIntegration: false,
@@ -69,7 +72,7 @@ function createWindow() {
   win.loadURL(VITE_DEV_SERVER_URL)
 }
 
-app.setName('Web Substrate')
+app.setName(APP_NAME)
 app.disableHardwareAcceleration()
 app
   .whenReady()
@@ -78,7 +81,7 @@ app
     // On OSX
     if (app.dock) {
       app.dock.setIcon(image)
-      app.dock.setBadge('Web Substrate')
+      app.dock.setBadge(APP_NAME)
     }
   })
   .then(createWindow)

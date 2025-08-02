@@ -19,5 +19,5 @@ export default () =>
         '@': path.resolve(__dirname, '../../'),
       },
     },
-    publicDir: './assets',
+    publicDir: '../../assets',
   })

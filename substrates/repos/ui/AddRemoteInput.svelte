@@ -16,17 +16,17 @@
   }
 </script>
 
-<form class="flexcc space-x-2 h10" onsubmit={handleSubmit}>
+<form class="flexcc space-x-2 h5 text-xs" onsubmit={handleSubmit}>
   <InternetIcon />
   <input
     bind:value={remote}
-    class={'rounded-md h8 px2 b b-black/10 outline-green-500 flex-grow'}
+    class={'rounded-md h5 px2 b b-black/10 outline-green-500 flex-grow'}
     placeholder="Remote Git repo"
   />
   <button
     type="submit"
     disabled={!remote}
-    class={'bg-green-500 text-white h8 flexcc px2 rounded-md b b-black/10  hover:bg-green-400 disabled:(saturate-0 hover:bg-green-500 opacity-50)'}
+    class={'bg-green-500 text-white h5 uppercase flexcc px2 rounded-md b b-black/10  hover:bg-green-400 disabled:(saturate-0 hover:bg-green-500 opacity-50)'}
   >
     Add
   </button>

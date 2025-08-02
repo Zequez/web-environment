@@ -169,6 +169,10 @@
   </div>
   <!-- <div>Blocks content</div> -->
   <div class="w-40% flex-shrink-0">
-    <iframe title="Preview" class="w-40% flex-shrink-0" src="/"></iframe>
+    <iframe
+      title="Preview"
+      class="w-full h-full flex-shrink-0"
+      src="/"
+    ></iframe>
   </div>
 </div>

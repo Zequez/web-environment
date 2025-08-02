@@ -23,6 +23,7 @@ const mkport = () => {
 export const UI_REPOS_PORT = mkport()
 export const SERVER_GIT_PORT = mkport()
 export const SERVER_FILES_PORT = mkport()
+export const SERVER_PUBLISHING_PORT = mkport()
 export const SERVER_VITE_SPINNER_PORT = mkport()
 
 // Actually this should return the same port independently of usage order
