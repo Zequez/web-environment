@@ -6,6 +6,7 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
+    "jsxImportSource": "preact",
     "allowJs": true,
 
     // Bundler mode
@@ -19,7 +20,7 @@
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
 
-    "types": ["vite/client", "bun-types", "./node_modules/unplugin-icons/types/svelte5.d.ts"],
+    "types": ["mdx", "vite/client", "bun-types", "./node_modules/unplugin-icons/types/svelte5.d.ts"],
 
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
@@ -35,11 +36,10 @@
     }
   },
   "include": [
-    "front",
-    "land",
+    "repos",
     "back",
     "wrapper",
     "substrates",
-    "vite.config.wrapper.ts", "center/ports.ts", "center/ports.ts", "center", "center"  ],
+    "center",],
   "exclude": ["node_modules"]
 }

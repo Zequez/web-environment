@@ -111,6 +111,15 @@
         // updateFile(selected!, htmlToDataString(resolvedSelected))
       }
     }
+
+    if (event.key === 'Escape' && expandedViewer) {
+      toggleExpandedViewer()
+    }
+  }
+
+  let expandedViewer = $state<boolean>(false)
+  function toggleExpandedViewer() {
+    expandedViewer = !expandedViewer
   }
 </script>
 
@@ -168,10 +177,18 @@
     {/if}
   </div>
   <!-- <div>Blocks content</div> -->
-  <div class="w-40% flex-shrink-0">
+  <div class="w-40% flex-shrink-0 flex flex-col">
+    <div class="bg-gray-800 text-white px2 flex">
+      <div class="flex-grow">Preview</div>
+      <button onclick={toggleExpandedViewer} class="hover:text-blue-300">
+        Expand
+      </button>
+    </div>
     <iframe
       title="Preview"
-      class="w-full h-full flex-shrink-0"
+      class={cx('w-full flex-grow bg-white', {
+        'fixed top-0 left-0 right-0 bottom-0 h-full': expandedViewer,
+      })}
       src="/"
     ></iframe>
   </div>

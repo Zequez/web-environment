@@ -1,6 +1,9 @@
+import path from 'path'
 import cx from 'classnames'
 
 export { cx }
+
+export const $path = (p: string) => path.resolve(__dirname, '../', p)
 
 export function maybeReadLS<T>(key: string, defaultValue: T): T {
   try {
@@ -36,4 +39,8 @@ export function timeAgoMini(date: Date) {
   if (seconds < 60 * 60) return `${Math.floor(seconds / 60)}m`
   if (seconds < 60 * 60 * 24) return `${Math.floor(seconds / 60 / 60)}h`
   return `${Math.floor(seconds / 60 / 60 / 24)}d`
+}
+
+export function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }

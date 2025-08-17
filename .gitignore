@@ -181,3 +181,4 @@ repos/*
 !repos/index.html
 
 back/electron/dist
+projections

@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_FILES_PORT } from '../../center/ports'
 import {
@@ -10,8 +11,6 @@ import {
 import dirTree, { type DirectoryTree } from 'directory-tree'
 import { isBinary } from '../../node_modules/istextorbinary' // I have no idea why using istextorbinary throws TypeScript off
 
-console.log('############# FILES SERVER')
-
 export type BackMsg =
   | ['files-tree', DirectoryTree]
   | ['file-content', path: string, content: string]
@@ -23,6 +22,8 @@ export type FrontMsg =
 
 function start() {
   const server = createWebsocketServer<FrontMsg, BackMsg, { repo: string }>({
+    name: 'Files Server',
+    color: chalk.yellow,
     port: SERVER_FILES_PORT,
     onMessage: (msg, params, sendMsg) => {
       const basePath = `repos/${params.repo}`
@@ -59,8 +60,6 @@ function start() {
       return closeWatcher
     },
   })
-
-  console.log('Files server started')
 
   return server
 }

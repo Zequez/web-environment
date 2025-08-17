@@ -2,6 +2,7 @@ import { stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
+import { wait } from '@/center/utils'
 
 export async function ensurePathIsRepo(repoPath: string) {
   if (!(await exists(repoPath))) {
@@ -121,7 +122,7 @@ export async function fetch(repoPath: string) {
 }
 
 export async function autoCommit(repoPath: string) {
-  await Bun.$`cd ${repoPath} && git add -A && git commit -m "Auto-commit ${new Date().toISOString()}" && git push`
+  await Bun.$`cd ${repoPath} && git add -A && git commit -m "Auto-commit ${new Date().toISOString()}"`
 }
 
 export async function pull(repoPath: string) {
@@ -153,8 +154,8 @@ export async function addRemote(repoPath: string, remoteUrl: string) {
   return resolvedUrl
 }
 
-export async function init(repoPath: string) {
-  await Bun.$`cd ${repoPath} && git init`
+export async function init(repoPath: string, branch: string = 'main') {
+  await Bun.$`cd ${repoPath} && git init --initial-branch=${branch}`
 }
 
 export async function abortMerge(repoPath: string) {
@@ -194,4 +195,19 @@ export async function isGitRepo(repoPath: string) {
 
   const gitStats = await stat(join(repoPath, '.git'))
   return gitStats.isDirectory()
+}
+
+export async function degitfy(repoPath: string) {
+  await Bun.$`rm -rf ${repoPath}/.git`
+}
+
+export async function forcePushToOriginOnWwwBranch(
+  dirPath: string,
+  origin: string,
+) {
+  await degitfy(dirPath)
+  await init(dirPath, 'www')
+  await addRemote(dirPath, origin)
+  await autoCommit(dirPath)
+  await Bun.$`cd ${dirPath} && git push --set-upstream origin www -f`
 }

@@ -1,16 +1,22 @@
 import { type ServerWebSocket } from 'bun'
+import { type ChalkInstance, default as chalk } from 'chalk'
 
 const allowedOrigins = /^http:\/\/localhost:\d+$/
 type Config<T, K, Params> = {
   onConnect: (sendMsg: (msg: K) => void, params: Params) => Promise<() => void>
   onMessage: (msg: T, params: Params, sendMsg: (msg: K) => void) => void
   port: number
+  name: string
+  color: ChalkInstance
 }
 
 export function createWebsocketServer<T, K, Params>(
   config: Config<T, K, Params>,
 ) {
   const clientsSubscriptions = new Map<ServerWebSocket<any>, () => void>()
+  function log(...args: any[]) {
+    console.log(config.color(`[${config.name}]`), ...args)
+  }
 
   function sendMsg(ws: ServerWebSocket<any>, msg: K) {
     console.log('🟩', msg)
@@ -43,7 +49,7 @@ export function createWebsocketServer<T, K, Params>(
         return // Bun will handle the upgrade
       }
 
-      console.error('Websocket upgrade failed')
+      log(chalk.red(`Websocket upgrade failed`))
       return new Response('Upgrade failed', { status: 500 })
     },
     websocket: {
@@ -51,9 +57,9 @@ export function createWebsocketServer<T, K, Params>(
         let cmd: T = null!
         try {
           cmd = JSON.parse(message.toString()) as T
-          console.log('🔽', cmd)
+          log(` 🔽`, cmd)
         } catch (e) {
-          console.log('Invalid message', message)
+          log(`Invalid message`, message)
           return
         }
 
@@ -64,11 +70,11 @@ export function createWebsocketServer<T, K, Params>(
             sendMsg.bind(null, ws),
           )
         } catch (e) {
-          console.log('Server', e)
+          log(`Server`, e)
         }
       },
       async open(ws) {
-        console.log('Client connected')
+        log(`Client connected`)
         const subscription = await config.onConnect(
           sendMsg.bind(null, ws),
           (ws.data as any).params as Params,
@@ -77,18 +83,18 @@ export function createWebsocketServer<T, K, Params>(
       },
 
       close(ws) {
-        console.log('Client disconnected')
+        log(`Client disconnected`)
         const unsub = clientsSubscriptions.get(ws)
         if (unsub) unsub()
         clientsSubscriptions.delete(ws)
       },
       drain(ws) {
-        console.log('Client drain?')
+        log(` Client drain?`)
       },
     },
   })
 
-  console.log(`Running   http://localhost:${config.port}`)
+  log(`Running   http://localhost:${config.port}`)
 
   return server
 }

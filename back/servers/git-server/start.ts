@@ -1,15 +1,16 @@
+import chalk from 'chalk'
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_GIT_PORT } from '@/center/ports'
 
 import { startReposMonitor } from './reposMonitor'
 import { type BackMsg, type FrontMsg } from './messages'
 
-console.log('############# GIT SERVER')
-
 function start() {
   const reposMonitor = startReposMonitor()
 
   createWebsocketServer<FrontMsg, BackMsg, {}>({
+    name: 'Git Server',
+    color: chalk.green,
     port: SERVER_GIT_PORT,
     onConnect: async (sendMsg, params) => {
       // Send files list and updates

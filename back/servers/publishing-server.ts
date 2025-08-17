@@ -5,11 +5,16 @@
 // Maybe later: Different publishing strategy other than Git, for example
 // FTP server, directly to Vercel, Cloudflare, etc
 
-import { createWebsocketServer } from '@/back/basic-websocket'
-import { SERVER_FILES_PORT } from '../../center/ports'
 import { existsSync } from 'fs'
+import { build } from 'vite'
+import chalk from 'chalk'
 
-console.log('############# PUBLISHING SERVER')
+import { createWebsocketServer } from '@/back/basic-websocket'
+import { SERVER_PUBLISHING_PORT } from '@/center/ports'
+import editorGenViteConfig from '@/substrates/editor/vite.config.gen'
+import { $path } from '@/center/utils'
+
+import { forcePushToOriginOnWwwBranch, remoteUrl } from './git-server/git'
 
 type OutputData = {
   createdAt: number
@@ -20,19 +25,30 @@ export type BackMsg = ['outputs', repos: { [key: string]: OutputData }]
 export type FrontMsg = ['build', repo: string] | ['publish', repo: string]
 
 function start() {
-  const server = createWebsocketServer<FrontMsg, BackMsg, { repo: string }>({
-    port: SERVER_FILES_PORT,
-    onMessage: (msg, params, sendMsg) => {
-      const basePath = `repos/${params.repo}`
-      if (!existsSync(basePath)) {
-        return
-      }
-
+  const server = createWebsocketServer<FrontMsg, BackMsg, {}>({
+    name: 'Publishing Server',
+    // Orange
+    color: chalk.rgb(255, 165, 0),
+    port: SERVER_PUBLISHING_PORT,
+    onMessage: async (msg, params, sendMsg) => {
       switch (msg[0]) {
-        case 'build':
+        case 'build': {
+          const [, repo] = msg
+          const result = await build(editorGenViteConfig(repo))
+          console.log('REPO BUILT!')
           break
-        case 'publish':
+        }
+        case 'publish': {
+          const [, repo] = msg
+          const origin = await remoteUrl($path(`repos/${repo}`))
+          if (origin) {
+            await forcePushToOriginOnWwwBranch(
+              $path(`projections/${repo}`),
+              origin,
+            )
+          }
           break
+        }
       }
     },
     onConnect: async (sendMsg, params) => {
@@ -42,8 +58,6 @@ function start() {
       return closeWatcher
     },
   })
-
-  console.log('Publishing server started')
 
   return server
 }
