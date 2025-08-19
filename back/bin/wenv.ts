@@ -7,26 +7,15 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-// Main Process Watchers
-// import { startWatch } from '../uplink/watcher'
-import { startElectron } from '../electron/start'
 import chalk, { type ChalkInstance } from 'chalk'
 import runWatchProcess from '../run-watch-process'
 
-// async function createViteServer(config: InlineConfig) {
-//   const server = await createServer(config)
-//   await server.listen()
-//   return {
-//     server,
-//     url: server.resolvedUrls!.local![0],
-//     async stop() {
-//       await server.close()
-//     },
-//     get exited() {
-//       return Promise.resolve(true)
-//     }
-//   }
-// }
+function printTitle(title: string, color: ChalkInstance) {
+  const eq = title.replace(/./g, '=')
+  console.log(color(eq))
+  console.log(color(title))
+  console.log(color(eq))
+}
 
 yargs(hideBin(process.argv))
   .scriptName('wenv')
@@ -35,46 +24,9 @@ yargs(hideBin(process.argv))
     'Starts the web environment app (dev mode)',
     (yargs) => {},
     async (argv) => {
-      console.log(chalk.bgBlackBright('MAIN PROCESS STARTING'))
-      // let reposServers: { [key: string]: ViteDevServer } = {}
+      printTitle('MAIN PROCESS STARTING', chalk.yellowBright)
+      console.log('\n')
 
-      // function runningServersUrls() {
-      //   return Object.fromEntries(
-      //     Object.entries(reposServers).map(([key, value]) => [
-      //       key,
-      //       value.resolvedUrls?.local?.[0]!,
-      //     ]),
-      //   )
-      // }
-
-      // // Get Server for Repo
-      // const viteSpinnerServer = Bun.serve({
-      //   port: SERVER_VITE_SPINNER_PORT,
-      //   async fetch(req) {
-      //     const url = new URL(req.url)
-      //     const repo = url.pathname.slice(1)
-
-      //     if (repo) {
-      //       if (!reposServers[repo]) {
-      //         console.log(`Spinning new vite server for ${repo}`)
-      //         const port = UI_PORT_FOR_REPO(repo)
-      //         reposServers[repo] = await createServer(
-      //           editorGenViteConfig(repo, port),
-      //         )
-      //         await reposServers[repo].listen()
-      //       }
-      //       // Get server URL
-      //       const endpoint = reposServers[repo].resolvedUrls?.local?.[0]
-
-      //       return new Response(endpoint, { status: 200 })
-      //     } else {
-      //       return new Response(JSON.stringify(runningServersUrls()), {
-      //         status: 200,
-      //       })
-      //     }
-      //   },
-      // })
-      // console.log(`VITE SPINNING SERVER PORT ${SERVER_VITE_SPINNER_PORT}`)
       const servers = {
         mainframeVite: runWatchProcess(
           'Mainframe Vite',
@@ -121,7 +73,8 @@ yargs(hideBin(process.argv))
         Object.entries(servers).map(([key, value]) => value.waitUntilItEnds()),
       )
 
-      console.log(chalk.bgBlackBright('MAIN PROCESS DE-ENERGIZED'))
+      console.log('\n')
+      printTitle('MAIN PROCESS DE-ENERGIZED', chalk.yellowBright)
     },
   )
   .demandCommand(1, '')
