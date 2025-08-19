@@ -6,16 +6,12 @@
 
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { createServer, type InlineConfig, type ViteDevServer } from 'vite'
 
 // Main Process Watchers
 // import { startWatch } from '../uplink/watcher'
 import { startElectron } from '../electron/start'
-import chalk from 'chalk'
-
-import editorGenViteConfig from '@/substrates/editor/vite.config.gen'
-import reposGenViteConfig from '@/substrates/repos/vite.config.gen'
-import { SERVER_VITE_SPINNER_PORT, UI_PORT_FOR_REPO } from '@/center/ports'
+import chalk, { type ChalkInstance } from 'chalk'
+import runWatchProcess from '../run-watch-process'
 
 // async function createViteServer(config: InlineConfig) {
 //   const server = await createServer(config)
@@ -39,11 +35,7 @@ yargs(hideBin(process.argv))
     'Starts the web environment app (dev mode)',
     (yargs) => {},
     async (argv) => {
-      const reposServer = await createServer(reposGenViteConfig())
-      await reposServer.listen()
-
-      console.log('REPOS UI SERVER URL', reposServer.resolvedUrls?.local?.[0])
-
+      console.log(chalk.bgBlackBright('MAIN PROCESS STARTING'))
       // let reposServers: { [key: string]: ViteDevServer } = {}
 
       // function runningServersUrls() {
@@ -83,38 +75,41 @@ yargs(hideBin(process.argv))
       //   },
       // })
       // console.log(`VITE SPINNING SERVER PORT ${SERVER_VITE_SPINNER_PORT}`)
-
-      const viteSpinnerServer = startBunWatcherProcess(
-        './back/servers/vite-spinner.ts',
-      )
-
-      const gitServer = startBunWatcherProcess(
-        './back/servers/git-server/start.ts',
-      )
-      const filesServer = startBunWatcherProcess(
-        './back/servers/files-server.ts',
-      )
-      const publishingServer = startBunWatcherProcess(
-        './back/servers/publishing-server.ts',
-      )
-
-      const electronProcess = await startElectron()
+      const servers = {
+        mainframeVite: runWatchProcess(
+          'Mainframe Vite',
+          chalk.magenta,
+          './back/servers/mainframe-vite.ts',
+        ),
+        viteSpinner: runWatchProcess(
+          'Vite Spinner',
+          chalk.rgb(160, 32, 240),
+          './back/servers/vite-spinner.ts',
+        ),
+        git: runWatchProcess(
+          'GIT',
+          chalk.green,
+          './back/servers/git-server/start.ts',
+        ),
+        files: runWatchProcess(
+          'Files',
+          chalk.yellow,
+          './back/servers/files-server.ts',
+        ),
+        publishing: runWatchProcess(
+          'Publishing',
+          chalk.rgb(255, 165, 0),
+          './back/servers/publishing-server.ts',
+        ),
+        electron: runWatchProcess(
+          'Electron',
+          chalk.rgb(145, 188, 240),
+          './back/electron/start.ts',
+        ),
+      }
 
       const cleanup = async () => {
-        reposServer.close()
-        // Promise.all([
-        //   reposServer.close(),
-        //   // viteSpinnerServer.stop(),
-
-        //   // ...Object.entries(reposServers).map(([key, value]) => value.close()),
-        // ])
-
-        viteSpinnerServer.kill()
-        gitServer.kill()
-        filesServer.kill()
-        publishingServer.kill()
-        electronProcess.kill()
-
+        Object.values(servers).map((s) => s.kill())
         console.log('Cleanup finished')
       }
 
@@ -122,23 +117,13 @@ yargs(hideBin(process.argv))
       process.on('SIGTERM', cleanup)
       process.on('exit', cleanup)
 
-      await viteSpinnerServer.exited
-      await gitServer.exited
-      await filesServer.exited
-      await publishingServer.exited
-      await electronProcess.exited
+      await Promise.all(
+        Object.entries(servers).map(([key, value]) => value.waitUntilItEnds()),
+      )
 
-      console.log('WEB ENVIRONMENT PROCESS DE-ENERGIZED')
+      console.log(chalk.bgBlackBright('MAIN PROCESS DE-ENERGIZED'))
     },
   )
   .demandCommand(1, '')
   .help()
   .parse()
-
-function startBunWatcherProcess(scriptPath: string) {
-  console.log(chalk.yellow(`STARTING SERVER ${scriptPath}`))
-  return Bun.spawn(['bun', 'run', '--watch', '--no-clear-screen', scriptPath], {
-    stdout: 'inherit',
-    stderr: 'inherit',
-  })
-}

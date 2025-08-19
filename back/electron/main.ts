@@ -1,6 +1,7 @@
 import { app, BrowserWindow, nativeImage, ipcMain, shell } from 'electron'
 import contextMenu from 'electron-context-menu'
 import { fileURLToPath } from 'url'
+import waitPort from 'wait-port'
 import path from 'path'
 
 import { UI_REPOS_PORT, SERVER_VITE_SPINNER_PORT } from '@/center/ports'
@@ -69,7 +70,11 @@ function createWindow() {
   })
   // // The Web Substrate has no production version
   // console.log(process.env.VITE_DEV_SERVER_URL)
-  win.loadURL(VITE_DEV_SERVER_URL)
+  waitPort({ host: 'localhost', port: UI_REPOS_PORT, output: 'silent' }).then(
+    () => {
+      win.loadURL(VITE_DEV_SERVER_URL)
+    },
+  )
 }
 
 app.setName(APP_NAME)

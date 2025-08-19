@@ -98,7 +98,6 @@ export class ActiveRepo implements Repo {
   }
 
   async analyzeSyncStatus() {
-    console.log('Analyzing sync status!')
     if (this.status[0] === 'git-full') {
       const unresolvedConflicts = await git.hasUnresolvedMergeConflicts(
         this.path,

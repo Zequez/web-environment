@@ -57,6 +57,7 @@ export async function startElectron() {
     }>
   > | null = null
   function restartElectron() {
+    console.log('ELECTRON RESTARTING')
     if (electronServerProcess) {
       electronServerProcess.kill()
     }
@@ -90,3 +91,5 @@ export async function startElectron() {
     },
   }
 }
+
+startElectron()

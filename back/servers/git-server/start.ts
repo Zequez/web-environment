@@ -9,14 +9,11 @@ function start() {
   const reposMonitor = startReposMonitor()
 
   createWebsocketServer<FrontMsg, BackMsg, {}>({
-    name: 'Git Server',
-    color: chalk.green,
     port: SERVER_GIT_PORT,
     onConnect: async (sendMsg, params) => {
       // Send files list and updates
       await reposMonitor.refresh()
       return reposMonitor.subscribe((repos) => {
-        console.log('REPOS!', repos)
         sendMsg(['repos-list', repos])
       })
     },

@@ -26,9 +26,6 @@ export type FrontMsg = ['build', repo: string] | ['publish', repo: string]
 
 function start() {
   const server = createWebsocketServer<FrontMsg, BackMsg, {}>({
-    name: 'Publishing Server',
-    // Orange
-    color: chalk.rgb(255, 165, 0),
     port: SERVER_PUBLISHING_PORT,
     onMessage: async (msg, params, sendMsg) => {
       switch (msg[0]) {

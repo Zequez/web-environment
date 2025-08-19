@@ -6,8 +6,6 @@ type Config<T, K, Params> = {
   onConnect: (sendMsg: (msg: K) => void, params: Params) => Promise<() => void>
   onMessage: (msg: T, params: Params, sendMsg: (msg: K) => void) => void
   port: number
-  name: string
-  color: ChalkInstance
 }
 
 export function createWebsocketServer<T, K, Params>(
@@ -15,11 +13,11 @@ export function createWebsocketServer<T, K, Params>(
 ) {
   const clientsSubscriptions = new Map<ServerWebSocket<any>, () => void>()
   function log(...args: any[]) {
-    console.log(config.color(`[${config.name}]`), ...args)
+    console.log(...args)
   }
 
   function sendMsg(ws: ServerWebSocket<any>, msg: K) {
-    console.log('🟩', msg)
+    log(chalk.green('➡'), msg)
     return ws.send(JSON.stringify(msg))
   }
 
@@ -57,7 +55,7 @@ export function createWebsocketServer<T, K, Params>(
         let cmd: T = null!
         try {
           cmd = JSON.parse(message.toString()) as T
-          log(` 🔽`, cmd)
+          log(chalk.red('⬅'), cmd)
         } catch (e) {
           log(`Invalid message`, message)
           return

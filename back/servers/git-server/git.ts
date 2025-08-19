@@ -53,7 +53,7 @@ export async function remoteUrl(repoPath: string): Promise<null | string> {
   // Read origin URL from .git/config
   try {
     const url =
-      await Bun.$`cd ${repoPath} && git config --get remote.origin.url`
+      await Bun.$`cd ${repoPath} && git config --get remote.origin.url`.quiet()
 
     const remote = url.text().trim()
     // console.log('Remote', remote)
@@ -67,7 +67,7 @@ export async function remoteUrl(repoPath: string): Promise<null | string> {
 
 export async function aheadBehind(repoPath: string) {
   const status =
-    await Bun.$`cd ${repoPath} && git rev-list --left-right --count HEAD...origin/main`
+    await Bun.$`cd ${repoPath} && git rev-list --left-right --count HEAD...origin/main`.quiet()
   const parsedStatus = status.text().trim().split(/\s+/)
   const [ahead, behind] = parsedStatus.map((v) => parseInt(v, 10))
 
@@ -75,7 +75,7 @@ export async function aheadBehind(repoPath: string) {
 }
 
 export async function hasUncommittedChanges(repoPath: string) {
-  const changes = await Bun.$`cd ${repoPath} && git status --short`
+  const changes = await Bun.$`cd ${repoPath} && git status --short`.quiet()
   return !(changes.text().trim() === '')
 }
 
@@ -163,8 +163,8 @@ export async function abortMerge(repoPath: string) {
 }
 
 export async function hasUnresolvedMergeConflicts(repoPath: string) {
-  const output = await Bun.$`cd ${repoPath} && git ls-files -u`
-  console.log('REPO PATH MERGE UNRESOLVED', repoPath, output.text())
+  const output = await Bun.$`cd ${repoPath} && git ls-files -u`.quiet()
+  // console.log('REPO PATH MERGE UNRESOLVED', repoPath)
   return output.text().trim() !== ''
 }
 

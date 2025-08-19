@@ -3,6 +3,7 @@ import path from 'path'
 
 export default defineConfig({
   root: __dirname, // make sure it doesn't try to walk up
+  clearScreen: false,
   build: {
     lib: {
       entry: path.resolve(__dirname, 'preload.ts'),

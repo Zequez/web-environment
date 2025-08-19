@@ -5,6 +5,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { preact } from '@preact/preset-vite'
 import mdx from '@mdx-js/rollup'
 import remarkFrontmatter from 'remark-frontmatter'
+import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import { $path } from '@/center/utils'
 
 export default (repo: string, port?: number) => {
@@ -24,7 +25,7 @@ export default (repo: string, port?: number) => {
         enforce: 'pre',
         ...mdx({
           jsxImportSource: 'preact',
-          remarkPlugins: [remarkFrontmatter],
+          remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter],
         }),
       },
       preact(),

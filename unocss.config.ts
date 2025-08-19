@@ -1,5 +1,10 @@
 import transformerVariantGroup from '@unocss/transformer-variant-group'
-import { defineConfig, presetTypography, presetWind3 } from 'unocss'
+import {
+  defineConfig,
+  presetTypography,
+  presetWind3,
+  transformerDirectives,
+} from 'unocss'
 import presetWebFonts from '@unocss/preset-web-fonts'
 
 const FLEX_ALIGNS: Record<string, string> = {
@@ -22,7 +27,7 @@ export default defineConfig({
       // },
     }),
   ],
-  transformers: [transformerVariantGroup()],
+  transformers: [transformerVariantGroup(), transformerDirectives()],
   rules: [
     [
       /^flex([cse_])([cse_])$/,

@@ -30,9 +30,6 @@ let reposServersUrl = computed(() => {
 
 function start() {
   const server = createWebsocketServer<FrontMsg, BackMsg, {}>({
-    name: 'Vite Spinner',
-    // Purple
-    color: chalk.rgb(160, 32, 240),
     port: SERVER_VITE_SPINNER_PORT,
     onMessage: async (msg, params, sendMsg) => {
       const [, repo] = msg
@@ -87,16 +84,16 @@ function start() {
   return server
 }
 
-const cleanup = () => {
-  Promise.all([
-    ...Object.entries(reposServers.value).map(([key, value]) => value.close()),
-  ])
+// const cleanup = () => {
+//   Promise.all([
+//     ...Object.entries(reposServers.value).map(([key, value]) => value.close()),
+//   ])
 
-  console.log('Vite spinned servers cleanup finished')
-}
+//   console.log('Vite spinned servers cleanup finished')
+// }
 
-process.on('SIGINT', cleanup)
-process.on('SIGTERM', cleanup)
-process.on('exit', cleanup)
+// process.on('SIGINT', cleanup)
+// process.on('SIGTERM', cleanup)
+// process.on('exit', cleanup)
 
 start()

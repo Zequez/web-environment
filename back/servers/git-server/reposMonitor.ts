@@ -22,14 +22,12 @@ export function startReposMonitor() {
   }
 
   function subscribe(cb: (repos: Repo[]) => void) {
-    console.log('SUBSCRIBING!')
     subscribers.push(cb)
     cb(outputRepos())
     return () => unsubscribe(cb)
   }
 
   function unsubscribe(cb: (repos: Repo[]) => void) {
-    console.log('UNSUBSCRIBING!')
     subscribers = subscribers.filter((c) => c !== cb)
   }
 
