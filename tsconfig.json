@@ -40,6 +40,6 @@
     "back",
     "wrapper",
     "substrates",
-    "center",],
+    "center", "types.d.ts", "types.d.ts",],
   "exclude": ["node_modules"]
 }

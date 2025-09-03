@@ -1,0 +1,51 @@
+.md h1 {
+  @apply text-4xl font-bold mb4;
+}
+
+.md h2 {
+  @apply text-lg font-bold my4;
+}
+
+
+
+.md a {
+  @apply text-blue-500 underline;
+}
+
+.md a:hover {
+  @apply text-blue-400;
+}
+
+.md p {
+  @apply text-sm mb2;
+}
+
+.md ol li {
+  @apply mb.5 text-sm;
+}
+
+.md li > p, .md li > ul li {
+  display: flex
+}
+
+.md li > p:before, .md li > ul li:before  {
+  content: "✦";
+  @apply text-yellow-500 mr2;
+  text-shadow: 0 1px 0 theme('colors.yellow.700');
+}
+
+.md ul ul {
+  @apply ml4;
+}
+
+.md ul li > p {
+  display: inline-block
+}
+
+.md ul, .md ol {
+  @apply mb2;
+}
+
+.md ul li {
+  @apply mb.5 text-sm;
+}

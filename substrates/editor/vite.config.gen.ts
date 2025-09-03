@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import fs from 'fs'
 import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
@@ -29,6 +30,19 @@ export default (repo: string, port?: number) => {
         }),
       },
       preact(),
+      {
+        name: 'copy-cname',
+        closeBundle() {
+          const src = $path(`repos/${repo}/CNAME`)
+          const dest = $path(`projections/${repo}/CNAME`)
+          if (fs.existsSync(src)) {
+            fs.copyFileSync(src, dest)
+            console.log(`✅ Copied CNAME to ${dest}`)
+          } else {
+            console.warn(`⚠️ No CNAME file found at ${src}`)
+          }
+        },
+      },
     ],
     define: {
       __REPO__: JSON.stringify(repo),

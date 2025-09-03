@@ -38,7 +38,6 @@ function start() {
         case 'delete-file':
           break
         case 'read-file':
-          console.log(msg[1])
           if (msg[1].startsWith(basePath)) {
             if (isBinary(msg[1])) {
             } else {
