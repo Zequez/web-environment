@@ -11,10 +11,11 @@ import chalk from 'chalk'
 
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_PUBLISHING_PORT } from '@/center/ports'
-import editorGenViteConfig from '@/substrates/editor/vite.config.gen'
 import { $path } from '@/center/utils'
 
 import { forcePushToOriginOnWwwBranch, remoteUrl } from './git-server/git'
+import { DEFAULT_SUBSTRATE, SUBSTRATES } from '@/center/substrates'
+import { readRepoWenvConfig } from '@/center/wenv-config'
 
 type OutputData = {
   createdAt: number
@@ -31,7 +32,9 @@ function start() {
       switch (msg[0]) {
         case 'build': {
           const [, repo] = msg
-          const result = await build(editorGenViteConfig(repo))
+          const config = readRepoWenvConfig(repo as string)
+          const generator = SUBSTRATES[config.substrate || DEFAULT_SUBSTRATE]
+          const result = await build(generator(repo))
           console.log('REPO BUILT!')
           break
         }

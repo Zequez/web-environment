@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
-import fs from 'fs'
 import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
+import { imagetools } from 'vite-imagetools'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { preact } from '@preact/preset-vite'
 import { $path } from '@/center/utils'
+import addCname from '@/center/vite-tools/add-cname'
 
 export default (repo: string, port?: number) => {
   return defineConfig({
@@ -15,7 +15,13 @@ export default (repo: string, port?: number) => {
         }
       : undefined,
     root: __dirname,
-    plugins: [svelte(), UnoCSS(), Icons({ compiler: 'svelte' })],
+    plugins: [
+      svelte(),
+      UnoCSS(),
+      Icons({ compiler: 'svelte' }),
+      addCname(repo),
+      imagetools(),
+    ],
     define: {
       __REPO__: JSON.stringify(repo),
     },

@@ -86,3 +86,21 @@ export function monitorPinchZoom(cb: (zoom: -1 | 1) => void) {
     document.removeEventListener('touchmove', handleTouchMove)
   }
 }
+
+export function cssVariables(
+  node: HTMLElement,
+  variables: { [key: string]: any },
+) {
+  setCssVariables(node, variables)
+
+  return {
+    update(variables: { [key: string]: any }) {
+      setCssVariables(node, variables)
+    },
+  }
+}
+function setCssVariables(node: HTMLElement, variables: { [key: string]: any }) {
+  for (const name in variables) {
+    node.style.setProperty(`--${name}`, variables[name])
+  }
+}

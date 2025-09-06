@@ -15,17 +15,29 @@ const FLEX_ALIGNS: Record<string, string> = {
 }
 
 export default defineConfig({
+  content: {
+    pipeline: {
+      include: [
+        // the default
+        /\.(svelte|[jt]sx|mdx|html|ts)($|\?)/,
+        // include js/ts files
+        'repos/**/*.{js,ts}',
+      ],
+      // exclude files
+      // exclude: []
+    },
+  },
   presets: [
     presetWind3(),
     presetTypography(),
-    presetWebFonts({
-      provider: 'bunny', // default provider
-      // fonts: {
-      //   sans: 'Alegreya Sans SC',
-      //   mono: 'Fira Code',
-      //   serif: 'Alegreya SC', // Example of a serif font
-      // },
-    }),
+    // presetWebFonts({
+    //   provider: 'bunny', // default provider
+    //   // fonts: {
+    //   //   sans: 'Alegreya Sans SC',
+    //   //   mono: 'Fira Code',
+    //   //   serif: 'Alegreya SC', // Example of a serif font
+    //   // },
+    // }),
   ],
   transformers: [transformerVariantGroup(), transformerDirectives()],
   rules: [
@@ -65,6 +77,14 @@ export default defineConfig({
     },
   ],
   theme: {
+    fontFamily: {
+      sans: 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
+      serif: 'var(--font-serif, Georgia, Cambria, "Times New Roman", serif)',
+      mono: 'var(--font-mono, SFMono-Regular, Menlo, Monaco, Consolas, monospace)',
+    },
+    boxShadow: {
+      solid: '0 1.5px 0 1px var(--un-shadow-color)',
+    },
     breakpoints: {
       xs: '360px',
       sm: '640px',
@@ -86,6 +106,19 @@ export default defineConfig({
           `950`,
           `hsl(var(--main-hue), var(--main-saturation), 95%)`,
         ])
+        return Object.fromEntries(colors)
+      })(),
+
+      alt: (() => {
+        let colors: [string, string][] = []
+        for (let i = 10; i <= 90; i += 10) {
+          colors.push([
+            `${i}0`,
+            `hsl(var(--alt-hue), var(--alt-saturation), ${i}%)`,
+          ])
+        }
+        colors.push([`50`, `hsl(var(--alt-hue), var(--alt-saturation), 5%)`])
+        colors.push([`950`, `hsl(var(--alt-hue), var(--alt-saturation), 95%)`])
         return Object.fromEntries(colors)
       })(),
     },

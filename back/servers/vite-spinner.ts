@@ -1,10 +1,11 @@
 import { createServer, type ViteDevServer } from 'vite'
+
 import { signal, computed } from '@preact/signals-core'
-import chalk from 'chalk'
 
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_VITE_SPINNER_PORT, UI_PORT_FOR_REPO } from '@/center/ports'
-import editorGenViteConfig from '@/substrates/editor/vite.config.gen'
+import { readRepoWenvConfig } from '@/center/wenv-config'
+import { DEFAULT_SUBSTRATE, SUBSTRATES } from '@/center/substrates'
 
 export type BackMsg = ['servers', servers: { [key: string]: string }]
 export type FrontMsg = ['start', repo: string] | ['stop', repo: string]
@@ -37,9 +38,11 @@ function start() {
       async function startNewServer() {
         console.log(`Spinning new vite server for ${repo}`)
         const port = UI_PORT_FOR_REPO(repo)
-        const newViteServer = await createServer(
-          editorGenViteConfig(repo, port),
-        )
+        const config = readRepoWenvConfig(repo)
+
+        const generator =
+          SUBSTRATES[(config.substrate as string) || DEFAULT_SUBSTRATE]
+        const newViteServer = await createServer(generator(repo, port))
         await newViteServer.listen()
         reposServers.value = {
           ...reposServers.value,

@@ -8,8 +8,12 @@ import mdx from '@mdx-js/rollup'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import { $path } from '@/center/utils'
+import { readRepoWenvConfig } from '@/center/wenv-config'
+import addCname from '@/center/vite-tools/add-cname'
 
 export default (repo: string, port?: number) => {
+  const wenv = readRepoWenvConfig(repo)
+
   return defineConfig({
     server: port
       ? {
@@ -30,19 +34,7 @@ export default (repo: string, port?: number) => {
         }),
       },
       preact(),
-      {
-        name: 'copy-cname',
-        closeBundle() {
-          const src = $path(`repos/${repo}/CNAME`)
-          const dest = $path(`projections/${repo}/CNAME`)
-          if (fs.existsSync(src)) {
-            fs.copyFileSync(src, dest)
-            console.log(`✅ Copied CNAME to ${dest}`)
-          } else {
-            console.warn(`⚠️ No CNAME file found at ${src}`)
-          }
-        },
-      },
+      addCname(repo),
     ],
     define: {
       __REPO__: JSON.stringify(repo),
