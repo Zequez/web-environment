@@ -1,5 +1,5 @@
 import CircleIcon from '~icons/fa6-solid/circle'
-import type { WebConfig } from './WebConfig'
+import type { WebConfig } from './WebConfig.ts'
 
 type PartialWebConfig = Partial<
   Omit<WebConfig, 'colors' | 'nav' | 'header'> & {
@@ -45,14 +45,12 @@ const DEFAULT: WebConfig = {
       title: 'First',
       id: 'first',
       showOnNavigation: true,
-      separator: null,
       components: [{ type: 'Markdown', content: 'Lorem ipsum dolor sit amet' }],
     },
     {
       title: 'Second',
       id: 'second',
       showOnNavigation: true,
-      separator: null,
       components: [],
     },
   ],

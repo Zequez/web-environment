@@ -73,7 +73,7 @@
 
 <div class="flexcc mt6">
   <button
-    class="bg-alt-400 font-semibold tracking-wider text-white uppercase rounded-md text-sm px3 py2 hover:bg-alt-500"
+    class="bg-alt-500 font-semibold tracking-wider text-white uppercase rounded-md text-sm px3 py2 hover:bg-alt-600"
   >
     Agregar cartel
   </button>

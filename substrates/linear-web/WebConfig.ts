@@ -56,12 +56,4 @@ type Section = {
   components: SectionComponent[]
   id: string
   showOnNavigation: boolean
-  separator: {
-    id: string
-    reverse?: boolean
-    dragInOffset?: number
-    cavityOffset?: number
-    flip?: boolean
-    viewboxShift?: [number, number, number, number]
-  } | null
 }
