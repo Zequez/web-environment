@@ -45,6 +45,9 @@
           <Team config={compConfig} />
         {:else if compConfig.type === 'Fliers'}
           <Fliers config={compConfig} />
+        {:else if typeof compConfig.type !== 'string'}
+          {@const Comp = compConfig.type}
+          <Comp config={compConfig} />
         {/if}
       {/each}
     </div>

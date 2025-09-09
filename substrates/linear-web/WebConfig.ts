@@ -40,7 +40,11 @@ export type WebConfig = {
   separators: SeparatorConfig[]
 }
 
-export type SectionComponent = TeamConfig | MarkdownConfig | FliersConfig
+export type SectionComponent =
+  | TeamConfig
+  | MarkdownConfig
+  | FliersConfig
+  | (Record<string, any> & { type: Component<{ config: any }> })
 
 export type SeparatorConfig = {
   id: string
