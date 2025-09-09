@@ -1,13 +1,15 @@
 import type { UserConfig } from 'vite'
 
-import editorGenViteConfig from '@/substrates/editor/vite.config.gen'
-import bareGenViteConfig from '@/substrates/bare/vite.config.gen'
+import nonlinearWeb from '@/substrates/nonlinear-web/vite.config.gen'
+import linearWeb from '@/substrates/linear-web/vite.config.gen'
+import nothingWeb from '@/substrates/nothing-web/vite.config.gen'
 
 export const SUBSTRATES: {
   [key: string]: (repo: string, port?: number) => UserConfig
 } = {
-  editor: editorGenViteConfig,
-  bare: bareGenViteConfig,
+  'nonlinear-web': nonlinearWeb,
+  'linear-web': linearWeb,
+  'nothing-web': nothingWeb,
 }
 
-export const DEFAULT_SUBSTRATE = 'bare'
+export const DEFAULT_SUBSTRATE = 'nothingWeb'

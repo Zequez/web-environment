@@ -1,0 +1,33 @@
+.md {
+  @apply text-black/90;
+}
+
+.md p {
+  @apply text-lg;
+}
+
+.md li {
+  @apply text-lg;
+}
+
+.md a {
+  @apply text-alt-500 underline;
+}
+
+.md a:hover {
+  @apply text-alt-600;
+}
+
+.md li:before  {
+  content: "✦";
+  @apply text-alt-500 mr2;
+  text-shadow: 0 1px 0 theme('colors.alt.700');
+}
+
+.md ul {
+  @apply pl4;
+}
+
+.md > ul {
+  @apply pl0;
+}
