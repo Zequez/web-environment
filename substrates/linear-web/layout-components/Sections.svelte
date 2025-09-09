@@ -30,11 +30,9 @@
         'text-shadow-[0_2px_0_#0005]',
       )}
     >
-      <div
-        id={section.id}
-        class={cx(C.config.css.width, 'mx-auto w-full px4 text-center ')}
-      >
-        {section.title}
+      <div class={cx(C.config.css.width, 'mx-auto w-full px4 text-center ')}>
+        <div id={section.id} class="h-0 w-0 relative -top-30 targetted"></div>
+        <div class="rounded-lg b-2 b-transparent">{section.title}</div>
       </div>
     </div>
     <div class={cx(C.config.css.width, 'relative mx-auto py4 px4 z-13')}>
@@ -70,3 +68,24 @@
     </div>
   {/if}
 {/if}
+
+<style>
+  .targetted:target + div {
+    animation: 2.5s flashSection;
+  }
+
+  @keyframes flashSection {
+    0% {
+      @apply bg-alt-600/0 b-white/0;
+    }
+    30% {
+      @apply bg-alt-600 b-white/50;
+    }
+    45% {
+      @apply bg-alt-600 b-white/50;
+    }
+    100% {
+      @apply bg-alt-600/0 b-white/0;
+    }
+  }
+</style>
