@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import createContextedStore, { proxifyCmd } from '@/center/contexted-store'
 import type { WebConfig } from './WebConfig.ts'
 import { onMount } from 'svelte'
+import { debounce } from '@/center/utils.ts'
 
 export default createContextedStore('main', (initialConfig: WebConfig) => {
   const initialHash = window.location.hash.slice(1)
@@ -10,6 +11,8 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
     initialHash || initialConfig.sections[0]?.id || null,
   )
   let config = $state(initialConfig)
+  type Position = { section: string; progress: number } | null
+  let position = $state<Position>(null)
 
   onMount(() => {
     window.addEventListener('hashchange', (ev) => {
@@ -26,7 +29,29 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
     }
   })
 
-  const cmd = {}
+  const cmd = {
+    setPosition(pos: Position) {
+      position = pos
+    },
+  }
+
+  let prevPosition: Position = null
+  $effect(() => {
+    debouncedMaybeUpdateActive(position)
+  })
+
+  function maybeUpdateActive(newPos: Position) {
+    if (
+      (prevPosition === null && newPos !== null) ||
+      (prevPosition !== null && newPos === null) ||
+      prevPosition!.section !== newPos!.section
+    ) {
+      activeSection = newPos ? newPos.section : null
+      prevPosition = newPos
+    }
+  }
+
+  const debouncedMaybeUpdateActive = debounce(maybeUpdateActive, 150)
 
   const cmdProxy = proxifyCmd(chalk.cyan('[CMD]'), cmd)
 
@@ -40,6 +65,9 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
     },
     get activeSection() {
       return activeSection
+    },
+    get position() {
+      return position
     },
   }
 })

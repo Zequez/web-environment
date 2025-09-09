@@ -88,16 +88,24 @@
             class="uppercase font-bold h-full group flexcc relative z-10"
           >
             <span
-              class={cx(
-                'px2 py1 rounded-lg group-hover:(bg-white/20 transition-duration-0) transition-colors transition-duration-500',
+              class={[
+                'px2 py1 rounded-lg absolute z-10',
+                'group-hover:(bg-white/20 transition-duration-0) transition-colors transition-duration-500',
                 {
                   'bg-alt-500! text-main-900 shadow-[0_1px_0_0.5px] shadow-black/40':
                     C.activeSection === section.id,
                 },
-              )}
+              ]}
             >
               {section.title}
             </span>
+            <span class="px2 py1 relative z-12">{section.title}</span>
+            {#if C.position?.section === section.id}
+              <span
+                class="h-full block absolute left-0 w1 -translate-x-1/2 bg-black/25 z-11"
+                style={`left: ${C.position.progress * 100}%;`}
+              ></span>
+            {/if}
           </a>
           {#if i < C.config.sections.length - 1}
             <SeparatorIcon
