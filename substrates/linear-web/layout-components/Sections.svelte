@@ -13,9 +13,8 @@
 
   const DocEl = document.documentElement
 
-  const SCROLL_TARGET_OFFSET = 120
+  const SCROLL_TARGET_OFFSET = 66
 
-  let position = $state<{ section: number; progress: number } | null>(null)
   let sectionsElements = $state<HTMLDivElement[]>([])
   let sections = $derived<
     { id: string; showOnNav: boolean; el: HTMLDivElement }[]
@@ -26,7 +25,6 @@
       el: sectionsElements[i],
     })),
   )
-  let sectionsOnNav: boolean[] = []
   function handleWindowScroll() {
     if (DocEl.scrollHeight !== scrollHeight) {
       recalculateSegments()
@@ -55,9 +53,9 @@
   let scrollHeight = 0
   let segments: [id: string | null, height: number][] = []
   function recalculateSegments() {
-    console.log('Calculating segments')
     if (!sections.length) return
 
+    segments = []
     segments.push([null, sections[0].el.offsetTop - SCROLL_TARGET_OFFSET])
     for (let section of sections) {
       segments.push([
@@ -67,11 +65,16 @@
     }
     const sum = segments.reduce((all, c) => all + c[1], 0)
     scrollHeight = DocEl.scrollHeight
+    console.log('NEW SCROLL HEIGHT', scrollHeight)
     segments.push([null, scrollHeight - sum + SCROLL_TARGET_OFFSET])
+
+    // console.log(segments)
   }
 
   onMount(() => {
-    recalculateSegments()
+    setTimeout(() => {
+      recalculateSegments()
+    }, 100)
   })
 </script>
 
@@ -79,11 +82,7 @@
 
 {#each C.config.sections as section, i (section.title)}
   {@const nextSeparator = C.config.separators[i + 1]}
-  <div
-    class={cx('relative b-red', {})}
-    bind:this={sectionsElements[i]}
-    data-on-nav={section.showOnNavigation}
-  >
+  <div class={cx('relative b-red', {})} bind:this={sectionsElements[i]}>
     {#if C.config.separators[i] && C.config.separators[i].snapTo === 'prev'}
       <Separator index={i} config={C.config.separators[i]} />
     {/if}

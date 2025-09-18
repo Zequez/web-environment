@@ -90,7 +90,7 @@
             <span
               class={[
                 'px2 py1 rounded-lg absolute z-10',
-                'group-hover:(bg-white/20 transition-duration-0) transition-colors transition-duration-500',
+                'group-hover:(bg-white/20)',
                 {
                   'bg-alt-500! text-main-900 shadow-[0_1px_0_0.5px] shadow-black/40':
                     C.activeSection === section.id,

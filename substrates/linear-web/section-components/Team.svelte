@@ -32,13 +32,13 @@
   {#each config.members as member (member.name)}
     <div
       class={[
-        'flexcs flex-col w-50 bg-main-950 m2',
+        'flexcs flex-col w-46 bg-main-950 m2',
         'rounded-lg overflow-hidden shadow-md',
         'b-t-1.5 b-t-main-800 b-b-3 b-x-2 b-x-main-700 b-b-main-600',
         { 'bg-red-500!': false },
       ]}
     >
-      <img src={member.img} class="h50 w50 object-cover" alt={member.name} />
+      <img src={member.img} class="h46 w46 object-cover" alt={member.name} />
       <div class="flex flex-col p2 text-sm flex-grow">
         {#if member.website}
           <a
