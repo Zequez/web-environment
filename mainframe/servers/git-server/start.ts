@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import { createWebsocketServer } from '@/back/basic-websocket'
+import { createWebsocketServer } from '@/mainframe/basic-websocket'
 import { SERVER_GIT_PORT } from '@/center/ports'
 
 import { startReposMonitor } from './reposMonitor'

@@ -1,6 +1,5 @@
-import chalk from 'chalk'
-import { createWebsocketServer } from '@/back/basic-websocket'
-import { SERVER_FILES_PORT } from '../../center/ports'
+import { createWebsocketServer } from '@/mainframe/basic-websocket'
+import { SERVER_FILES_PORT } from '@/center/ports'
 import {
   existsSync,
   watch,

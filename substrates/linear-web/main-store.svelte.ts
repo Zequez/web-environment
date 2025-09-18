@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import createContextedStore, { proxifyCmd } from '@/center/contexted-store'
 import type { WebConfig } from './WebConfig.ts'
 import { onMount } from 'svelte'
-import { debounce } from '@/center/utils.ts'
+import { debounce } from '@/center/utils/neutral'
 
 export default createContextedStore('main', (initialConfig: WebConfig) => {
   const initialHash = window.location.hash.slice(1)

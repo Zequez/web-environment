@@ -31,32 +31,32 @@ yargs(hideBin(process.argv))
         mainframeVite: runWatchProcess(
           'Mainframe Vite',
           chalk.magenta,
-          './back/servers/mainframe-vite.ts',
+          './mainframe/servers/mainframe-vite.ts',
         ),
         viteSpinner: runWatchProcess(
           'Vite Spinner',
           chalk.rgb(160, 32, 240),
-          './back/servers/vite-spinner/start.ts',
+          './mainframe/servers/vite-spinner/start.ts',
         ),
         git: runWatchProcess(
           'GIT',
           chalk.green,
-          './back/servers/git-server/start.ts',
+          './mainframe/servers/git-server/start.ts',
         ),
         files: runWatchProcess(
           'Files',
           chalk.yellow,
-          './back/servers/files-server.ts',
+          './mainframe/servers/files-server.ts',
         ),
         publishing: runWatchProcess(
           'Publishing',
           chalk.rgb(255, 165, 0),
-          './back/servers/publishing-server.ts',
+          './mainframe/servers/publishing-server.ts',
         ),
         electron: runWatchProcess(
           'Electron',
           chalk.rgb(145, 188, 240),
-          './back/electron/start.ts',
+          './mainframe/electron/start.ts',
         ),
       }
 

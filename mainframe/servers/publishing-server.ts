@@ -7,9 +7,9 @@
 
 import { build } from 'vite'
 
-import { createWebsocketServer } from '@/back/basic-websocket'
+import { createWebsocketServer } from '@/mainframe/basic-websocket'
 import { SERVER_PUBLISHING_PORT } from '@/center/ports'
-import { $path } from '@/center/utils'
+import { $path } from '@/center/utils/system'
 
 import { forcePushToOriginOnWwwBranch, remoteUrl } from './git-server/git'
 import { DEFAULT_SUBSTRATE, SUBSTRATES } from '@/center/substrates'

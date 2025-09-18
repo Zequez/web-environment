@@ -32,14 +32,15 @@
     "paths": {
       "@/*": ["./*"],
       "@@/*": ["./repos/*"],
-      "@/back/*": ["./back/*"],
+      "@/mainframe/*": ["./mainframe/*"],
     }
   },
   "include": [
     "repos",
-    "back",
+    "mainframe",
     "wrapper",
     "substrates",
-    "center", "types.d.ts", "types.d.ts",],
+    "center",
+    "types.d.ts"],
   "exclude": ["node_modules"]
 }

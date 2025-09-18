@@ -3,10 +3,10 @@ import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import { imagetools } from 'vite-imagetools'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { $path } from '@/center/utils'
+import { $path } from '@/center/utils/system'
 import addCname from '@/center/vite-tools/add-cname'
-import type { ViteMetaConfig } from '@/back/servers/vite-spinner/meta-config'
-import { createConfig as createUnoCSSConfig } from '../../meta.unocss.config'
+import type { ViteMetaConfig } from '@/mainframe/servers/vite-spinner/meta-config'
+import { createConfig as createUnoCSSConfig } from '@/mainframe/meta.unocss.config'
 import { readRepoWenvConfig } from '@/center/wenv-config'
 
 export default ({ repo, port, accessibleFromLocalNetwork }: ViteMetaConfig) => {

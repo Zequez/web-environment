@@ -1,7 +1,7 @@
 import { readdir, exists } from 'fs/promises'
 import type { Repo } from './messages'
 import { ActiveRepo } from './ActiveRepo'
-import { debounce } from '@/center/utils'
+import { debounce } from '@/center/utils/neutral'
 
 // Assumes "main" branch and "origin" remote
 

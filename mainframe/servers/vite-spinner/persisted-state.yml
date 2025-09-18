@@ -1,0 +1,9 @@
+repos:
+  casa-experimental:
+    started: true
+    port: 19725
+    accessibleFromLocalNetwork: true
+  ezequiel:
+    started: true
+    port: 19726
+    accessibleFromLocalNetwork: false

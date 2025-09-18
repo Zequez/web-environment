@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { cx, timeAgoMini } from '@/center/utils'
+  import { timeAgoMini } from '@/center/utils/neutral'
   import { onMount } from 'svelte'
   import RotateIcon from '~icons/fa6-solid/rotate'
   import DownloadIcon from '~icons/fa6-solid/download'
@@ -29,14 +29,14 @@
     <button
       disabled={isFetching}
       onclick={onFetch}
-      class={cx(
-        'bg-blue-400 hover:bg-blue-500 disabled:(saturate-0 pointer-events-none) text-white flexcc rounded-md text-xs h6 w6 b b-black/10 mr2',
-      )}
+      class={'bg-blue-400 hover:bg-blue-500 disabled:(saturate-0 pointer-events-none) text-white flexcc rounded-md text-xs h6 w6 b b-black/10 mr2'}
     >
       <RotateIcon
-        class={cx('', {
-          'animate-spin': isFetching,
-        })}
+        class={[
+          {
+            'animate-spin': isFetching,
+          },
+        ]}
       />
     </button>
     <div class="text-xs flex-grow text-left text-black/70">

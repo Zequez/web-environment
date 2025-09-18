@@ -21,19 +21,19 @@
     BackMsg,
     FrontMsg,
     Repo,
-  } from '@/back/servers/git-server/messages'
+  } from '@/mainframe/servers/git-server/messages'
   import type {
     BackMsg as PublishingBackMsg,
     FrontMsg as PublishingFrontMsg,
-  } from '@/back/servers/publishing-server'
+  } from '@/mainframe/servers/publishing-server'
 
   import type {
     BackMsg as ViteSpinnerBackMsg,
     FrontMsg as ViteSpinnerFrontMsg,
-  } from '@/back/servers/vite-spinner'
+  } from '@/mainframe/servers/vite-spinner/start.ts'
 
   import AddRemoteInput from './AddRemoteInput.svelte'
-  import { type ElectronBridge } from '@/back/electron/preload'
+  import { type ElectronBridge } from '@/mainframe/electron/preload'
   import SyncButton from './SyncButton.svelte'
   import FetchedButton from './FetchedButton.svelte'
   import GitRemoteDisplay from './GitRemoteDisplay.svelte'

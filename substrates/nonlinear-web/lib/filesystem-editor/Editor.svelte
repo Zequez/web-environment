@@ -4,7 +4,7 @@
 
   import { SERVER_FILES_PORT } from '@/center/ports'
   import { cx } from '@/center/utils'
-  import { type BackMsg, type FrontMsg } from '@/back/servers/files-server'
+  import { type BackMsg, type FrontMsg } from '@/mainframe/servers/files-server'
 
   let socket = $state<WebSocket>(null!)
   let dirTree = $state<DirectoryTree>(null!)

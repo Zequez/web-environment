@@ -1,6 +1,9 @@
 import { parse, stringify } from 'yaml'
 import fs from 'fs'
 import net from 'net'
+import path from 'path'
+
+export const $path = (p: string) => path.resolve(__dirname, '../../', p)
 
 export function yamlFileStore<T>(path: string, initial: T) {
   let data: T = null!

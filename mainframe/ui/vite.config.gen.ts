@@ -3,16 +3,16 @@ import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import path from 'path'
-import { UI_REPOS_PORT } from '@/center/ports'
-import { createConfig as createUnoCSSConfig } from '../../meta.unocss.config'
+import { MAINFRAME_UI_PORT } from '@/center/ports'
+import { createConfig as createUnoCSSConfig } from '../meta.unocss.config'
 
 export default () =>
   defineConfig({
     server: {
       host: '0.0.0.0',
-      port: UI_REPOS_PORT,
+      port: MAINFRAME_UI_PORT,
     },
-    root: './substrates/repos',
+    root: './mainframe/ui',
     plugins: [
       svelte(),
       UnoCSS(createUnoCSSConfig({ repo: '_' })),

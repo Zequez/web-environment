@@ -1,6 +1,5 @@
 <script lang="ts">
   import { cx } from '@/center/utils'
-  import { fade } from 'svelte/transition'
 
   const {
     direction,

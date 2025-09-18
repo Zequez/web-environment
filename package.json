@@ -11,7 +11,7 @@
     "electron": "^36.4.0"
   },
   "bin": {
-    "wenv": "./back/bin/wenv.ts"
+    "wenv": "./mainframe/bin/wenv.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

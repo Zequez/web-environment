@@ -4,7 +4,7 @@
   import CheckIcon from '~icons/fa6-solid/check'
   import CodeMergeIcon from '~icons/fa6-solid/code-merge'
   import RotateIcon from '~icons/fa6-solid/rotate'
-  import type { SyncStatus } from '@/back/servers/git-server/messages'
+  import type { SyncStatus } from '@/mainframe/servers/git-server/messages'
   import { cx } from '@/center/utils'
 
   const {

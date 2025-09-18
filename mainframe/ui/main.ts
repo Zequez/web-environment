@@ -3,7 +3,7 @@ import 'virtual:uno.css'
 import 'svooltip/styles.css'
 import { mount } from 'svelte'
 
-import Compositor from './ui/Compositor.svelte'
+import Compositor from './components/Compositor.svelte'
 
 mount(Compositor, { target: document.getElementById('root')!, props: {} })
 

@@ -2,7 +2,7 @@ import { stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
-import { wait } from '@/center/utils'
+import { wait } from '@/center/utils/neutral'
 
 export async function ensurePathIsRepo(repoPath: string) {
   if (!(await exists(repoPath))) {

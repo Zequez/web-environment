@@ -22,7 +22,7 @@ export async function startElectron() {
 
   async function watchAndCompileElectronStuff() {
     const watcher = watch(
-      './back/electron/',
+      './mainframe/electron/',
       { recursive: true },
       async (eventType, fileName) => {
         if (fileName && fileName.endsWith('.ts')) {
@@ -39,8 +39,8 @@ export async function startElectron() {
   // Compile ./electron/main.ts and ./electron/preload.ts using Bun to ./electron/dist
   async function compileElectronStuff() {
     await Bun.build({
-      entrypoints: ['./back/electron/main.ts'],
-      outdir: './back/electron/dist',
+      entrypoints: ['./mainframe/electron/main.ts'],
+      outdir: './mainframe/electron/dist',
       target: 'node',
       external: ['electron'],
     })
@@ -64,7 +64,7 @@ export async function startElectron() {
     electronServerProcess = Bun.spawn(
       [
         `./node_modules/electron/dist/${APP_NAME}.app/Contents/MacOS/Electron`,
-        './back/electron/dist/main.js',
+        './mainframe/electron/dist/main.js',
         '--args',
       ],
       {

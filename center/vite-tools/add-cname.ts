@@ -1,5 +1,5 @@
 import fs from 'node:fs'
-import { $path } from '@/center/utils'
+import { $path } from '@/center/utils/system'
 import { readRepoWenvConfig } from '../wenv-config'
 
 export default function copyCname(repo: string) {

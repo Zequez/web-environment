@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import fs from 'fs'
 import UnoCSS from 'unocss/vite'
 import Icons from 'unplugin-icons/vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
@@ -7,11 +6,11 @@ import { preact } from '@preact/preset-vite'
 import mdx from '@mdx-js/rollup'
 import remarkFrontmatter from 'remark-frontmatter'
 import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
-import { $path } from '@/center/utils'
+import { $path } from '@/center/utils/system'
 import { readRepoWenvConfig } from '@/center/wenv-config'
 import addCname from '@/center/vite-tools/add-cname'
-import { createConfig as createUnoCSSConfig } from '../../meta.unocss.config'
-import type { ViteMetaConfig } from '@/back/servers/vite-spinner/meta-config'
+import { createConfig as createUnoCSSConfig } from '@/mainframe/meta.unocss.config'
+import type { ViteMetaConfig } from '@/mainframe/servers/vite-spinner/meta-config'
 
 export default ({ repo, port, accessibleFromLocalNetwork }: ViteMetaConfig) => {
   const wenv = readRepoWenvConfig(repo)

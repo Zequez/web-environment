@@ -1,6 +1,6 @@
 import type { UserConfig } from 'vite'
 
-import type { ViteMetaConfig } from '@/back/servers/vite-spinner/meta-config'
+import type { ViteMetaConfig } from '@/mainframe/servers/vite-spinner/meta-config'
 
 import nonlinearWeb from '@/substrates/nonlinear-web/vite.config.gen'
 import linearWeb from '@/substrates/linear-web/vite.config.gen'

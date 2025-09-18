@@ -4,14 +4,14 @@ import { fileURLToPath } from 'url'
 import waitPort from 'wait-port'
 import path from 'path'
 
-import { UI_REPOS_PORT, SERVER_VITE_SPINNER_PORT } from '@/center/ports'
+import { MAINFRAME_UI_PORT, SERVER_VITE_SPINNER_PORT } from '@/center/ports'
 import { APP_NAME } from './config'
 
 contextMenu({
   showSaveImageAs: true,
 })
 
-const VITE_DEV_SERVER_URL = 'http://localhost:' + UI_REPOS_PORT
+const VITE_DEV_SERVER_URL = 'http://localhost:' + MAINFRAME_UI_PORT
 
 console.log('VITE_DEV_SERVER_URL', VITE_DEV_SERVER_URL)
 
@@ -70,11 +70,13 @@ function createWindow() {
   })
   // // The Web Substrate has no production version
   // console.log(process.env.VITE_DEV_SERVER_URL)
-  waitPort({ host: 'localhost', port: UI_REPOS_PORT, output: 'silent' }).then(
-    () => {
-      win.loadURL(VITE_DEV_SERVER_URL)
-    },
-  )
+  waitPort({
+    host: 'localhost',
+    port: MAINFRAME_UI_PORT,
+    output: 'silent',
+  }).then(() => {
+    win.loadURL(VITE_DEV_SERVER_URL)
+  })
 }
 
 app.setName(APP_NAME)

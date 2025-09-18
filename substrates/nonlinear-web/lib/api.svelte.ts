@@ -1,4 +1,4 @@
-import type { BackMsg, FrontMsg } from '@/back/servers/files-server'
+import type { BackMsg, FrontMsg } from '@/mainframe/servers/files-server'
 import { SERVER_FILES_PORT } from '@/center/ports'
 import { onMount } from 'svelte'
 import { stringify } from 'yaml'

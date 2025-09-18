@@ -1,5 +1,5 @@
 import { createServer } from 'vite'
-import reposGenViteConfig from '@/substrates/repos/vite.config.gen'
+import reposGenViteConfig from '../ui/vite.config.gen'
 
 const reposServer = await createServer(reposGenViteConfig())
 await reposServer.listen()

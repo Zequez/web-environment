@@ -20,7 +20,7 @@ const mkport = () => {
   return port
 }
 
-export const UI_REPOS_PORT = mkport()
+export const MAINFRAME_UI_PORT = mkport()
 export const SERVER_GIT_PORT = mkport()
 export const SERVER_FILES_PORT = mkport()
 export const SERVER_PUBLISHING_PORT = mkport()

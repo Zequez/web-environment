@@ -2,7 +2,7 @@ import { createServer, type ViteDevServer } from 'vite'
 
 import { signal, computed } from '@preact/signals-core'
 
-import { createWebsocketServer } from '@/back/basic-websocket'
+import { createWebsocketServer } from '@/mainframe/basic-websocket'
 import { SERVER_VITE_SPINNER_PORT } from '@/center/ports'
 import { readRepoWenvConfig } from '@/center/wenv-config'
 import { DEFAULT_SUBSTRATE, SUBSTRATES } from '@/center/substrates'
