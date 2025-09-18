@@ -37,6 +37,7 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
 
   let prevPosition: Position = null
   $effect(() => {
+    // maybeUpdateActive(position)
     debouncedMaybeUpdateActive(position)
   })
 
@@ -51,7 +52,7 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
     }
   }
 
-  const debouncedMaybeUpdateActive = debounce(maybeUpdateActive, 150)
+  const debouncedMaybeUpdateActive = debounce(maybeUpdateActive, 50)
 
   const cmdProxy = proxifyCmd(chalk.cyan('[CMD]'), cmd)
 

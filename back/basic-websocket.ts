@@ -1,6 +1,8 @@
 import { type ServerWebSocket } from 'bun'
 import { type ChalkInstance, default as chalk } from 'chalk'
 
+const SILENCE_MESSAGES = ['repos-list']
+
 const allowedOrigins = /^http:\/\/localhost:\d+$/
 type Config<T, K, Params> = {
   onConnect: (sendMsg: (msg: K) => void, params: Params) => Promise<() => void>
@@ -17,7 +19,9 @@ export function createWebsocketServer<T, K, Params>(
   }
 
   function sendMsg(ws: ServerWebSocket<any>, msg: K) {
-    log(chalk.green('➡'), msg)
+    if (Array.isArray(msg) && SILENCE_MESSAGES.indexOf(msg[0]) !== -1) {
+      log(chalk.green('➡'), msg)
+    }
     return ws.send(JSON.stringify(msg))
   }
 

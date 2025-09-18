@@ -1,11 +1,13 @@
 import type { UserConfig } from 'vite'
 
+import type { ViteMetaConfig } from '@/back/servers/vite-spinner/meta-config'
+
 import nonlinearWeb from '@/substrates/nonlinear-web/vite.config.gen'
 import linearWeb from '@/substrates/linear-web/vite.config.gen'
 import nothingWeb from '@/substrates/nothing-web/vite.config.gen'
 
 export const SUBSTRATES: {
-  [key: string]: (repo: string, port?: number) => UserConfig
+  [key: string]: (metaConfig: ViteMetaConfig) => UserConfig
 } = {
   'nonlinear-web': nonlinearWeb,
   'linear-web': linearWeb,

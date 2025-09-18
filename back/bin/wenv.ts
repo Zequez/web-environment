@@ -36,7 +36,7 @@ yargs(hideBin(process.argv))
         viteSpinner: runWatchProcess(
           'Vite Spinner',
           chalk.rgb(160, 32, 240),
-          './back/servers/vite-spinner.ts',
+          './back/servers/vite-spinner/start.ts',
         ),
         git: runWatchProcess(
           'GIT',

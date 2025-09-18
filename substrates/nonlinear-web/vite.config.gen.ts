@@ -10,21 +10,22 @@ import remarkMdxFrontmatter from 'remark-mdx-frontmatter'
 import { $path } from '@/center/utils'
 import { readRepoWenvConfig } from '@/center/wenv-config'
 import addCname from '@/center/vite-tools/add-cname'
+import { createConfig as createUnoCSSConfig } from '../../meta.unocss.config'
+import type { ViteMetaConfig } from '@/back/servers/vite-spinner/meta-config'
 
-export default (repo: string, port?: number) => {
+export default ({ repo, port, accessibleFromLocalNetwork }: ViteMetaConfig) => {
   const wenv = readRepoWenvConfig(repo)
+  const unocss = createUnoCSSConfig({ repo, fonts: wenv.fonts })
 
   return defineConfig({
-    server: port
-      ? {
-          host: '0.0.0.0',
-          port: port,
-        }
-      : undefined,
+    server: {
+      host: accessibleFromLocalNetwork ? '0.0.0.0' : 'localhost',
+      port: port,
+    },
     root: __dirname,
     plugins: [
       svelte(),
-      UnoCSS(),
+      UnoCSS(unocss),
       Icons({ compiler: 'svelte' }),
       {
         enforce: 'pre',

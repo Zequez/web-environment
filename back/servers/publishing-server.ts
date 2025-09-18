@@ -5,9 +5,7 @@
 // Maybe later: Different publishing strategy other than Git, for example
 // FTP server, directly to Vercel, Cloudflare, etc
 
-import { existsSync } from 'fs'
 import { build } from 'vite'
-import chalk from 'chalk'
 
 import { createWebsocketServer } from '@/back/basic-websocket'
 import { SERVER_PUBLISHING_PORT } from '@/center/ports'
@@ -34,7 +32,9 @@ function start() {
           const [, repo] = msg
           const config = readRepoWenvConfig(repo as string)
           const generator = SUBSTRATES[config.substrate || DEFAULT_SUBSTRATE]
-          const result = await build(generator(repo))
+          const result = await build(
+            generator({ repo, port: 0, accessibleFromLocalNetwork: false }),
+          )
           console.log('REPO BUILT!')
           break
         }

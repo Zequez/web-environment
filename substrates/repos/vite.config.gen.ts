@@ -4,6 +4,7 @@ import Icons from 'unplugin-icons/vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import path from 'path'
 import { UI_REPOS_PORT } from '@/center/ports'
+import { createConfig as createUnoCSSConfig } from '../../meta.unocss.config'
 
 export default () =>
   defineConfig({
@@ -12,7 +13,11 @@ export default () =>
       port: UI_REPOS_PORT,
     },
     root: './substrates/repos',
-    plugins: [svelte(), UnoCSS(), Icons({ compiler: 'svelte' })],
+    plugins: [
+      svelte(),
+      UnoCSS(createUnoCSSConfig({ repo: '_' })),
+      Icons({ compiler: 'svelte' }),
+    ],
     resolve: {
       alias: {
         '@@': path.resolve(__dirname, '../../repos/'),

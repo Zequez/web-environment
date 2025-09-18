@@ -182,6 +182,6 @@ repos/*
 back/electron/dist
 projections
 
-servers/vite-spinner-state.yml
+back/servers/vite-spinner/persisted-state.yml
 
-public/assets/fonts/*
+assets/fonts/*

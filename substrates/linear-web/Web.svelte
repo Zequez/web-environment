@@ -17,12 +17,6 @@
 
 <svelte:head>
   <title>{config.title}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Epunda+Slab:ital,wght@0,300..900;1,300..900&display=swap"
-    rel="stylesheet"
-  />
   <meta
     name="theme-color"
     content={`hsl(var(--main-hue) var(--main-saturation) 50%)`}
@@ -55,10 +49,6 @@
 </div>
 
 <style>
-  :root {
-    --font-serif: 'Epunda Slab', serif;
-  }
-
   :global {
     .no-separator .separator {
       display: none !important;

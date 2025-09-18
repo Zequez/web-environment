@@ -26,16 +26,4 @@ export const SERVER_FILES_PORT = mkport()
 export const SERVER_PUBLISHING_PORT = mkport()
 export const SERVER_VITE_SPINNER_PORT = mkport()
 
-// Actually this should return the same port independently of usage order
-// Proposal:
-// Reserve 1000 ports space
-// Using the repo string generate a hash and map it to a port
-// 2 repos CANNOT share the same port
-const REPOS_PORT_BASE = mkport()
-let repos: string[] = []
-export const UI_PORT_FOR_REPO = (repo: string) => {
-  if (!repos.includes(repo)) {
-    repos.push(repo)
-  }
-  return REPOS_PORT_BASE + repos.indexOf(repo)
-}
+export const REPOS_PORT_BASE = mkport() + 10
