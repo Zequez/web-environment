@@ -75,7 +75,9 @@ function createWindow() {
     port: MAINFRAME_UI_PORT,
     output: 'silent',
   }).then(() => {
-    win.loadURL(VITE_DEV_SERVER_URL)
+    setTimeout(() => {
+      win.loadURL(VITE_DEV_SERVER_URL)
+    }, 100)
   })
 }
 

@@ -19,22 +19,20 @@
   <title>{config.title}</title>
   <meta
     name="theme-color"
-    content={`hsl(var(--main-hue) var(--main-saturation) 50%)`}
+    content={`hsl(${config.colors.main.hue} ${config.colors.main.saturation}% 50%)`}
   />
+  <link rel="icon" type="image/png" href={config.icon || '/favicon.png'} />
 </svelte:head>
 
-<svelte:body
+<div
+  class="w-full h-full bg-main-500"
+  style={`background-image: url(./noise20.png);`}
   use:cssVariables={{
     'main-hue': config.colors.main.hue,
     'main-saturation': config.colors.main.saturation,
     'alt-hue': config.colors.alt.hue,
     'alt-saturation': config.colors.alt.saturation,
   }}
-/>
-
-<div
-  class="w-full h-full bg-main-500"
-  style={`background-image: url(./noise20.png);`}
 >
   <Nav />
   <Header />

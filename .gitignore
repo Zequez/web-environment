@@ -181,7 +181,9 @@ repos/*
 
 back/electron/dist
 projections
+prerenderers
 
 back/servers/vite-spinner/persisted-state.yml
 
 assets/fonts/*
+./_test.ts

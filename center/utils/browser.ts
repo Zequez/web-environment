@@ -64,8 +64,13 @@ export function cssVariables(
     },
   }
 }
+
 function setCssVariables(node: HTMLElement, variables: { [key: string]: any }) {
   for (const name in variables) {
     node.style.setProperty(`--${name}`, variables[name])
   }
+}
+
+export function getLocationHash() {
+  return typeof window === 'undefined' ? '' : window.location.hash
 }

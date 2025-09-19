@@ -3,9 +3,10 @@ import createContextedStore, { proxifyCmd } from '@/center/contexted-store'
 import type { WebConfig } from './WebConfig.ts'
 import { onMount } from 'svelte'
 import { debounce } from '@/center/utils/neutral'
+import { getLocationHash } from '@/center/utils'
 
 export default createContextedStore('main', (initialConfig: WebConfig) => {
-  const initialHash = window.location.hash.slice(1)
+  const initialHash = getLocationHash()
   let optimizeVisuals = $state(false)
   let activeSection = $state(
     initialHash || initialConfig.sections[0]?.id || null,
@@ -16,7 +17,7 @@ export default createContextedStore('main', (initialConfig: WebConfig) => {
 
   onMount(() => {
     window.addEventListener('hashchange', (ev) => {
-      activeSection = window.location.hash.slice(1)
+      activeSection = getLocationHash() || null
     })
 
     if (initialHash) {

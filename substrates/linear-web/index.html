@@ -4,11 +4,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Barebones Environment</title>
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <!-- [ADDED BY SVELTE] -->
+    <!-- <title>Barebones Environment</title>
+    <link rel="icon" type="image/png" href="/favicon.png" /> -->
+    <script type="module" prerender src="./prerender.ts"></script>
+    <!--app-head-->
   </head>
   <body class="h-100vh">
-    <div id="root" class="size-full"></div>
+    <div id="root" class="size-full"><!--app-html--></div>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

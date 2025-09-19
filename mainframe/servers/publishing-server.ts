@@ -32,9 +32,20 @@ function start() {
           const [, repo] = msg
           const config = readRepoWenvConfig(repo as string)
           const generator = SUBSTRATES[config.substrate || DEFAULT_SUBSTRATE]
-          const result = await build(
-            generator({ repo, port: 0, accessibleFromLocalNetwork: false }),
-          )
+          const buildPrerendererConfig = generator({
+            repo,
+            mode: 'build-prerenderer',
+          })
+          await build(buildPrerendererConfig)
+          console.log('PRE-Renderer built')
+
+          const buildConfig = generator({
+            repo,
+            mode: 'build',
+          })
+
+          await build(buildConfig)
+
           console.log('REPO BUILT!')
           break
         }

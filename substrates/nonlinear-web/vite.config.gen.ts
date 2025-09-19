@@ -12,15 +12,18 @@ import addCname from '@/center/vite-tools/add-cname'
 import { createConfig as createUnoCSSConfig } from '@/mainframe/meta.unocss.config'
 import type { ViteMetaConfig } from '@/mainframe/servers/vite-spinner/meta-config'
 
-export default ({ repo, port, accessibleFromLocalNetwork }: ViteMetaConfig) => {
-  const wenv = readRepoWenvConfig(repo)
-  const unocss = createUnoCSSConfig({ repo, fonts: wenv.fonts })
+export default (C: ViteMetaConfig) => {
+  const wenv = readRepoWenvConfig(C.repo)
+  const unocss = createUnoCSSConfig({ repo: C.repo, fonts: wenv.fonts })
 
   return defineConfig({
-    server: {
-      host: accessibleFromLocalNetwork ? '0.0.0.0' : 'localhost',
-      port: port,
-    },
+    server:
+      C.mode === 'run'
+        ? {
+            host: C.accessibleFromLocalNetwork ? '0.0.0.0' : 'localhost',
+            port: C.port,
+          }
+        : undefined,
     root: __dirname,
     plugins: [
       svelte(),
@@ -34,19 +37,19 @@ export default ({ repo, port, accessibleFromLocalNetwork }: ViteMetaConfig) => {
         }),
       },
       preact(),
-      addCname(repo),
+      addCname(C.repo),
     ],
     define: {
-      __REPO__: JSON.stringify(repo),
+      __REPO__: JSON.stringify(C.repo),
     },
     build: {
-      outDir: $path(`projections/${repo}`),
+      outDir: $path(`projections/${C.repo}`),
       emptyOutDir: true,
     },
     publicDir: $path('assets'),
     resolve: {
       alias: {
-        '@@@': $path(`repos/${repo}`),
+        '@@@': $path(`repos/${C.repo}`),
         '@@': $path('repos'),
         '@': $path(''),
       },

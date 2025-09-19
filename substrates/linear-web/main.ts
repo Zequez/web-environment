@@ -1,7 +1,8 @@
 import '@unocss/reset/tailwind.css'
 import 'virtual:uno.css'
-import { mount } from 'svelte'
+import { mount, hydrate } from 'svelte'
 
 import Root from './Root.svelte'
 
-mount(Root, { target: document.getElementById('root')!, props: {} })
+const fun = import.meta.env.DEV ? mount : hydrate
+fun(Root, { target: document.getElementById('root')!, props: {} })

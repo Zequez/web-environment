@@ -15,6 +15,7 @@ export type WebConfig = {
       saturation: number
     }
   }
+  icon?: string
   css: {
     width: string
   }

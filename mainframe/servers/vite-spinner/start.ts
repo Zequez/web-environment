@@ -34,6 +34,7 @@ async function startNewServer(repo: string) {
       repo,
       port: repoConfig.port,
       accessibleFromLocalNetwork: repoConfig.accessibleFromLocalNetwork,
+      mode: 'run',
     }),
   )
   await newViteServer.listen()
