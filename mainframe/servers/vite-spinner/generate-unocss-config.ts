@@ -1,10 +1,12 @@
 import transformerVariantGroup from '@unocss/transformer-variant-group'
+import presetIcons from '@unocss/preset-icons'
 import {
   defineConfig,
   presetTypography,
   presetWind3,
   transformerDirectives,
 } from 'unocss'
+
 import presetWebFonts from '@unocss/preset-web-fonts'
 import { createLocalFontProcessor } from '@unocss/preset-web-fonts/local'
 
@@ -30,10 +32,11 @@ const DEFAULT_FONTS = {
   mono: 'Fira Code',
 }
 
-export function createConfig(config: WenvUnoCSSConfig) {
+export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {
   const resolvedFonts = { ...DEFAULT_FONTS, ...(config.fonts || {}) }
-  console.log('RESOLVED FONTS', resolvedFonts)
+  // console.log('Generating UNOCSS', resolvedFonts)
   return defineConfig({
+    configFile: false,
     content: {
       pipeline: {
         include: [
@@ -42,11 +45,13 @@ export function createConfig(config: WenvUnoCSSConfig) {
           // include js/ts files
           'repos/**/*.{js,ts}',
         ],
+
         // exclude files
         // exclude: []
       },
     },
     presets: [
+      presetIcons(),
       presetWind3(),
       presetTypography(),
       presetWebFonts({
@@ -102,11 +107,6 @@ export function createConfig(config: WenvUnoCSSConfig) {
       },
     ],
     theme: {
-      // fontFamily: {
-      //   sans: 'var(--font-sans, ui-sans-serif, system-ui, sans-serif)',
-      //   serif: 'var(--font-serif, Georgia, Cambria, "Times New Roman", serif)',
-      //   mono: 'var(--font-mono, SFMono-Regular, Menlo, Monaco, Consolas, monospace)',
-      // },
       boxShadow: {
         solid: '0 1.5px 0 1px var(--un-shadow-color)',
       },

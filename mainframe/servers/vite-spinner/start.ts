@@ -4,12 +4,15 @@ import { signal, computed } from '@preact/signals-core'
 
 import { createWebsocketServer } from '@/mainframe/basic-websocket'
 import { SERVER_VITE_SPINNER_PORT } from '@/center/ports'
-import { readRepoWenvConfig } from '@/center/wenv-config'
-import { DEFAULT_SUBSTRATE, SUBSTRATES } from '@/center/substrates'
+import repoVite from './repo-vite'
 import { getRepoConfig, getStartedRepos, setRepoConfig } from './persisted'
 
 export type BackMsg = ['servers', servers: { [key: string]: string }]
-export type FrontMsg = ['start', repo: string] | ['stop', repo: string]
+export type FrontMsg =
+  | ['start', repo: string]
+  | ['stop', repo: string]
+  | ['build', repo: string]
+  | ['publish', repo: string]
 
 let reposServers = signal<{ [key: string]: ViteDevServer }>({})
 
@@ -22,29 +25,35 @@ let reposServersUrl = computed(() => {
   )
 })
 
+let REPOS_VITE: { [key: string]: Awaited<ReturnType<typeof repoVite>> } = {}
+async function getRepoVite(repo: string) {
+  if (REPOS_VITE[repo]) {
+    return REPOS_VITE[repo]
+  } else {
+    const repoConfig = await getRepoConfig(repo)
+    const vite = await repoVite(repo, repoConfig)
+    REPOS_VITE[repo] = vite
+    return vite
+  }
+}
+
 async function startNewServer(repo: string) {
   console.log(`Spinning new vite server for ${repo}`)
-  const repoConfig = await getRepoConfig(repo)
-  const config = readRepoWenvConfig(repo)
+  const vite = await getRepoVite(repo)
 
-  const generator =
-    SUBSTRATES[(config.substrate as string) || DEFAULT_SUBSTRATE]
-  const newViteServer = await createServer(
-    generator({
-      repo,
-      port: repoConfig.port,
-      accessibleFromLocalNetwork: repoConfig.accessibleFromLocalNetwork,
-      mode: 'run',
-    }),
-  )
-  await newViteServer.listen()
+  const newViteServer = await vite.devRun()
+
   reposServers.value = {
     ...reposServers.value,
     [repo]: newViteServer,
   }
+
+  const repoConfig = await getRepoConfig(repo)
   if (!repoConfig.started) {
     setRepoConfig(repo, { started: true })
   }
+
+  console.log(`DONE ${repo}`)
 }
 
 function start() {
@@ -77,6 +86,17 @@ function start() {
             setRepoConfig(repo, { started: false })
           }
           break
+        case 'build': {
+          const vite = await getRepoVite(repo)
+          await vite.buildProjection()
+
+          break
+        }
+        case 'publish': {
+          const vite = await getRepoVite(repo)
+          await vite.publishProjection()
+          break
+        }
       }
     },
     onConnect: async (sendMsg, params) => {

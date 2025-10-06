@@ -48,11 +48,11 @@ yargs(hideBin(process.argv))
           chalk.yellow,
           './mainframe/servers/files-server.ts',
         ),
-        publishing: runWatchProcess(
-          'Publishing',
-          chalk.rgb(255, 165, 0),
-          './mainframe/servers/publishing-server.ts',
-        ),
+        // publishing: runWatchProcess(
+        //   'Publishing',
+        //   chalk.rgb(255, 165, 0),
+        //   './mainframe/servers/publishing-server.ts',
+        // ),
         electron: runWatchProcess(
           'Electron',
           chalk.rgb(145, 188, 240),

@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import { parse } from 'yaml'
 
-type WEnbvConfig = {
+export type WEnvConfig = {
   cname?: string
   substrate?: string
   fonts?: {
@@ -11,10 +11,10 @@ type WEnbvConfig = {
   }
 }
 
-export function readRepoWenvConfig(repo: string): WEnbvConfig {
+export function readRepoWenvConfig(repo: string): WEnvConfig {
   const content = fs.readFileSync(`./repos/${repo}/wenv.yml`, 'utf-8')
   if (content) {
-    return parse(content) as WEnbvConfig
+    return parse(content) as WEnvConfig
   } else {
     return {}
   }

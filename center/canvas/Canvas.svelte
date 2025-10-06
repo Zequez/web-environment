@@ -289,15 +289,10 @@
   role="presentation"
   class="relative h-full w-full bg-black overflow-auto no-scrollbar"
 >
-  <div
-    class="absolute left-0 top-0"
-    style={`background-image: url(${background}); background-size: ${320 * CS.zoom}px ${200 * CS.zoom}px; width: ${CS.cavitationSize.w * CS.zoom}px; height: ${CS.cavitationSize.h * CS.zoom}px;`}
-  ></div>
+  <!-- <div class="relative min-h-full min-w-full"> -->
 
   {#if loader}
-    <div
-      class="fixed inset-0 z-9999 bg-black pointer-events-none"
-      out:fade
+    <div class="fixed inset-0 z-9999 bg-black pointer-events-none" out:fade
     ></div>
   {/if}
   <div
@@ -305,6 +300,10 @@
     id="cavitation-container"
     class="relative max-w-none max-h-none overflow-hidden"
   >
+    <div
+      class="absolute left-0 top-0 bottom-0 right-0"
+      style={`background-image: url(${background}); background-size: ${320 * CS.zoom}px ${200 * CS.zoom}px;`}
+    ></div>
     <div
       bind:this={originContainer}
       id="origin-container"
@@ -317,6 +316,7 @@
       </Pin> -->
       {@render children()}
     </div>
+    <!-- </div> -->
   </div>
 </div>
 

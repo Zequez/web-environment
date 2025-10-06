@@ -1,0 +1,8 @@
+import { render as svelteRender } from 'svelte/server'
+
+// @ts-ignore
+import App from '@@@/App.svelte'
+
+export default function render(_url: string) {
+  return svelteRender(App, {})
+}

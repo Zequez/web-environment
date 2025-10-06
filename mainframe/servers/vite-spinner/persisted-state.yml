@@ -1,9 +1,29 @@
 repos:
   casa-experimental:
-    started: true
+    started: false
     port: 19725
-    accessibleFromLocalNetwork: true
+    accessibleFromLocalNetwork: false
   ezequiel:
     started: true
     port: 19726
     accessibleFromLocalNetwork: false
+  possibility-team:
+    started: false
+    port: 19727
+    accessibleFromLocalNetwork: false
+  manos-ezequiel:
+    started: false
+    port: 19728
+    accessibleFromLocalNetwork: false
+  self-editing:
+    started: false
+    port: 19729
+    accessibleFromLocalNetwork: false
+  tldraw:
+    started: false
+    port: 19730
+    accessibleFromLocalNetwork: false
+  web-environment:
+    started: true
+    port: 19731
+    accessibleFromLocalNetwork: true

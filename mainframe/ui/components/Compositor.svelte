@@ -22,10 +22,10 @@
     FrontMsg,
     Repo,
   } from '@/mainframe/servers/git-server/messages'
-  import type {
-    BackMsg as PublishingBackMsg,
-    FrontMsg as PublishingFrontMsg,
-  } from '@/mainframe/servers/publishing-server'
+  // import type {
+  //   BackMsg as PublishingBackMsg,
+  //   FrontMsg as PublishingFrontMsg,
+  // } from '@/mainframe/servers/publishing-server'
 
   import type {
     BackMsg as ViteSpinnerBackMsg,
@@ -94,10 +94,6 @@
     gitSocket.send(JSON.stringify(msg))
   }
 
-  function publishingSend(msg: PublishingFrontMsg) {
-    publishingSocket.send(JSON.stringify(msg))
-  }
-
   function viteSpinnerSend(msg: ViteSpinnerFrontMsg) {
     viteSpinnerSocket.send(JSON.stringify(msg))
   }
@@ -143,11 +139,11 @@
         break
       }
       case 'build': {
-        publishingSend(['build', c[1]])
+        viteSpinnerSend(['build', c[1]])
         break
       }
       case 'publish': {
-        publishingSend(['publish', c[1]])
+        viteSpinnerSend(['publish', c[1]])
         break
       }
       case 'start-vite': {

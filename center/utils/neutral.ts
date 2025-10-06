@@ -25,3 +25,23 @@ export function timeAgoMini(date: Date) {
   if (seconds < 60 * 60 * 24) return `${Math.floor(seconds / 60 / 60)}h`
   return `${Math.floor(seconds / 60 / 60 / 24)}d`
 }
+
+export function globImportToRecord<K, T>(
+  pathToClean: string,
+  parser: (v: K) => T,
+  raw: Record<string, K>,
+) {
+  return Object.fromEntries(
+    Object.entries(raw).map(([k, v]) => [
+      removeStartPathAndExtension(pathToClean, k),
+      parser(v),
+    ]),
+  )
+}
+
+export function removeStartPathAndExtension(startPath: string, value: string) {
+  const ext = value.split('.').pop()!
+  const extLength = ext.length + 1
+  const startLength = startPath.length
+  return value.slice(startLength, value.length - extLength)
+}

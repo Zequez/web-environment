@@ -10,6 +10,8 @@
   import FloatingButtons from './layout-components/FloatingButtons.svelte'
   import Sections from './layout-components/Sections.svelte'
 
+  import FloatingEditor from './FloatingEditor.svelte'
+
   const { config }: { config: WebConfig } = $props()
 
   const C = mainStore.initContext(config)
@@ -34,6 +36,7 @@
     'alt-saturation': config.colors.alt.saturation,
   }}
 >
+  <FloatingEditor />
   <Nav />
   <Header />
   <FloatingButtons />
