@@ -4,12 +4,13 @@ export default function runWatchProcess(
   title: string,
   color: ChalkInstance,
   scriptPath: string,
+  config?: { silent?: boolean },
 ) {
   console.log(`STARTING PROCESS`, color(`[${title}]`), scriptPath)
   const ps = Bun.spawn(
     ['bun', 'run', '--watch', '--no-clear-screen', scriptPath],
     {
-      stdout: 'pipe',
+      stdout: config?.silent ? 'ignore' : 'pipe',
       stderr: 'pipe',
       env: {
         ...process.env,
@@ -61,7 +62,9 @@ export default function runWatchProcess(
     })()
   }
 
-  prefixStream(ps.stdout, Bun.stdout)
+  if (!config?.silent) {
+    prefixStream(ps.stdout!, Bun.stderr)
+  }
   prefixStream(ps.stderr, Bun.stderr)
 
   return wrapProcess(title, color, ps)

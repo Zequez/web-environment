@@ -24,6 +24,10 @@ repos:
     port: 19730
     accessibleFromLocalNetwork: false
   web-environment:
-    started: true
+    started: false
     port: 19731
     accessibleFromLocalNetwork: true
+  web-environment-handbook:
+    started: true
+    port: 19732
+    accessibleFromLocalNetwork: false

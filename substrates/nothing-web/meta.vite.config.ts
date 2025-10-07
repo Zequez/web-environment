@@ -3,14 +3,21 @@ import { defineSubstrateViteConfig } from '@/mainframe/servers/vite-spinner/meta
 import { readdirSync, existsSync } from 'fs'
 
 export default defineSubstrateViteConfig((metaConfig) => {
-  const pagesPath = $path(`repos/${metaConfig.repo}/pages`)
-  let pages = ['/']
-  if (existsSync(pagesPath)) {
-    readdirSync(pagesPath).forEach((file) => {
-      console.log(file)
-    })
-  }
   return {
-    preRenderPaths: () => pages,
+    preRenderPaths: () => {
+      const pagesPath = $path(`repos/${metaConfig.repo}/pages`)
+      let pages = ['/']
+      console.log('HEY!')
+      if (existsSync(pagesPath)) {
+        readdirSync(pagesPath).forEach((file) => {
+          console.log(file)
+          const pageName = file.replace(/\.svelte$/, '')
+          if (pageName !== 'index') {
+            pages.push(`/${pageName}`)
+          }
+        })
+      }
+      return pages
+    },
   }
 })

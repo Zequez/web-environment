@@ -8,6 +8,8 @@ import Icons from 'unplugin-icons/vite'
 import { imagetools } from 'vite-imagetools'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import ViteYaml from '@modyfi/vite-plugin-yaml'
+import { mdsvex } from 'mdsvex'
+import AutoImport from 'unplugin-auto-import/vite'
 // import react from '@vitejs/plugin-react'
 
 // Utils
@@ -70,6 +72,18 @@ export async function generateViteConfig(C: ViteMetaConfig) {
       ).default(C)
     : {}
 
+  // Auto-imports
+  const repoImportPath = $path(`repos/${repo}/auto-import.ts`)
+  let autoImportConfig: ReturnType<typeof AutoImport> | undefined = undefined
+  if (fs.existsSync(repoImportPath)) {
+    console.log(`AUTO IMPORTING ${repo}`)
+    autoImportConfig = (await import(repoImportPath)).default
+  }
+  console.log(autoImportConfig)
+  // autoImportConfig = AutoImport({
+  //   // imports: [ { name: '*', as: '_', from: 'lodash' }],
+  // })
+
   return defineConfig({
     root: $path(`substrates/${substrate}`),
     define: {
@@ -126,7 +140,12 @@ export async function generateViteConfig(C: ViteMetaConfig) {
 
     plugins: [
       // Public Web Plugin
-      svelte(),
+      autoImportConfig,
+      svelte({
+        extensions: ['.svelte', '.svx'],
+        // @ts-ignore
+        preprocess: [mdsvex({ extensions: ['.svx'] })],
+      }),
       // react(),
       UnoCSS(generateUnoCSSConfig({ repo: C.repo, fonts: wenv.fonts })),
       Icons({ compiler: 'svelte' }),

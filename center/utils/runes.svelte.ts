@@ -92,6 +92,7 @@ function readFromLS<K>(key: string, def: K) {
 }
 
 export function lsState<K>(key: string, def: K, reset?: boolean) {
+  if (typeof localStorage === 'undefined') return def
   if (reset) {
     localStorage.removeItem(key)
   }
