@@ -27,9 +27,9 @@ type WenvUnoCSSConfig = {
 }
 
 const DEFAULT_FONTS = {
-  sans: 'Alegreya Sans SC',
-  serif: 'Alegreya SC',
-  mono: 'Fira Code',
+  sans: 'Alegreya Sans SC:400,700',
+  serif: 'Alegreya SC:400,700',
+  mono: 'Fira Code:400,700',
 }
 
 export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {

@@ -76,13 +76,8 @@ export async function generateViteConfig(C: ViteMetaConfig) {
   const repoImportPath = $path(`repos/${repo}/auto-import.ts`)
   let autoImportConfig: ReturnType<typeof AutoImport> | undefined = undefined
   if (fs.existsSync(repoImportPath)) {
-    console.log(`AUTO IMPORTING ${repo}`)
     autoImportConfig = (await import(repoImportPath)).default
   }
-  console.log(autoImportConfig)
-  // autoImportConfig = AutoImport({
-  //   // imports: [ { name: '*', as: '_', from: 'lodash' }],
-  // })
 
   return defineConfig({
     root: $path(`substrates/${substrate}`),

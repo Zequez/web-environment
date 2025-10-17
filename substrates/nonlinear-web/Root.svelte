@@ -2,8 +2,8 @@
   import './markdown.css'
 
   import { onMount, setContext, type Component } from 'svelte'
-  import favicon from '@@@/favicon.png'
-  import noise from '@@@/noise.png'
+  import favicon from '@@@/photos/favicon.jpg'
+  import noise from '@@@/photos/noise.png'
 
   import { Canvas } from '@/center/canvas'
 

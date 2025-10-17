@@ -187,3 +187,5 @@ back/servers/vite-spinner/persisted-state.yml
 
 assets/fonts/*
 ./_test.ts
+
+app-test/web-environment

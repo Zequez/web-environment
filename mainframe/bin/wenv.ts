@@ -42,7 +42,7 @@ yargs(hideBin(process.argv))
           'GIT',
           chalk.green,
           './mainframe/servers/git-server/start.ts',
-          { silent: true },
+          { silent: false },
         ),
         files: runWatchProcess(
           'Files',

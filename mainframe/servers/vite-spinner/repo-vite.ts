@@ -13,33 +13,37 @@ export default async function repoVite(
   const wenv = readRepoWenvConfig(repo)
 
   const configs = {
-    run: await generateViteConfig({
-      repo,
-      wenv,
-      mode: {
-        mode: 'run',
-        port: runModeConfig.port,
-        accessibleFromLocalNetwork: runModeConfig.accessibleFromLocalNetwork,
-      },
-    }),
-    build: await generateViteConfig({
-      repo,
-      wenv,
-      mode: {
-        mode: 'build',
-      },
-    }),
-    buildPrerenderer: await generateViteConfig({
-      repo,
-      wenv,
-      mode: {
-        mode: 'build-prerenderer',
-      },
-    }),
+    run: () =>
+      generateViteConfig({
+        repo,
+        wenv,
+        mode: {
+          mode: 'run',
+          port: runModeConfig.port,
+          accessibleFromLocalNetwork: runModeConfig.accessibleFromLocalNetwork,
+        },
+      }),
+    build: () =>
+      generateViteConfig({
+        repo,
+        wenv,
+        mode: {
+          mode: 'build',
+        },
+      }),
+    buildPrerenderer: () =>
+      generateViteConfig({
+        repo,
+        wenv,
+        mode: {
+          mode: 'build-prerenderer',
+        },
+      }),
   }
 
   async function devRun() {
-    const server = await createServer(configs.run!)
+    const runConfig = await configs.run()
+    const server = await createServer(runConfig!)
     console.log('CREATING DEV SERVER')
     // server.middlewares.use('/__uplink', (req, res, next) => {
     //   console.log('REQUEST!', req.url)
@@ -54,15 +58,28 @@ export default async function repoVite(
   }
 
   async function buildProjection() {
-    if (configs.buildPrerenderer) {
-      await build(configs.buildPrerenderer)
-      console.log('PRE-Renderer built')
+    const buildPrerendererConfig = await configs.buildPrerenderer()
+    if (buildPrerendererConfig) {
+      try {
+        await build(buildPrerendererConfig)
+        console.log('PRE-Renderer built')
+      } catch (e) {
+        console.error(e)
+        console.log('PRE-Renderer built failed')
+        return
+      }
     } else {
       console.log('Skipping PRE-Renderer build')
     }
 
-    await build(configs.build!)
-    console.log('REPO BUILT!')
+    const buildConfig = await configs.build()
+    try {
+      await build(buildConfig!)
+      console.log('REPO BUILT!')
+    } catch (e) {
+      console.error(e)
+      console.log('REPO BUILD FAILED')
+    }
   }
 
   async function publishProjection() {

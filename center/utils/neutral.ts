@@ -45,3 +45,32 @@ export function removeStartPathAndExtension(startPath: string, value: string) {
   const startLength = startPath.length
   return value.slice(startLength, value.length - extLength)
 }
+
+export type ImgData = {
+  src: [string, string, string]
+  meta: { width: number; height: number }
+}
+
+export function mergeImagesImports(
+  pathToClean: string,
+  picturesSrcs: { [key: string]: [string, string, string] },
+  picturesMeta: { [key: string]: { width: number; height: number } },
+): { [key: string]: ImgData } {
+  let pictures: { [key: string]: ImgData } = {}
+
+  for (let srcs in picturesSrcs) {
+    const name = srcs
+      .replace(pathToClean, '')
+      .replace('.png', '')
+      .replace('.jpg', '')
+      .replace('.jpeg', '')
+    const src = picturesSrcs[srcs]
+    const meta = picturesMeta[srcs]
+    pictures[name] = {
+      src: src as [string, string, string],
+      meta: meta as { width: number; height: number },
+    }
+  }
+
+  return pictures
+}

@@ -106,38 +106,45 @@ export function lsState<K>(key: string, def: K, reset?: boolean) {
   return data
 }
 
-export function onTripleShift(
+export const onTripleShift = onTripleKey.bind(null, 'Shift')
+
+export function onTripleKey(
+  keyName: string,
   node: {
     addEventListener: typeof HTMLElement.prototype.addEventListener
     removeEventListener: typeof HTMLElement.prototype.removeEventListener
-  },
+  } | null,
   callback: () => any,
 ) {
-  let shiftCount = 0
-  let shiftTimeout: any = null
+  let keyCount = 0
+  let keyTimeout: any = null
 
   function handleKeydown(ev: KeyboardEvent) {
-    if (ev.key === 'Shift') {
-      shiftCount++
-      if (shiftCount >= 3) {
+    if (ev.key === keyName) {
+      keyCount++
+      if (keyCount >= 3) {
         callback?.()
-        shiftCount = 0
-        clearTimeout(shiftTimeout)
+        keyCount = 0
+        clearTimeout(keyTimeout)
       } else {
-        clearTimeout(shiftTimeout)
-        shiftTimeout = setTimeout(() => {
-          shiftCount = 0
+        clearTimeout(keyTimeout)
+        keyTimeout = setTimeout(() => {
+          keyCount = 0
         }, 1000)
       }
     }
   }
 
-  node.addEventListener('keydown', handleKeydown)
+  if (node === null && typeof window === 'undefined') return
+
+  let nnode = node || window
+
+  nnode.addEventListener('keydown', handleKeydown)
 
   return {
     destroy() {
-      node.removeEventListener('keydown', handleKeydown)
-      clearTimeout(shiftTimeout)
+      nnode.removeEventListener('keydown', handleKeydown)
+      clearTimeout(keyTimeout)
     },
   }
 }
