@@ -35,3 +35,7 @@ repos:
     started: true
     port: 19733
     accessibleFromLocalNetwork: false
+  startover-toroid:
+    started: true
+    port: 19734
+    accessibleFromLocalNetwork: false
