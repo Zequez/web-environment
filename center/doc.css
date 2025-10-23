@@ -1,0 +1,56 @@
+.doc h1 {
+  @apply text-12 font-serif font-bold text-center my6;
+}
+
+.doc h2 {
+  @apply text-8 font-serif font-bold mb6;
+}
+
+.doc h3 {
+  @apply text-6 line-height-12 font-sans underline underline-(offset-2 2 black/70) mb6;
+}
+
+.doc h4 {
+  @apply text-4 font-sans underline underline-(offset-2 2 black/70) mb6;
+}
+
+.doc p {
+  @apply mb6;
+}
+
+.doc ul,
+.doc ol {
+  @apply mb6 pl6;
+}
+
+.doc li {
+  @apply list-disc list-inside;
+}
+
+.doc ol li {
+  @apply list-decimal list-inside;
+}
+
+.doc a:not(.btn),
+.doc .link {
+  @apply text-sky-500 underline hover:(text-sky-600  underline-sky-500) underline-(1.5 offset-2 sky-500/40);
+}
+
+.doc blockquote {
+  @apply mb6 p6 bg-black/5 rounded-lg relative text-black/70;
+}
+
+.doc blockquote > cite {
+  @apply absolute top-.8 left-16 text-xs;
+  /* @apply block; */
+}
+
+.doc blockquote:after {
+  content: '”';
+  @apply absolute font-mono line-height-0 -bottom-1 right-0 text-20 text-black/30 pointer-events-none;
+}
+
+.doc blockquote:before {
+  content: '“';
+  @apply absolute font-mono line-height-50% top-2 left-4 text-20 text-black/30 pointer-events-none;
+}

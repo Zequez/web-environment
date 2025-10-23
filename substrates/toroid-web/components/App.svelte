@@ -30,20 +30,31 @@
   import { onMount, type Component } from 'svelte'
   import { globImportToRecord } from '@/center/utils/neutral'
   import { onresizeobserver } from '@/center/utils/runes.svelte'
-  import favicon from '@@@/photos/favicon.jpg'
-  import noise from '@@@/photos/noise.png'
 
   import VerticalRhythmLines from '@/center/components/VerticalRhythmLines.svelte'
   import PagesList from './PagesList.svelte'
   import Guarda from './Guarda.svelte'
+  import DefaultContainer from './Container.svelte'
+  import DefaultNavContainer from './NavContainer.svelte'
+  import type { HTMLAttributes } from 'svelte/elements'
   // import Editor from './Editor.svelte'
+
+  const props: {
+    title: string
+    nav: string[][]
+    favicon: string
+    navBg: string
+    Guarda: Component
+    Container?: Component
+    NavContainer?: Component
+  } = $props()
 
   type Page = {
     Component: Component
     metadata: { title: string }
   }
 
-  console.log('Somethin g to pages gttslob refresh')
+  console.log('Somethin g to pages gstststtslob sts')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -57,8 +68,6 @@
 
   // PAGES NAVIGATION
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-  const props: { title: string; nav: string[][] } = $props()
 
   const rawPages = import.meta.glob('@@@/pages/*.svelte', {
     eager: true,
@@ -170,10 +179,13 @@
       pagesListHeight = 48
     }
   }
+
+  const Container = $derived(props.Container || DefaultContainer)
+  const NavContainer = $derived(props.NavContainer || DefaultNavContainer)
 </script>
 
 <svelte:head>
-  <link rel="icon" type="image/jpg" href={favicon} />
+  <link rel="icon" type="image/jpg" href={props.favicon} />
   <title>{currentPage.metadata?.title || props.title}</title>
 </svelte:head>
 
@@ -187,28 +199,28 @@
 {/if} -->
 
 <div class="flex flex-col min-h-screen relative">
-  <div
-    class="bg-gray-100 text-gray-950 dark:(bg-gray-950! text-gray-100!)"
-    bind:this={container}
-    use:onresizeobserver={recalculatePagesListHeight}
-  >
-    <currentPage.Component />
+  <div bind:this={container} use:onresizeobserver={recalculatePagesListHeight}>
+    <Container>
+      <currentPage.Component />
+    </Container>
   </div>
+  {#if props.Guarda}
+    <props.Guarda />
+  {:else}
+    <Guarda image={''} title={props.title} />
+  {/if}
 
-  <Guarda title={props.title} />
-  <div
-    class="relative flex-grow bg-gray-950 text-white print:hidden"
-    style="{`background-image: url(${noise});`}}"
-  >
+  <NavContainer>
     {#if !import.meta.env.SSR}
       <PagesList
         {pages}
         currentPage={currentPageName}
         {pageNameToNavPath}
         nav={props.nav}
+        {Container}
       />
     {/if}
-  </div>
+  </NavContainer>
 
   <VerticalRhythmLines />
 </div>

@@ -189,3 +189,5 @@ assets/fonts/*
 ./_test.ts
 
 app-test/web-environment
+
+*.code-workspace

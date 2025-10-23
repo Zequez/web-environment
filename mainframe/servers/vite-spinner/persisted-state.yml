@@ -28,14 +28,18 @@ repos:
     port: 19731
     accessibleFromLocalNetwork: true
   web-environment-handbook:
-    started: true
+    started: false
     port: 19732
     accessibleFromLocalNetwork: false
   coral:
-    started: true
+    started: false
     port: 19733
     accessibleFromLocalNetwork: false
   startover-toroid:
-    started: true
+    started: false
     port: 19734
+    accessibleFromLocalNetwork: false
+  casa-nami:
+    started: true
+    port: 19735
     accessibleFromLocalNetwork: false

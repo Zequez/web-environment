@@ -1,11 +1,13 @@
 <script lang="ts">
   import { onMount, tick, type Component, setContext } from 'svelte'
+  import type { ClassValue } from 'svelte/elements'
 
   const props: {
     pages: Record<string, { Component: Component }>
     currentPage: string
     pageNameToNavPath: Record<string, string>
     nav: string[][]
+    Container: Component
   } = $props()
 
   const NAV = props.nav
@@ -115,10 +117,11 @@
             style={`transform: scale(${scale})`}
             class={[
               'pointer-events-none transform-origin-tl w-screen overflow-hidden',
-              'bg-gray-100 text-gray-950 dark:(bg-gray-950! text-gray-100!)',
             ]}
           >
-            <Page.Component />
+            <props.Container>
+              <Page.Component />
+            </props.Container>
           </div>
           <a
             href={props.pageNameToNavPath[pageName]}

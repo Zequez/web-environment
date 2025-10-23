@@ -1,16 +1,19 @@
 <script lang="ts">
-  import guarda from '@@@/photos/guarda.svg'
+  import type { ClassValue } from 'svelte/elements'
 
-  const props: { title: string } = $props()
+  const props: { title: string; image?: string; class?: ClassValue } = $props()
 </script>
 
 <div id="nav-start"></div>
 <div
   class={[
     'print:hidden',
-    'sticky flex-shrink-0 bottom-0 text-center tracking-wide flexcc overflow-hidden h6 w-full',
-    'bg-gray-200 text-gray-600 text-shadow-[0_1px_0_#fff]',
-    'dark:(bg-gray-800! text-gray-300! text-shadow-[0_1px_0_#000]) ',
+    'sticky flex-shrink-0 bottom-0 text-center tracking-wide flexcc overflow-hidden w-full',
+    'h6',
+    props.class || [
+      'bg-gray-200 text-gray-600 text-shadow-[0_1px_0_#fff]',
+      'dark:(bg-gray-800! text-gray-300! text-shadow-[0_1px_0_#000])',
+    ],
   ]}
 >
   <span
@@ -25,26 +28,30 @@
     }}
     class="font-serif relative"
   >
-    <div
-      class="absolute top-10% right-100% mr1 h-80% opacity-20 dark:filter-invert"
-    >
-      <img
-        src={guarda}
-        class="h-full max-w-none"
-        alt="Intricate design on left of name"
-      />
-    </div>
+    {#if props.image}
+      <div
+        class="absolute top-10% right-100% mr1 h-80% opacity-20 dark:filter-invert"
+      >
+        <img
+          src={props.image}
+          class="h-full max-w-none"
+          alt="Intricate design on left of name"
+        />
+      </div>
+    {/if}
 
     {props.title}
 
-    <div
-      class="absolute top-10% left-100% ml1 h-80% scale-x-[-1] opacity-20 dark:filter-invert"
-    >
-      <img
-        src={guarda}
-        class="h-full max-w-none"
-        alt="Intricate design on right of name"
-      />
-    </div>
+    {#if props.image}
+      <div
+        class="absolute top-10% left-100% ml1 h-80% scale-x-[-1] opacity-20 dark:filter-invert"
+      >
+        <img
+          src={props.image}
+          class="h-full max-w-none"
+          alt="Intricate design on right of name"
+        />
+      </div>
+    {/if}
   </a>
 </div>
