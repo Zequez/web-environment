@@ -154,7 +154,9 @@ export async function generateViteConfig(C: ViteMetaConfig) {
       {
         name: 'add-cname',
         closeBundle() {
+          if (M.mode !== 'build') return
           const dest = $path(`projections/${C.repo}/CNAME`)
+
           if (wenv.cname) {
             fs.writeFileSync(dest, wenv.cname)
           } else {

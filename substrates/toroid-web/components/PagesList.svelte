@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, tick, type Component, setContext } from 'svelte'
-  import type { ClassValue } from 'svelte/elements'
 
   const props: {
     pages: Record<string, { Component: Component }>
@@ -10,9 +9,7 @@
     Container: Component
   } = $props()
 
-  const NAV = props.nav
-
-  for (let nav of NAV) {
+  for (let nav of props.nav) {
     for (let page of nav) {
       if (!props.pages[page]) {
         throw new Error(`Page "${page}" not found`)
@@ -20,83 +17,108 @@
     }
   }
 
+  document.body.classList.add('overflow-y-scroll')
+
+  let flatNavPagesList = $derived(props.nav.flat())
+
+  let otherPages = $derived.by(() => {
+    return Object.keys(props.pages).filter(
+      (page) => flatNavPagesList.indexOf(page) === -1,
+    )
+  })
+
   setContext('preview-page-mode', true)
 
   let container: HTMLDivElement
 
-  let pagesSizes = $state<{ [key: string]: { w: number; h: number } }>({})
-  const LINE = 24
-  let spacing = (LINE / 2) * (NAV.length + 1)
+  let columns = $derived(props.nav.length)
+  let viewportWidth = $state(document.documentElement.clientWidth)
 
-  let scale = $state(
-    1 / NAV.length - LINE / 2 / document.documentElement.clientWidth,
+  // Why does it need the page size?
+  //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Because when we shrink the element with scale, the actual element does not
+  // change in size, so then it does not work in a grid as one would expect.
+  // So we read the size, and then manually assign a scaled width and height
+  // to the container so that it works on the grid
+
+  let pagesSizes = $state<{ [key: string]: { w: number; h: number } }>({})
+
+  let scale = $derived(1 / columns) // This is the base scale
+
+  let gap = 12
+  let clientWidthMinusGaps = $derived(viewportWidth - (columns + 1) * gap)
+  let scaleAdjustedForGap = $derived(
+    scale * (clientWidthMinusGaps / viewportWidth),
   )
 
-  function calculateScale() {
-    scale = 1 / NAV.length - LINE / 2 / document.documentElement.clientWidth
-  }
+  let isMeasureRender = $derived(Object.keys(pagesSizes).length === 0)
+
+  let testMode = true
 
   onMount(() => {
     calculatePageSizes()
-
-    // function isNetworkIdle() {
-    //   const entries = performance.getEntriesByType('resource')
-    //   const now = performance.now()
-
-    //   // Check for any recent network activity (in last ~300ms)
-    //   const active = entries.some((e) => now - e.startTime < 300)
-    //   return !active
-    // }
-
-    // async function waitForIdle(interval = 100, timeout = 10000) {
-    //   const start = performance.now()
-    //   while (performance.now() - start < timeout) {
-    //     if (isNetworkIdle()) return
-    //     await new Promise((r) => setTimeout(r, interval))
-    //   }
-    // }
   })
 
   function calculatePageSizes() {
-    calculateScale()
+    // calculateScale()
     container.querySelectorAll('[data-name]').forEach((c) => {
       const pageName = c.getAttribute('data-name')!
       pagesSizes[pageName] = {
+        // These values are not affected by scaling transformation
         w: c.clientWidth,
         h: c.clientHeight,
       }
     })
+
+    console.log(pagesSizes)
+  }
+
+  let isResizing = $state(false)
+  let resizingDebounce: any = null
+  function receiveResizingEvent(ev: UIEvent) {
+    console.log(document.documentElement.clientWidth, viewportWidth)
+
+    // Only changes in width matter
+    if (document.documentElement.clientWidth === viewportWidth) {
+      return
+    }
+
+    if (!isResizing) {
+      isResizing = true
+    }
+
+    clearTimeout(resizingDebounce)
+    resizingDebounce = setTimeout(() => {
+      endResizing()
+      isResizing = false
+    }, 150)
+  }
+
+  function endResizing() {
+    recalculatePageSizes()
   }
 
   function recalculatePageSizes() {
+    viewportWidth = document.documentElement.clientWidth
     pagesSizes = {}
     tick().then(calculatePageSizes)
   }
-
-  let isFirstRender = $derived(Object.keys(pagesSizes).length === 0)
 </script>
 
-<svelte:window onresize={recalculatePageSizes} />
+<svelte:window onresize={receiveResizingEvent} />
 
 <div
   class={[
-    'relative w-full',
+    'relative w-full overflow-hidden',
     {
-      'overflow-hidden h-0': isFirstRender,
-      'grid grid-cols-4 pl3': !isFirstRender,
+      'overflow-hidden': isMeasureRender && !testMode,
+      flex: !isMeasureRender,
     },
   ]}
   bind:this={container}
 >
-  {#each NAV as navColumn, i (i)}
-    <div
-      class={[
-        {
-          contents: isFirstRender,
-          'flex flex-col space-y-3 pt3': !isFirstRender,
-        },
-      ]}
-    >
+  {#each props.nav as navColumn, i (i)}
+    <div class="flex flex-col" style={`padding-top: ${gap}px;`}>
       {#each navColumn as pageName (pageName)}
         {@const Page = props.pages[pageName]}
         {@const size = pagesSizes[pageName]}
@@ -104,19 +126,27 @@
         <div
           class={[
             {
-              'absolute top-0 left-0': isFirstRender,
-              'relative overflow-hidden rounded-1 b b-white/80': !isFirstRender,
+              'fixed top-0 left-0': isMeasureRender,
+              'relative overflow-hidden rounded-1 b b-white/80 bg-white/10':
+                !isMeasureRender,
             },
           ]}
           style={size
-            ? `width: ${size.w * scale}px; height: ${size.h * scale}px;`
+            ? `margin-right: ${gap}px;
+              margin-bottom: ${gap}px;
+              ${i === 0 ? `margin-left: ${gap}px;` : ''}
+              width: ${size.w * scaleAdjustedForGap}px;
+              height: ${size.h * scaleAdjustedForGap}px;`
             : null}
         >
           <div
             data-name={pageName}
-            style={`transform: scale(${scale})`}
+            style={`width: ${viewportWidth}px; ${size ? `transform: scale(${scaleAdjustedForGap})` : ''}`}
             class={[
-              'pointer-events-none transform-origin-tl w-screen overflow-hidden',
+              'pointer-events-none transform-origin-tl overflow-hidden',
+              {
+                hidden: isResizing,
+              },
             ]}
           >
             <props.Container>

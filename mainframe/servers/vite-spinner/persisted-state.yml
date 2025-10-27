@@ -43,3 +43,7 @@ repos:
     started: true
     port: 19735
     accessibleFromLocalNetwork: false
+  agroeco:
+    started: true
+    port: 19736
+    accessibleFromLocalNetwork: false

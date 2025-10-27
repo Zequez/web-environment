@@ -36,13 +36,13 @@
   import Guarda from './Guarda.svelte'
   import DefaultContainer from './Container.svelte'
   import DefaultNavContainer from './NavContainer.svelte'
-  import type { HTMLAttributes } from 'svelte/elements'
   // import Editor from './Editor.svelte'
 
   const props: {
     title: string
     nav: string[][]
     favicon: string
+    socialIcon?: string
     navBg: string
     Guarda: Component
     Container?: Component
@@ -51,10 +51,15 @@
 
   type Page = {
     Component: Component
-    metadata: { title: string }
+    metadata: Metadata
   }
 
-  console.log('Somethin g to pages gstststtslob sts')
+  type Metadata = {
+    title?: string
+    description?: string
+  }
+
+  console.log('ss')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -71,7 +76,7 @@
 
   const rawPages = import.meta.glob('@@@/pages/*.svelte', {
     eager: true,
-  }) as { [key: string]: { default: Component; metadata: { title: string } } }
+  }) as { [key: string]: { default: Component; metadata: Metadata } }
 
   const pages = globImportToRecord(
     `../../repos/${__REPO__}/pages/`,
@@ -187,6 +192,12 @@
 <svelte:head>
   <link rel="icon" type="image/jpg" href={props.favicon} />
   <title>{currentPage.metadata?.title || props.title}</title>
+  {#if currentPage.metadata?.description}
+    <meta name="description" content={currentPage.metadata?.description} />
+  {/if}
+  {#if props.socialIcon}
+    <meta property="og:image" content={props.socialIcon} />
+  {/if}
 </svelte:head>
 
 <svelte:window

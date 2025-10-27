@@ -15,7 +15,7 @@
 }
 
 .doc p {
-  @apply mb6;
+  @apply mb6 tracking-wide;
 }
 
 .doc ul,
@@ -53,4 +53,8 @@
 .doc blockquote:before {
   content: '“';
   @apply absolute font-mono line-height-50% top-2 left-4 text-20 text-black/30 pointer-events-none;
+}
+
+.doc hr {
+  @apply pb6 b-black/10 dark:b-white/20;
 }

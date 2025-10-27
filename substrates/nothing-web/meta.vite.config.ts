@@ -9,9 +9,11 @@ export default defineSubstrateViteConfig((metaConfig) => {
       let pages = ['/']
       if (existsSync(pagesPath)) {
         readdirSync(pagesPath).forEach((file) => {
-          const pageName = file.replace(/\.svelte$/, '')
-          if (pageName !== 'index') {
-            pages.push(`/${pageName}`)
+          if (file.endsWith('.svelte')) {
+            const pageName = file.replace(/\.svelte$/, '')
+            if (pageName !== 'index') {
+              pages.push(`/${pageName}`)
+            }
           }
         })
       }

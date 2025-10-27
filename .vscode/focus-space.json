@@ -1,0 +1,1669 @@
+{
+  "version": "1.0.0",
+  "entries": [
+    {
+      "id": "focus-1761526914047-ted55prbi",
+      "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel",
+      "type": "folder",
+      "children": [
+        {
+          "id": "focus-1761526914053-1iejz48rc",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components",
+          "type": "folder",
+          "label": "components",
+          "children": [
+            {
+              "id": "focus-1761526914053-wg1uil79c",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/ChangingWord.svelte",
+              "type": "file",
+              "label": "ChangingWord.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/ChangingWord.svelte",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526914053-u0uzyxhmk",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/DarkToggle.svelte",
+              "type": "file",
+              "label": "DarkToggle.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/DarkToggle.svelte",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526914053-1udzag6vm",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/DocPage.svelte",
+              "type": "file",
+              "label": "DocPage.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/DocPage.svelte",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526914053-xxmvqctdq",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/Guarda.svelte",
+              "type": "file",
+              "label": "Guarda.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/Guarda.svelte",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526914053-2cdyc4m86",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/LangToggle.svelte",
+              "type": "file",
+              "label": "LangToggle.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/LangToggle.svelte",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526914053-zze9jh1zl",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/PM.svelte",
+              "type": "file",
+              "label": "PM.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/PM.svelte",
+                "order": 5
+              }
+            },
+            {
+              "id": "focus-1761526914053-wfnr0bu6k",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/components/StarrySky.svelte",
+              "type": "file",
+              "label": "StarrySky.svelte",
+              "metadata": {
+                "dateAdded": 1761526914053,
+                "relativePath": "components/StarrySky.svelte",
+                "order": 6
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526914053,
+            "relativePath": "components",
+            "order": 1
+          }
+        },
+        {
+          "id": "focus-1761526914057-kp4h691l7",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages",
+          "type": "folder",
+          "label": "pages",
+          "children": [
+            {
+              "id": "focus-1761526914140-lpaj3la9e",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/404.svelte",
+              "type": "file",
+              "label": "404.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/404.svelte",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526914140-5j38g8yfd",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/aprendimientos.svelte",
+              "type": "file",
+              "label": "aprendimientos.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/aprendimientos.svelte",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526914140-ql7q6rihl",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/birth-celestial-influences.svelte",
+              "type": "file",
+              "label": "birth-celestial-influences.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/birth-celestial-influences.svelte",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526914140-94mcbp49n",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/card.svelte",
+              "type": "file",
+              "label": "card.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/card.svelte",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526914140-1yoewe5p8",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/conversations.svelte",
+              "type": "file",
+              "label": "conversations.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/conversations.svelte",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526914140-k1o38ja6s",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/craft-gallery.svelte",
+              "type": "file",
+              "label": "craft-gallery.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/craft-gallery.svelte",
+                "order": 5
+              }
+            },
+            {
+              "id": "focus-1761526914140-38klwvmfv",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/distincionario.svelte",
+              "type": "file",
+              "label": "distincionario.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/distincionario.svelte",
+                "order": 6
+              }
+            },
+            {
+              "id": "focus-1761526914140-nbiddsov3",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/editor.svelte",
+              "type": "file",
+              "label": "editor.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/editor.svelte",
+                "order": 7
+              }
+            },
+            {
+              "id": "focus-1761526914140-pfebo1gbh",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/ehp.svelte",
+              "type": "file",
+              "label": "ehp.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/ehp.svelte",
+                "order": 8
+              }
+            },
+            {
+              "id": "focus-1761526914140-2cckp3ezd",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/etimologia-nueva.svelte",
+              "type": "file",
+              "label": "etimologia-nueva.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/etimologia-nueva.svelte",
+                "order": 9
+              }
+            },
+            {
+              "id": "focus-1761526914140-vg08zekjg",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/flowing-fund-gameworld.svelte",
+              "type": "file",
+              "label": "flowing-fund-gameworld.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/flowing-fund-gameworld.svelte",
+                "order": 10
+              }
+            },
+            {
+              "id": "focus-1761526914140-b3pmdd95n",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/flowing-fund.svelte",
+              "type": "file",
+              "label": "flowing-fund.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/flowing-fund.svelte",
+                "order": 11
+              }
+            },
+            {
+              "id": "focus-1761526914140-5a3b7cld5",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/grant-application.svelte",
+              "type": "file",
+              "label": "grant-application.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/grant-application.svelte",
+                "order": 12
+              }
+            },
+            {
+              "id": "focus-1761526914140-islxt0c4q",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/index.svelte",
+              "type": "file",
+              "label": "index.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/index.svelte",
+                "order": 13
+              }
+            },
+            {
+              "id": "focus-1761526914140-inhb5fvb5",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/land-base.svelte",
+              "type": "file",
+              "label": "land-base.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/land-base.svelte",
+                "order": 14
+              }
+            },
+            {
+              "id": "focus-1761526914140-35p97vyot",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/malabares.svelte",
+              "type": "file",
+              "label": "malabares.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/malabares.svelte",
+                "order": 15
+              }
+            },
+            {
+              "id": "focus-1761526914140-q5d923eyi",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/material-lovers.svelte",
+              "type": "file",
+              "label": "material-lovers.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/material-lovers.svelte",
+                "order": 16
+              }
+            },
+            {
+              "id": "focus-1761526914140-u6gy0pi0d",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/me-and-my-jobs.svelte",
+              "type": "file",
+              "label": "me-and-my-jobs.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/me-and-my-jobs.svelte",
+                "order": 17
+              }
+            },
+            {
+              "id": "focus-1761526914140-k8841k0h9",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/on-my-workbench.svelte",
+              "type": "file",
+              "label": "on-my-workbench.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/on-my-workbench.svelte",
+                "order": 18
+              }
+            },
+            {
+              "id": "focus-1761526914140-894y45t60",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/paper-gallery.svelte",
+              "type": "file",
+              "label": "paper-gallery.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/paper-gallery.svelte",
+                "order": 19
+              }
+            },
+            {
+              "id": "focus-1761526914140-lepot108x",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/servicio-web.svelte",
+              "type": "file",
+              "label": "servicio-web.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/servicio-web.svelte",
+                "order": 20
+              }
+            },
+            {
+              "id": "focus-1761526914140-mrp3dkqhy",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/sistema-mogotes.svelte",
+              "type": "file",
+              "label": "sistema-mogotes.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/sistema-mogotes.svelte",
+                "order": 21
+              }
+            },
+            {
+              "id": "focus-1761526914140-urle6gk0f",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/sitios-web.svelte",
+              "type": "file",
+              "label": "sitios-web.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/sitios-web.svelte",
+                "order": 22
+              }
+            },
+            {
+              "id": "focus-1761526914140-1l8mr8vdx",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/sostenedor-de-espacio.svelte",
+              "type": "file",
+              "label": "sostenedor-de-espacio.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/sostenedor-de-espacio.svelte",
+                "order": 23
+              }
+            },
+            {
+              "id": "focus-1761526914140-smoo02t75",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/team-report-letters.svelte",
+              "type": "file",
+              "label": "team-report-letters.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/team-report-letters.svelte",
+                "order": 24
+              }
+            },
+            {
+              "id": "focus-1761526914140-3dhud0spf",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/trainings-goals.svelte",
+              "type": "file",
+              "label": "trainings-goals.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/trainings-goals.svelte",
+                "order": 25
+              }
+            },
+            {
+              "id": "focus-1761526914140-h2yt1kcap",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/trainings.svelte",
+              "type": "file",
+              "label": "trainings.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/trainings.svelte",
+                "order": 26
+              }
+            },
+            {
+              "id": "focus-1761526914140-53yhcrveb",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/web-gallery.svelte",
+              "type": "file",
+              "label": "web-gallery.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/web-gallery.svelte",
+                "order": 27
+              }
+            },
+            {
+              "id": "focus-1761526914140-zuciv6htr",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/web-waitlist.svelte",
+              "type": "file",
+              "label": "web-waitlist.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/web-waitlist.svelte",
+                "order": 28
+              }
+            },
+            {
+              "id": "focus-1761526914140-2hab9riyf",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/written.svelte",
+              "type": "file",
+              "label": "written.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/written.svelte",
+                "order": 29
+              }
+            },
+            {
+              "id": "focus-1761526914140-2g9rtsfq4",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/pages/youtube.svelte",
+              "type": "file",
+              "label": "youtube.svelte",
+              "metadata": {
+                "dateAdded": 1761526914140,
+                "relativePath": "pages/youtube.svelte",
+                "order": 30
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526914057,
+            "relativePath": "pages",
+            "order": 3
+          }
+        },
+        {
+          "id": "focus-1761526914142-vo575orx0",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos",
+          "type": "folder",
+          "label": "photos",
+          "children": [
+            {
+              "id": "focus-1761526914143-gazyqhv2g",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/celestial-influences",
+              "type": "folder",
+              "label": "celestial-influences",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/celestial-influences",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526914143-m0tcw48ll",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/composicion-macro",
+              "type": "folder",
+              "label": "composicion-macro",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/composicion-macro",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526914143-pkrxzu5sq",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/faces",
+              "type": "folder",
+              "label": "faces",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/faces",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526914143-9gvjcn37e",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/fliers",
+              "type": "folder",
+              "label": "fliers",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/fliers",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526914143-ddw4j0kgi",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/land-base",
+              "type": "folder",
+              "label": "land-base",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/land-base",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526914143-bsakv4kyz",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/material-lovers",
+              "type": "folder",
+              "label": "material-lovers",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/material-lovers",
+                "order": 5
+              }
+            },
+            {
+              "id": "focus-1761526914143-zvc96gnk3",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/servicio-web",
+              "type": "folder",
+              "label": "servicio-web",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/servicio-web",
+                "order": 6
+              }
+            },
+            {
+              "id": "focus-1761526914143-6281otp3h",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/web-gallery",
+              "type": "folder",
+              "label": "web-gallery",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/web-gallery",
+                "order": 7
+              }
+            },
+            {
+              "id": "focus-1761526914143-ilrfo86c2",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/.DS_Store",
+              "type": "file",
+              "label": ".DS_Store",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/.DS_Store",
+                "order": 8
+              }
+            },
+            {
+              "id": "focus-1761526914143-c7zfbynjo",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/archiarchy.jpg",
+              "type": "file",
+              "label": "archiarchy.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/archiarchy.jpg",
+                "order": 9
+              }
+            },
+            {
+              "id": "focus-1761526914143-l750k02xg",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/bg.svg",
+              "type": "file",
+              "label": "bg.svg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/bg.svg",
+                "order": 10
+              }
+            },
+            {
+              "id": "focus-1761526914143-ukuu6880z",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/distinctionary.png",
+              "type": "file",
+              "label": "distinctionary.png",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/distinctionary.png",
+                "order": 11
+              }
+            },
+            {
+              "id": "focus-1761526914143-3chreayd3",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/ezequiel.jpg",
+              "type": "file",
+              "label": "ezequiel.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/ezequiel.jpg",
+                "order": 12
+              }
+            },
+            {
+              "id": "focus-1761526914143-j257m4clp",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/favicon.jpg",
+              "type": "file",
+              "label": "favicon.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/favicon.jpg",
+                "order": 13
+              }
+            },
+            {
+              "id": "focus-1761526914143-jlvi0oc2z",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/flowing-fund.png",
+              "type": "file",
+              "label": "flowing-fund.png",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/flowing-fund.png",
+                "order": 14
+              }
+            },
+            {
+              "id": "focus-1761526914143-i26xwxzxv",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/gaia.jpg",
+              "type": "file",
+              "label": "gaia.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/gaia.jpg",
+                "order": 15
+              }
+            },
+            {
+              "id": "focus-1761526914143-fawzyz7o3",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/guarda.png",
+              "type": "file",
+              "label": "guarda.png",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/guarda.png",
+                "order": 16
+              }
+            },
+            {
+              "id": "focus-1761526914143-ogmypcwy1",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/guarda.svg",
+              "type": "file",
+              "label": "guarda.svg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/guarda.svg",
+                "order": 17
+              }
+            },
+            {
+              "id": "focus-1761526914143-mezz35co1",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/mini-garden.jpg",
+              "type": "file",
+              "label": "mini-garden.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/mini-garden.jpg",
+                "order": 18
+              }
+            },
+            {
+              "id": "focus-1761526914143-vpvb2gdhx",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/noise-original.png",
+              "type": "file",
+              "label": "noise-original.png",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/noise-original.png",
+                "order": 19
+              }
+            },
+            {
+              "id": "focus-1761526914143-7b6l5ubtr",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/noise.png",
+              "type": "file",
+              "label": "noise.png",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/noise.png",
+                "order": 20
+              }
+            },
+            {
+              "id": "focus-1761526914143-27jt1y1ke",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/photos/pelotas.jpg",
+              "type": "file",
+              "label": "pelotas.jpg",
+              "metadata": {
+                "dateAdded": 1761526914143,
+                "relativePath": "photos/pelotas.jpg",
+                "order": 21
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526914142,
+            "relativePath": "photos",
+            "order": 4
+          }
+        },
+        {
+          "id": "focus-1761526914144-2bif3t8of",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/utils",
+          "type": "folder",
+          "label": "utils",
+          "children": [],
+          "metadata": {
+            "dateAdded": 1761526914144,
+            "relativePath": "utils",
+            "order": 5
+          }
+        },
+        {
+          "id": "focus-1761526914146-5qdq46t13",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/workers",
+          "type": "folder",
+          "label": "workers",
+          "children": [
+            {
+              "id": "focus-1761526914147-wx0xcm2eg",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/workers/api.ts",
+              "type": "file",
+              "label": "api.ts",
+              "metadata": {
+                "dateAdded": 1761526914147,
+                "relativePath": "workers/api.ts",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526914147-dbva5re30",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/workers/publish.ts",
+              "type": "file",
+              "label": "publish.ts",
+              "metadata": {
+                "dateAdded": 1761526914147,
+                "relativePath": "workers/publish.ts",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526914147-0evt3j2r7",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/workers/run.ts",
+              "type": "file",
+              "label": "run.ts",
+              "metadata": {
+                "dateAdded": 1761526914147,
+                "relativePath": "workers/run.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526914147-gr7lrj0z5",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/workers/sync.ts",
+              "type": "file",
+              "label": "sync.ts",
+              "metadata": {
+                "dateAdded": 1761526914147,
+                "relativePath": "workers/sync.ts",
+                "order": 3
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526914146,
+            "relativePath": "workers",
+            "order": 6
+          }
+        },
+        {
+          "id": "focus-1761526914151-oysq0jkhd",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/.gitignore",
+          "type": "file",
+          "label": ".gitignore",
+          "metadata": {
+            "dateAdded": 1761526914151,
+            "relativePath": ".gitignore",
+            "order": 8
+          }
+        },
+        {
+          "id": "focus-1761526914152-krikurhti",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/App.svelte",
+          "type": "file",
+          "label": "App.svelte",
+          "metadata": {
+            "dateAdded": 1761526914152,
+            "relativePath": "App.svelte",
+            "order": 9
+          }
+        },
+        {
+          "id": "focus-1761526914154-mirqfe9vq",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/auto-import.ts",
+          "type": "file",
+          "label": "auto-import.ts",
+          "metadata": {
+            "dateAdded": 1761526914154,
+            "relativePath": "auto-import.ts",
+            "order": 10
+          }
+        },
+        {
+          "id": "focus-1761526914156-t1xcuwdgr",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/auto-imports.d.ts",
+          "type": "file",
+          "label": "auto-imports.d.ts",
+          "metadata": {
+            "dateAdded": 1761526914156,
+            "relativePath": "auto-imports.d.ts",
+            "order": 11
+          }
+        },
+        {
+          "id": "focus-1761526914159-h1c8jtu28",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/Editor.svelte",
+          "type": "file",
+          "label": "Editor.svelte",
+          "metadata": {
+            "dateAdded": 1761526914159,
+            "relativePath": "Editor.svelte",
+            "order": 13
+          }
+        },
+        {
+          "id": "focus-1761526914161-yvksxxq3w",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/repos/ezequiel/wenv.yml",
+          "type": "file",
+          "label": "wenv.yml",
+          "metadata": {
+            "dateAdded": 1761526914161,
+            "relativePath": "wenv.yml",
+            "order": 14
+          }
+        }
+      ],
+      "metadata": {
+        "dateAdded": 1761526914047,
+        "relativePath": "",
+        "order": 0
+      }
+    },
+    {
+      "id": "focus-1761526925677-zd4z5o8nb",
+      "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web",
+      "type": "folder",
+      "children": [
+        {
+          "id": "focus-1761526925680-9qs5k7a4v",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components",
+          "type": "folder",
+          "label": "components",
+          "children": [
+            {
+              "id": "focus-1761526925681-69lf2mvkn",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/App.svelte",
+              "type": "file",
+              "label": "App.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/App.svelte",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526925681-4dzyfzr0k",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/Container.svelte",
+              "type": "file",
+              "label": "Container.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/Container.svelte",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526925681-qqarqb0fo",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/DarkToggle.svelte",
+              "type": "file",
+              "label": "DarkToggle.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/DarkToggle.svelte",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526925681-4e9m3bgmu",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/Guarda.svelte",
+              "type": "file",
+              "label": "Guarda.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/Guarda.svelte",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526925681-it8hd2kut",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/NavContainer.svelte",
+              "type": "file",
+              "label": "NavContainer.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/NavContainer.svelte",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526925681-1w3hnoqnq",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/OptimizedImg.svelte",
+              "type": "file",
+              "label": "OptimizedImg.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/OptimizedImg.svelte",
+                "order": 5
+              }
+            },
+            {
+              "id": "focus-1761526925681-ba16a10fw",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/components/PagesList.svelte",
+              "type": "file",
+              "label": "PagesList.svelte",
+              "metadata": {
+                "dateAdded": 1761526925681,
+                "relativePath": "substrates/toroid-web/components/PagesList.svelte",
+                "order": 6
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526925680,
+            "relativePath": "substrates/toroid-web/components",
+            "order": 0
+          }
+        },
+        {
+          "id": "focus-1761526925687-co83bfhp4",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/index.html",
+          "type": "file",
+          "label": "index.html",
+          "metadata": {
+            "dateAdded": 1761526925687,
+            "relativePath": "substrates/toroid-web/index.html",
+            "order": 2
+          }
+        },
+        {
+          "id": "focus-1761526925689-ewjqtrhq5",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/main.ts",
+          "type": "file",
+          "label": "main.ts",
+          "metadata": {
+            "dateAdded": 1761526925689,
+            "relativePath": "substrates/toroid-web/main.ts",
+            "order": 3
+          }
+        },
+        {
+          "id": "focus-1761526925693-bbz0xubby",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/meta.vite.config.ts",
+          "type": "file",
+          "label": "meta.vite.config.ts",
+          "metadata": {
+            "dateAdded": 1761526925693,
+            "relativePath": "substrates/toroid-web/meta.vite.config.ts",
+            "order": 4
+          }
+        },
+        {
+          "id": "focus-1761526925695-rf7ackkox",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/substrates/toroid-web/prerender.ts",
+          "type": "file",
+          "label": "prerender.ts",
+          "metadata": {
+            "dateAdded": 1761526925695,
+            "relativePath": "substrates/toroid-web/prerender.ts",
+            "order": 5
+          }
+        }
+      ],
+      "metadata": {
+        "dateAdded": 1761526925677,
+        "relativePath": "substrates/toroid-web",
+        "order": 119
+      }
+    },
+    {
+      "id": "focus-1761526932834-ypygqtwcv",
+      "uriString": "file:///Users/zequez/Sync/projects/web-environment/center",
+      "type": "folder",
+      "children": [
+        {
+          "id": "focus-1761526932836-jq20io66x",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas",
+          "type": "folder",
+          "label": "canvas",
+          "children": [
+            {
+              "id": "focus-1761526932837-qacfum4sm",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/BlobDirectionIndicator.svelte",
+              "type": "file",
+              "label": "BlobDirectionIndicator.svelte",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/BlobDirectionIndicator.svelte",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526932837-vh2pmpiok",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/canvas-store.svelte.ts",
+              "type": "file",
+              "label": "canvas-store.svelte.ts",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/canvas-store.svelte.ts",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526932837-cy3gjtjyk",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/Canvas.svelte",
+              "type": "file",
+              "label": "Canvas.svelte",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/Canvas.svelte",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526932837-jcdoiydiq",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/cavitation-calc.ts",
+              "type": "file",
+              "label": "cavitation-calc.ts",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/cavitation-calc.ts",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526932837-83ms2lowu",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/EdgeScrollFrame.svelte",
+              "type": "file",
+              "label": "EdgeScrollFrame.svelte",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/EdgeScrollFrame.svelte",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526932837-sdt9iaffe",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/index.ts",
+              "type": "file",
+              "label": "index.ts",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/index.ts",
+                "order": 5
+              }
+            },
+            {
+              "id": "focus-1761526932837-c74h7lgzw",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/MiniMap.svelte",
+              "type": "file",
+              "label": "MiniMap.svelte",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/MiniMap.svelte",
+                "order": 6
+              }
+            },
+            {
+              "id": "focus-1761526932837-eznaeqjy9",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/canvas/Pin.svelte",
+              "type": "file",
+              "label": "Pin.svelte",
+              "metadata": {
+                "dateAdded": 1761526932837,
+                "relativePath": "center/canvas/Pin.svelte",
+                "order": 7
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526932836,
+            "relativePath": "center/canvas",
+            "order": 0
+          }
+        },
+        {
+          "id": "focus-1761526932838-l6foenhq2",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/components",
+          "type": "folder",
+          "label": "components",
+          "children": [
+            {
+              "id": "focus-1761526932839-rjcdxbmsu",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/components/Lang.svelte",
+              "type": "file",
+              "label": "Lang.svelte",
+              "metadata": {
+                "dateAdded": 1761526932839,
+                "relativePath": "center/components/Lang.svelte",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526932839-ses6cs0fe",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/components/Markdown.svelte",
+              "type": "file",
+              "label": "Markdown.svelte",
+              "metadata": {
+                "dateAdded": 1761526932839,
+                "relativePath": "center/components/Markdown.svelte",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526932839-b4a05i3l8",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/components/VerticalRhythmLines.svelte",
+              "type": "file",
+              "label": "VerticalRhythmLines.svelte",
+              "metadata": {
+                "dateAdded": 1761526932839,
+                "relativePath": "center/components/VerticalRhythmLines.svelte",
+                "order": 2
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526932838,
+            "relativePath": "center/components",
+            "order": 1
+          }
+        },
+        {
+          "id": "focus-1761526932840-r3foh5baz",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/experimental",
+          "type": "folder",
+          "label": "experimental",
+          "children": [
+            {
+              "id": "focus-1761526932841-mf1rweg8d",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/experimental/yaml2svelte",
+              "type": "folder",
+              "label": "yaml2svelte",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526932841,
+                "relativePath": "center/experimental/yaml2svelte",
+                "order": 0
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526932840,
+            "relativePath": "center/experimental",
+            "order": 2
+          }
+        },
+        {
+          "id": "focus-1761526932842-o4p2zmjwt",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative",
+          "type": "folder",
+          "label": "generative",
+          "children": [
+            {
+              "id": "focus-1761526932843-oz71a7q2b",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative/Clouds.ts",
+              "type": "file",
+              "label": "Clouds.ts",
+              "metadata": {
+                "dateAdded": 1761526932843,
+                "relativePath": "center/generative/Clouds.ts",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526932843-iin7z2cgv",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative/Draw.svelte",
+              "type": "file",
+              "label": "Draw.svelte",
+              "metadata": {
+                "dateAdded": 1761526932843,
+                "relativePath": "center/generative/Draw.svelte",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526932843-td0hfzba0",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative/Grass.ts",
+              "type": "file",
+              "label": "Grass.ts",
+              "metadata": {
+                "dateAdded": 1761526932843,
+                "relativePath": "center/generative/Grass.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526932843-udzt15g2z",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative/StarrySky.ts",
+              "type": "file",
+              "label": "StarrySky.ts",
+              "metadata": {
+                "dateAdded": 1761526932843,
+                "relativePath": "center/generative/StarrySky.ts",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526932843-ouw6mw02y",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/generative/UnderGrass.ts",
+              "type": "file",
+              "label": "UnderGrass.ts",
+              "metadata": {
+                "dateAdded": 1761526932843,
+                "relativePath": "center/generative/UnderGrass.ts",
+                "order": 4
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526932842,
+            "relativePath": "center/generative",
+            "order": 3
+          }
+        },
+        {
+          "id": "focus-1761526932844-mqv6ptjbw",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils",
+          "type": "folder",
+          "label": "utils",
+          "children": [
+            {
+              "id": "focus-1761526932870-k11mao7sh",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils/browser.ts",
+              "type": "file",
+              "label": "browser.ts",
+              "metadata": {
+                "dateAdded": 1761526932870,
+                "relativePath": "center/utils/browser.ts",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526932870-drtotlo5z",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils/index.ts",
+              "type": "file",
+              "label": "index.ts",
+              "metadata": {
+                "dateAdded": 1761526932870,
+                "relativePath": "center/utils/index.ts",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526932870-375nbm904",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils/neutral.ts",
+              "type": "file",
+              "label": "neutral.ts",
+              "metadata": {
+                "dateAdded": 1761526932870,
+                "relativePath": "center/utils/neutral.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526932870-gyfqi7byo",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils/runes.svelte.ts",
+              "type": "file",
+              "label": "runes.svelte.ts",
+              "metadata": {
+                "dateAdded": 1761526932870,
+                "relativePath": "center/utils/runes.svelte.ts",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526932870-2te1i07e2",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/utils/system.ts",
+              "type": "file",
+              "label": "system.ts",
+              "metadata": {
+                "dateAdded": 1761526932870,
+                "relativePath": "center/utils/system.ts",
+                "order": 4
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526932844,
+            "relativePath": "center/utils",
+            "order": 4
+          }
+        },
+        {
+          "id": "focus-1761526932874-ehq5q4znz",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/contexted-store.ts",
+          "type": "file",
+          "label": "contexted-store.ts",
+          "metadata": {
+            "dateAdded": 1761526932874,
+            "relativePath": "center/contexted-store.ts",
+            "order": 6
+          }
+        },
+        {
+          "id": "focus-1761526932875-ltcr6ltca",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/doc.css",
+          "type": "file",
+          "label": "doc.css",
+          "metadata": {
+            "dateAdded": 1761526932875,
+            "relativePath": "center/doc.css",
+            "order": 7
+          }
+        },
+        {
+          "id": "focus-1761526932876-olb3qtrif",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/enes.svelte.ts",
+          "type": "file",
+          "label": "enes.svelte.ts",
+          "metadata": {
+            "dateAdded": 1761526932876,
+            "relativePath": "center/enes.svelte.ts",
+            "order": 8
+          }
+        },
+        {
+          "id": "focus-1761526932877-sljm43jgi",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/ports.ts",
+          "type": "file",
+          "label": "ports.ts",
+          "metadata": {
+            "dateAdded": 1761526932877,
+            "relativePath": "center/ports.ts",
+            "order": 9
+          }
+        },
+        {
+          "id": "focus-1761526932879-laismxbou",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/ssr-mock.ts",
+          "type": "file",
+          "label": "ssr-mock.ts",
+          "metadata": {
+            "dateAdded": 1761526932879,
+            "relativePath": "center/ssr-mock.ts",
+            "order": 10
+          }
+        },
+        {
+          "id": "focus-1761526932880-ufpij5gd8",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/center/wenv-config.ts",
+          "type": "file",
+          "label": "wenv-config.ts",
+          "metadata": {
+            "dateAdded": 1761526932880,
+            "relativePath": "center/wenv-config.ts",
+            "order": 11
+          }
+        }
+      ],
+      "metadata": {
+        "dateAdded": 1761526932834,
+        "relativePath": "center",
+        "order": 134
+      }
+    },
+    {
+      "id": "focus-1761526936908-md03fsu9d",
+      "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe",
+      "type": "folder",
+      "children": [
+        {
+          "id": "focus-1761526936910-ik2vwv3t2",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/bin",
+          "type": "folder",
+          "label": "bin",
+          "children": [
+            {
+              "id": "focus-1761526936911-1x78rlykp",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/bin/wenv.ts",
+              "type": "file",
+              "label": "wenv.ts",
+              "metadata": {
+                "dateAdded": 1761526936911,
+                "relativePath": "mainframe/bin/wenv.ts",
+                "order": 0
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526936910,
+            "relativePath": "mainframe/bin",
+            "order": 0
+          }
+        },
+        {
+          "id": "focus-1761526936912-b64td081c",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron",
+          "type": "folder",
+          "label": "electron",
+          "children": [
+            {
+              "id": "focus-1761526936913-7wdfz0oi4",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/dist",
+              "type": "folder",
+              "label": "dist",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/dist",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526936913-5qkofhp7s",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/config.ts",
+              "type": "file",
+              "label": "config.ts",
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/config.ts",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526936913-mfk0jf83n",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/main.ts",
+              "type": "file",
+              "label": "main.ts",
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/main.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526936913-yncmqlvsa",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/preload.ts",
+              "type": "file",
+              "label": "preload.ts",
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/preload.ts",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526936913-ybjjcn6zx",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/start.ts",
+              "type": "file",
+              "label": "start.ts",
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/start.ts",
+                "order": 4
+              }
+            },
+            {
+              "id": "focus-1761526936913-ol34ahfa1",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/electron/vite.config.ts",
+              "type": "file",
+              "label": "vite.config.ts",
+              "metadata": {
+                "dateAdded": 1761526936913,
+                "relativePath": "mainframe/electron/vite.config.ts",
+                "order": 5
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526936912,
+            "relativePath": "mainframe/electron",
+            "order": 1
+          }
+        },
+        {
+          "id": "focus-1761526936914-4f2kruz5m",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers",
+          "type": "folder",
+          "label": "servers",
+          "children": [
+            {
+              "id": "focus-1761526936915-yafius4yn",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers/git-server",
+              "type": "folder",
+              "label": "git-server",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526936915,
+                "relativePath": "mainframe/servers/git-server",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526936915-z5tqpmhm1",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers/vite-spinner",
+              "type": "folder",
+              "label": "vite-spinner",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526936915,
+                "relativePath": "mainframe/servers/vite-spinner",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526936915-8hk0a4nlo",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers/files-server.ts",
+              "type": "file",
+              "label": "files-server.ts",
+              "metadata": {
+                "dateAdded": 1761526936915,
+                "relativePath": "mainframe/servers/files-server.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526936915-eecfszyy0",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers/mainframe-vite.ts",
+              "type": "file",
+              "label": "mainframe-vite.ts",
+              "metadata": {
+                "dateAdded": 1761526936915,
+                "relativePath": "mainframe/servers/mainframe-vite.ts",
+                "order": 3
+              }
+            },
+            {
+              "id": "focus-1761526936915-tpi3120x8",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/servers/publishing-server.ts",
+              "type": "file",
+              "label": "publishing-server.ts",
+              "metadata": {
+                "dateAdded": 1761526936915,
+                "relativePath": "mainframe/servers/publishing-server.ts",
+                "order": 4
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526936914,
+            "relativePath": "mainframe/servers",
+            "order": 2
+          }
+        },
+        {
+          "id": "focus-1761526936915-97vh3n8bi",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/ui",
+          "type": "folder",
+          "label": "ui",
+          "children": [
+            {
+              "id": "focus-1761526936916-0jtuaq3i1",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/ui/components",
+              "type": "folder",
+              "label": "components",
+              "children": [],
+              "metadata": {
+                "dateAdded": 1761526936916,
+                "relativePath": "mainframe/ui/components",
+                "order": 0
+              }
+            },
+            {
+              "id": "focus-1761526936916-0aoauraxa",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/ui/index.html",
+              "type": "file",
+              "label": "index.html",
+              "metadata": {
+                "dateAdded": 1761526936916,
+                "relativePath": "mainframe/ui/index.html",
+                "order": 1
+              }
+            },
+            {
+              "id": "focus-1761526936916-pnr4igng4",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/ui/main.ts",
+              "type": "file",
+              "label": "main.ts",
+              "metadata": {
+                "dateAdded": 1761526936916,
+                "relativePath": "mainframe/ui/main.ts",
+                "order": 2
+              }
+            },
+            {
+              "id": "focus-1761526936916-sqa2exi5z",
+              "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/ui/vite.config.gen.ts",
+              "type": "file",
+              "label": "vite.config.gen.ts",
+              "metadata": {
+                "dateAdded": 1761526936916,
+                "relativePath": "mainframe/ui/vite.config.gen.ts",
+                "order": 3
+              }
+            }
+          ],
+          "metadata": {
+            "dateAdded": 1761526936915,
+            "relativePath": "mainframe/ui",
+            "order": 3
+          }
+        },
+        {
+          "id": "focus-1761526936918-4cztd2dqf",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/basic-websocket.ts",
+          "type": "file",
+          "label": "basic-websocket.ts",
+          "metadata": {
+            "dateAdded": 1761526936918,
+            "relativePath": "mainframe/basic-websocket.ts",
+            "order": 4
+          }
+        },
+        {
+          "id": "focus-1761526936919-2mpfl4cd6",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/paths.ts",
+          "type": "file",
+          "label": "paths.ts",
+          "metadata": {
+            "dateAdded": 1761526936919,
+            "relativePath": "mainframe/paths.ts",
+            "order": 5
+          }
+        },
+        {
+          "id": "focus-1761526936922-1szulv44q",
+          "uriString": "file:///Users/zequez/Sync/projects/web-environment/mainframe/run-watch-process.ts",
+          "type": "file",
+          "label": "run-watch-process.ts",
+          "metadata": {
+            "dateAdded": 1761526936922,
+            "relativePath": "mainframe/run-watch-process.ts",
+            "order": 6
+          }
+        }
+      ],
+      "metadata": {
+        "dateAdded": 1761526936908,
+        "relativePath": "mainframe",
+        "order": 169
+      }
+    }
+  ],
+  "lastModified": 1761526991592
+}
