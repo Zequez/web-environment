@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, tick, type Component, setContext } from 'svelte'
+  import SlotSentinel from './SlotSentinel.svelte'
 
   const props: {
     pages: Record<string, { Component: Component }>
@@ -9,6 +10,7 @@
     Container: Component
   } = $props()
 
+  // Check if all pages exist
   for (let nav of props.nav) {
     for (let page of nav) {
       if (!props.pages[page]) {
@@ -17,8 +19,16 @@
     }
   }
 
-  document.body.classList.add('overflow-y-scroll')
+  setContext('preview-page-mode', true)
+  let container: HTMLDivElement
+  let columns = $derived(props.nav.length)
 
+  // Make sure the scroll is always visible otherwise the page size calcualtions will be off
+  document.body.classList.add('overflow-y-scroll')
+  let viewportWidth = $state(document.documentElement.clientWidth)
+
+  // Get pages that are not shown on the navigation
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   let flatNavPagesList = $derived(props.nav.flat())
 
   let otherPages = $derived.by(() => {
@@ -27,15 +37,10 @@
     )
   })
 
-  setContext('preview-page-mode', true)
-
-  let container: HTMLDivElement
-
-  let columns = $derived(props.nav.length)
-  let viewportWidth = $state(document.documentElement.clientWidth)
+  // Page sizing and scaling
+  // ━━━━━━━━━━━━━━━━━━━━━━━
 
   // Why does it need the page size?
-  //━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // Because when we shrink the element with scale, the actual element does not
   // change in size, so then it does not work in a grid as one would expect.
   // So we read the size, and then manually assign a scaled width and height
@@ -51,16 +56,13 @@
     scale * (clientWidthMinusGaps / viewportWidth),
   )
 
-  let isMeasureRender = $derived(Object.keys(pagesSizes).length === 0)
-
-  let testMode = true
+  let pageSizeTestMode = false
 
   onMount(() => {
     calculatePageSizes()
   })
 
   function calculatePageSizes() {
-    // calculateScale()
     container.querySelectorAll('[data-name]').forEach((c) => {
       const pageName = c.getAttribute('data-name')!
       pagesSizes[pageName] = {
@@ -69,15 +71,14 @@
         h: c.clientHeight,
       }
     })
-
-    console.log(pagesSizes)
   }
+
+  // Resizing handling
+  // ━━━━━━━━━━━━━━━━━
 
   let isResizing = $state(false)
   let resizingDebounce: any = null
   function receiveResizingEvent(ev: UIEvent) {
-    console.log(document.documentElement.clientWidth, viewportWidth)
-
     // Only changes in width matter
     if (document.documentElement.clientWidth === viewportWidth) {
       return
@@ -88,53 +89,97 @@
     }
 
     clearTimeout(resizingDebounce)
-    resizingDebounce = setTimeout(() => {
-      endResizing()
-      isResizing = false
-    }, 150)
+    resizingDebounce = setTimeout(endResizing, 150)
   }
 
   function endResizing() {
-    recalculatePageSizes()
-  }
-
-  function recalculatePageSizes() {
+    isResizing = false
     viewportWidth = document.documentElement.clientWidth
     pagesSizes = {}
     tick().then(calculatePageSizes)
   }
+
+  // Progressive Pages Rendering by Neccesity
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  let navToRender = $state<string[][]>(props.nav.map(() => []))
+
+  // onMount(() => {
+  //   checkNavNecessity()
+  // })
+
+  let slotsRenderNecessity = $state(props.nav.map(() => false))
+
+  function receiveSlotSentinelEnterView(column: number) {
+    slotsRenderNecessity[column] = true
+    necessityChange()
+  }
+
+  function receiveSlotSentinelLeaveView(column: number) {
+    slotsRenderNecessity[column] = false
+    necessityChange()
+  }
+
+  let neccesityCheckDebounce: any = null
+  function necessityChange() {
+    clearTimeout(neccesityCheckDebounce)
+    neccesityCheckDebounce = setTimeout(checkNavNecessity, 100)
+  }
+
+  function checkNavNecessity() {
+    let pageAdded = false
+    for (let i = 0; i < slotsRenderNecessity.length; i++) {
+      if (slotsRenderNecessity[i]) {
+        // console.log(`Column ${i} needs page`)
+        let currentlyRendered = navToRender[i].length
+        // console.log(`There are ${currentlyRendered} pages rendered`)
+        if (props.nav[i].length > currentlyRendered) {
+          // console.log(`Adding page ${props.nav[i][currentlyRendered]}`)
+          navToRender[i].push(props.nav[i][currentlyRendered])
+          pageAdded = true
+        }
+      }
+    }
+
+    if (pageAdded) {
+      tick().then(calculatePageSizes)
+      setTimeout(() => {
+        checkNavNecessity()
+      })
+    }
+  }
+
+  // $inspect(slotsRenderNecessity)
 </script>
 
 <svelte:window onresize={receiveResizingEvent} />
 
 <div
-  class={[
-    'relative w-full overflow-hidden',
-    {
-      'overflow-hidden': isMeasureRender && !testMode,
-      flex: !isMeasureRender,
-    },
-  ]}
+  class={['relative w-full overflow-hidden flex']}
+  style={`padding: 0 ${gap / 2}px;`}
   bind:this={container}
 >
-  {#each props.nav as navColumn, i (i)}
-    <div class="flex flex-col" style={`padding-top: ${gap}px;`}>
+  {#each navToRender as navColumn, i (i)}
+    <div
+      class="flex flex-col"
+      style={`padding-top: ${gap}px; padding-left: ${gap / 2}px; padding-right: ${gap / 2}px`}
+    >
       {#each navColumn as pageName (pageName)}
         {@const Page = props.pages[pageName]}
         {@const size = pagesSizes[pageName]}
+        {@const measureRender = !size}
 
         <div
           class={[
+            'transition-opacity transition-duration-1000',
             {
-              'fixed top-0 left-0': isMeasureRender,
-              'relative overflow-hidden rounded-1 b b-white/80 bg-white/10':
-                !isMeasureRender,
+              'fixed top-0 left-0 opacity-0': measureRender,
+              'relative overflow-hidden rounded-1 b b-white/80 bg-white/10 opacity-100':
+                !measureRender,
             },
           ]}
           style={size
-            ? `margin-right: ${gap}px;
-              margin-bottom: ${gap}px;
-              ${i === 0 ? `margin-left: ${gap}px;` : ''}
+            ? `margin-bottom: ${gap}px;
               width: ${size.w * scaleAdjustedForGap}px;
               height: ${size.h * scaleAdjustedForGap}px;`
             : null}
@@ -165,6 +210,18 @@
           >
         </div>
       {/each}
+      {#if navToRender[i].length < props.nav[i].length}
+        <div
+          style={`
+          margin-bottom: ${gap}px;
+          width: ${viewportWidth * scaleAdjustedForGap}px;`}
+        >
+          <SlotSentinel
+            onEnterView={receiveSlotSentinelEnterView.bind(null, i)}
+            onLeaveView={receiveSlotSentinelLeaveView.bind(null, i)}
+          />
+        </div>
+      {/if}
     </div>
   {/each}
 </div>

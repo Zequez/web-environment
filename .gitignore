@@ -191,3 +191,5 @@ assets/fonts/*
 app-test/web-environment
 
 *.code-workspace
+
+.vscode
