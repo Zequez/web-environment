@@ -36,6 +36,7 @@
   import Guarda from './Guarda.svelte'
   import DefaultContainer from './Container.svelte'
   import DefaultNavContainer from './NavContainer.svelte'
+  import { cssVariables } from '@/center/utils'
   // import Editor from './Editor.svelte'
 
   const props: {
@@ -47,6 +48,12 @@
     Guarda: Component
     Container?: Component
     NavContainer?: Component
+    themeColors?: {
+      'main-hue': number
+      'main-saturation': number
+      'alt-hue'?: number
+      'alt-saturation'?: number
+    }
   } = $props()
 
   type Page = {
@@ -68,6 +75,14 @@
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   onMount(() => {})
+
+  let themeColors = {
+    'main-hue': 205,
+    'main-saturation': 70,
+    'alt-hue': 300,
+    'alt-saturation': 70,
+    ...(props.themeColors || {}),
+  }
 
   let container: HTMLDivElement
 
@@ -209,7 +224,7 @@
   <Editor />
 {/if} -->
 
-<div class="flex flex-col min-h-screen relative">
+<div class="flex flex-col min-h-screen relative" use:cssVariables={themeColors}>
   <div bind:this={container} use:onresizeobserver={recalculatePagesListHeight}>
     <Container>
       <currentPage.Component />

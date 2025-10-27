@@ -150,6 +150,22 @@
   }
 
   // $inspect(slotsRenderNecessity)
+
+  // Handle page hovering
+
+  // let hoveringPage = $state<string | null>(null)
+  // let hoveringPageBoundingRect = $state<DOMRect | null>(null)
+
+  // function recalculateHoveringPageRect() {
+  //   hoveringPageBoundingRect = document
+  //     .querySelector(`[data-name="${hoveringPage}"]`)!
+  //     .getBoundingClientRect()
+  // }
+
+  // function receiveHoveringPage(pageName: string) {
+  //   hoveringPage = pageName
+  //   recalculateHoveringPageRect()
+  // }
 </script>
 
 <svelte:window onresize={receiveResizingEvent} />
@@ -198,18 +214,22 @@
               <Page.Component />
             </props.Container>
           </div>
+
           <a
             href={props.pageNameToNavPath[pageName]}
             class={[
-              'absolute inset-0 hover:bg-white/10 text-black/0',
+              'absolute inset-0  text-black/0 [--line:3px] [--gap:6px]',
               {
-                'shadow-[inset_0_0_0px_3px] shadow-yellow-500':
+                'diagonal-stripes bg-main-500/40  b-3 b-main-500/80':
                   props.currentPage === pageName,
+                ' hover:(bg-main-500/40 b-3 b-main-500/80 b-dashed)':
+                  props.currentPage !== pageName,
               },
             ]}>{pageName}</a
           >
         </div>
       {/each}
+
       {#if navToRender[i].length < props.nav[i].length}
         <div
           style={`
@@ -224,4 +244,37 @@
       {/if}
     </div>
   {/each}
+  <!-- {#if hoveringPageBoundingRect}
+    {@const { x, y, width, height } = hoveringPageBoundingRect}
+    <div
+      style={`left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px;`}
+      class="fixed transition-all transition-duration-500 pointer-events-none bg-blue-500/30 b b-3 b-blue-500/80 b-dashed"
+    ></div>
+  {/if} -->
 </div>
+
+<style>
+  :root {
+    /* ajusta estas variables */
+    --stripe-size: 6px; /* ancho de cada franja (blanca o transparente) */
+    --stripe-color: rgba(
+      255,
+      255,
+      255,
+      0.3
+    ); /* color de la franja visible (aquí blanco) */
+    --angle: 45deg; /* ángulo de las rayas */
+  }
+
+  /* patrón repetido (sobre cualquier fondo) */
+  .diagonal-stripes {
+    background-image: repeating-linear-gradient(
+      var(--angle),
+      var(--stripe-color) 0 calc(var(--stripe-size)),
+      transparent calc(var(--stripe-size)) calc(2 * var(--stripe-size))
+    );
+    /* la siguiente línea no es necesaria para el patrón, pero ayuda a que
+     el tamaño visual sea consistente en ciertos casos */
+    /* background-size: calc(2 * var(--stripe-size)) calc(2 * var(--stripe-size)); */
+  }
+</style>
