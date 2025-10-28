@@ -25,5 +25,6 @@ export const SERVER_GIT_PORT = mkport()
 export const SERVER_FILES_PORT = mkport()
 export const SERVER_PUBLISHING_PORT = mkport()
 export const SERVER_VITE_SPINNER_PORT = mkport()
+export const SERVER_TUNNEL_PORT = mkport()
 
 export const REPOS_PORT_BASE = mkport() + 10

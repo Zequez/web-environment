@@ -49,6 +49,11 @@ yargs(hideBin(process.argv))
           chalk.yellow,
           './mainframe/servers/files-server.ts',
         ),
+        tunnel: runWatchProcess(
+          'Tunnel',
+          chalk.bgRedBright,
+          './mainframe/servers/tunnel-server.ts',
+        ),
         // publishing: runWatchProcess(
         //   'Publishing',
         //   chalk.rgb(255, 165, 0),

@@ -44,6 +44,7 @@ export function startReposMonitor() {
   async function refresh() {
     console.log('Refreshing repos')
     const reposPaths = await readdir('./repos')
+    console.log(reposPaths)
 
     console.log('REPOS PATH!', reposPaths)
 

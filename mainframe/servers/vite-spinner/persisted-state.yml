@@ -47,3 +47,7 @@ repos:
     started: true
     port: 19736
     accessibleFromLocalNetwork: false
+  mogotes:
+    started: true
+    port: 19737
+    accessibleFromLocalNetwork: false
