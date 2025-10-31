@@ -5,8 +5,17 @@
   import navBg from '../photos/navBg.jpg'
   import reposPos from '../../tunnels/reposPos2.ts'
 
+  import type {
+    BackMsg as ViteSpinnerBackMsg,
+    FrontMsg as ViteSpinnerFrontMsg,
+  } from '@/mainframe/servers/vite-spinner/start.ts'
+  import { init } from '../mainframe-store.svelte.ts'
+
+  const S = init()
+
   import { Pin, Canvas, store as canvasStore } from '@/center/canvas'
   import RepoBlock from './RepoBlock.svelte'
+  import { SERVER_VITE_SPINNER_PORT } from '@/center/ports.ts'
 
   let loaded = $state(false)
   let repos: Repo[] = $state<Repo[]>([])
@@ -84,6 +93,8 @@
       <Pin id={repo.name!} data={pos}>
         <RepoBlock
           {repo}
+          viteServer={S.runningViteServers[repo.name!]}
+          onToggleVite={() => S.cmd('toggle-vite', repo.name!)}
           onPosUpdated={(deltaPos) => {
             let oldPos = reposPositions[repo.name!]
             reposPositions[repo.name!] = {
