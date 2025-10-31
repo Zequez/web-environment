@@ -72,21 +72,14 @@ export function getCavitationSizeAndOrigin(
 } {
   const p = padding
   const p2 = padding * 2
-  if (elements.length === 0) {
-    return {
-      size: { w: window.innerWidth + p2, h: window.innerHeight + p2 },
-      origin: { x: -window.innerWidth / 2 - p, y: -window.innerHeight / 2 - p },
-    }
-  }
 
-  // else if (elements.length === 1) {
+  console.log('ELEMENTS!', elements)
+  // if (elements.length === 0) {
   //   return {
   //     size: { w: window.innerWidth + p2, h: window.innerHeight + p2 },
-  //     origin: { x: window.innerWidth / 2 + p, y: window.innerHeight / 2 + p },
+  //     origin: { x: -window.innerWidth / 2 - p, y: -window.innerHeight / 2 - p },
   //   }
   // }
-
-  console.log(elements)
 
   let winEl = {
     left: -window.innerWidth / 2,
@@ -100,12 +93,12 @@ export function getCavitationSizeAndOrigin(
   const topMost = Math.min(...elements.map((r) => r.top), winEl.top)
   const bottomMost = Math.max(...elements.map((r) => r.bottom), winEl.bottom)
 
-  console.log('LRTB most', leftMost, rightMost, topMost, bottomMost)
+  // console.log('LRTB most', leftMost, rightMost, topMost, bottomMost)
 
   const w = rightMost - leftMost
   const h = bottomMost - topMost
 
-  console.log('Height, width', w, h)
+  // console.log('Height, width', w, h)
 
   const cavitationW = w + p2
   const cavitationH = h + p2

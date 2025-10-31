@@ -11,6 +11,9 @@ export default () =>
     server: {
       host: 'localhost',
       port: MAINFRAME_UI_PORT,
+      watch: {
+        // ignored: ['**/tunnels/reposPos.json'],
+      },
     },
     root: './mainframe/ui',
     plugins: [

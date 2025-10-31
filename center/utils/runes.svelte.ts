@@ -11,6 +11,7 @@ export function draggable(
   } | null>(null)
 
   function handleDragOnMouseDown(ev: MouseEvent) {
+    console.log('EVENT1')
     const clickedEl = ev.currentTarget as HTMLElement
     if (ev.button === 0 && !dragging) {
       ev.stopPropagation()

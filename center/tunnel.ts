@@ -5,6 +5,9 @@ type ApiMap = {
   'mainframe/tunnels/publishing.ts/buildRepo': (repo: string) => boolean
   'mainframe/tunnels/publishing.ts/publishRepo': (repo: string) => boolean
   'mainframe/tunnels/list-repos.ts': () => Repo[]
+  'mainframe/tunnels/saveCanvaReposPositions.ts': (repos: {
+    [key: string]: { x: number; y: number }
+  }) => void
 }
 
 export async function tunnel<F extends keyof ApiMap>(

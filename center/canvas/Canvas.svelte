@@ -2,7 +2,7 @@
   import { onMount, type Snippet } from 'svelte'
   import { fade } from 'svelte/transition'
   import store from './canvas-store.svelte'
-  import { cx, monitorPinchZoom } from '@/center/utils'
+  import { cx, monitorPinchZoom, observeChildren } from '@/center/utils'
   import EdgeScrollFrame from './EdgeScrollFrame.svelte'
   import BlobDirectionIndicator from './BlobDirectionIndicator.svelte'
   import MiniMap from './MiniMap.svelte'
@@ -70,6 +70,10 @@
     )
   }
 
+  $effect(() => {
+    console.log('CHILDREN CHANGED', children)
+  })
+
   onMount(() => {
     recalculateCavitationSize()
     const id = window.location.hash.slice(1) || 'origin'
@@ -81,15 +85,22 @@
           scrollIntoView(id, true)
           loader = false
         }, 0)
-      } else {
-        scrollContainer.scrollLeft = MIN_PADDING
-        scrollContainer.scrollTop = MIN_PADDING
-        loader = false
+        return
       }
-    } else {
-      loader = false
     }
 
+    scrollContainer.scrollLeft = MIN_PADDING
+    scrollContainer.scrollTop = MIN_PADDING
+    loader = false
+  })
+
+  onMount(() => {
+    observeChildren(originContainer, () => {
+      recalculateCavitationSize()
+    })
+  })
+
+  onMount(() => {
     return monitorPinchZoom((zoom: -1 | 1) => {
       CS.cmd.shiftZoom(zoom)
     })
@@ -314,7 +325,7 @@
     class="relative max-w-none max-h-none overflow-hidden"
   >
     <div
-      class="absolute left-0 top-0 bottom-0 right-0"
+      class="absolute left-0 top-0 bottom-0 right-0 pointer-events-none"
       style={`background-image: url(${background}); background-size: ${320 * CS.zoom}px ${200 * CS.zoom}px;`}
     ></div>
     <!--
@@ -330,11 +341,11 @@
       id="origin-container"
       class={cx('absolute w-0 h-0', {})}
     >
-      <Pin id="center" data={{ x: 0, y: 0 }} debug={true}>
+      <!-- <Pin id="center" data={{ x: 0, y: 0 }} debug={true}>
         <div class="h-400px w-300px -translate-x-1/2 bg-red-500 z-99999"
           >Center</div
         >
-      </Pin>
+      </Pin> -->
       <!-- <Pin id="aars" data={{ x: 100, y: 150 }}>
         <div class="h-3px w-3px -translate-x-1/2 bg-green z-999999"></div>
       </Pin>

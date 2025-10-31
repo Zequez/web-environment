@@ -74,3 +74,33 @@ function setCssVariables(node: HTMLElement, variables: { [key: string]: any }) {
 export function getLocationHash() {
   return typeof window === 'undefined' ? '' : window.location.hash
 }
+
+export function observeChildren(
+  parent: Element,
+  callback: (added: Element[], removed: Element[]) => void,
+) {
+  const observer = new MutationObserver((mutations) => {
+    const added: Element[] = []
+    const removed: Element[] = []
+
+    for (const mutation of mutations) {
+      if (mutation.type === 'childList') {
+        Array.from(mutation.addedNodes).forEach((node) => {
+          if (node instanceof Element && node.parentElement === parent)
+            added.push(node)
+        })
+        Array.from(mutation.removedNodes).forEach((node) => {
+          if (node instanceof Element) removed.push(node)
+        })
+      }
+    }
+
+    if (added.length || removed.length) {
+      callback(added, removed)
+    }
+  })
+
+  observer.observe(parent, { childList: true })
+
+  return () => observer.disconnect()
+}
