@@ -37,6 +37,7 @@
   import SyncButton from './SyncButton.svelte'
   import FetchedButton from './FetchedButton.svelte'
   import GitRemoteDisplay from './GitRemoteDisplay.svelte'
+  import { tunnel } from '@/center/tunnel'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -98,7 +99,7 @@
     viteSpinnerSocket.send(JSON.stringify(msg))
   }
 
-  function cmd(
+  async function cmd(
     ...c:
       | [type: 'add-repo', name: string]
       | [type: 'init-repo-git', name: string]
@@ -139,11 +140,12 @@
         break
       }
       case 'build': {
-        viteSpinnerSend(['build', c[1]])
+        await tunnel('mainframe/tunnels/publishing.ts/buildRepo', c[1])
+        // viteSpinnerSend(['build', c[1]])
         break
       }
       case 'publish': {
-        viteSpinnerSend(['publish', c[1]])
+        await tunnel('mainframe/tunnels/publishing.ts/publishRepo', c[1])
         break
       }
       case 'start-vite': {

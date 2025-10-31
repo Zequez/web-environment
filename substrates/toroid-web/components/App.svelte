@@ -66,7 +66,7 @@
     description?: string
   }
 
-  console.log('ssss')
+  console.log('sssss')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

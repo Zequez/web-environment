@@ -9,7 +9,7 @@
     children,
   }: {
     id: string
-    data: { x: number; y: number; title: string; layer: string }
+    data: { x: number; y: number; title?: string; layer?: string }
     debug?: boolean
     children?: any
   } = $props()

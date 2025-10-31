@@ -1,9 +1,16 @@
 import { SERVER_TUNNEL_PORT } from '@/center/ports'
+import type { Repo } from '@/mainframe/servers/git-server/messages'
 
-export async function tunnel<T extends [], K>(
-  fun: string,
-  ...args: T
-): Promise<K> {
+type ApiMap = {
+  'mainframe/tunnels/publishing.ts/buildRepo': (repo: string) => boolean
+  'mainframe/tunnels/publishing.ts/publishRepo': (repo: string) => boolean
+  'mainframe/tunnels/list-repos.ts': () => Repo[]
+}
+
+export async function tunnel<F extends keyof ApiMap>(
+  fun: F,
+  ...args: Parameters<ApiMap[F]>
+): Promise<ReturnType<ApiMap[F]>> {
   const response = await fetch(
     `http://localhost:${SERVER_TUNNEL_PORT}/${fun}`,
     {
@@ -11,9 +18,11 @@ export async function tunnel<T extends [], K>(
       body: JSON.stringify(args),
     },
   )
-  return response.json() as Promise<K>
+
+  return response.json()
 }
-export function streamTunnel<T extends [], K>(fun: string, ...args: T) {
+
+export function streamTunnel<T extends any[], K>(fun: string, ...args: T) {
   const lastFun = fun.split('/').pop()
   if (!lastFun!.startsWith('stream')) {
     throw 'Function not streamable'

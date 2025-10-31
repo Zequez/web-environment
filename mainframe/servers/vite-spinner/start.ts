@@ -8,11 +8,9 @@ import repoVite from './repo-vite'
 import { getRepoConfig, getStartedRepos, setRepoConfig } from './persisted'
 
 export type BackMsg = ['servers', servers: { [key: string]: string }]
-export type FrontMsg =
-  | ['start', repo: string]
-  | ['stop', repo: string]
-  | ['build', repo: string]
-  | ['publish', repo: string]
+export type FrontMsg = ['start', repo: string] | ['stop', repo: string]
+// | ['build', repo: string]
+// | ['publish', repo: string]
 
 let reposServers = signal<{ [key: string]: ViteDevServer }>({})
 
@@ -86,17 +84,17 @@ function start() {
             setRepoConfig(repo, { started: false })
           }
           break
-        case 'build': {
-          const vite = await getRepoVite(repo)
-          await vite.buildProjection()
+        // case 'build': {
+        //   const vite = await getRepoVite(repo)
+        //   await vite.buildProjection()
 
-          break
-        }
-        case 'publish': {
-          const vite = await getRepoVite(repo)
-          await vite.publishProjection()
-          break
-        }
+        //   break
+        // }
+        // case 'publish': {
+        //   const vite = await getRepoVite(repo)
+        //   await vite.publishProjection()
+        //   break
+        // }
       }
     },
     onConnect: async (sendMsg, params) => {

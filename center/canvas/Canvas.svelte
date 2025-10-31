@@ -7,8 +7,9 @@
   import BlobDirectionIndicator from './BlobDirectionIndicator.svelte'
   import MiniMap from './MiniMap.svelte'
   import { gatherElements, getCavitationSizeAndOrigin } from './cavitation-calc'
+  import Pin from './Pin.svelte'
 
-  const { children, background }: { children: Snippet; background: string } =
+  const { children, background }: { children?: Snippet; background: string } =
     $props()
 
   const CS = store.getContext()
@@ -19,9 +20,6 @@
   let scrollContainer = $state<HTMLDivElement>(null!)
   let cavitationContainer = $state<HTMLDivElement>(null!)
   let originContainer = $state<HTMLDivElement>(null!)
-
-  let fgCavitationSize = $state({ w: 0, h: 0 })
-  let fgOriginPosition = $state({ x: 0, y: 0 })
 
   let virtualMap = $state<ActualElement[]>([])
 
@@ -50,15 +48,18 @@
     layer: string
   }
 
+  const MIN_PADDING = 100
+
   function recalculateCavitationSize() {
-    const elements = gatherElements(originContainer)
+    virtualMap = gatherElements(originContainer)
 
-    virtualMap = elements.filter((v) => v.layer === 'fg')
-    const virtual = getCavitationSizeAndOrigin(virtualMap)
-    fgOriginPosition = virtual.origin
-    fgCavitationSize = virtual.size
+    // const virtual = getCavitationSizeAndOrigin(virtualMap)
+    // fgOriginPosition = virtual.origin
+    // fgCavitationSize = virtual.size
 
-    const { size, origin } = getCavitationSizeAndOrigin(elements)
+    const { size, origin } = getCavitationSizeAndOrigin(virtualMap, MIN_PADDING)
+
+    console.log('SIZE', size, 'ORIGIN', origin)
 
     CS.cmd.setCavitationSize(
       scrollContainer,
@@ -80,6 +81,10 @@
           scrollIntoView(id, true)
           loader = false
         }, 0)
+      } else {
+        scrollContainer.scrollLeft = MIN_PADDING
+        scrollContainer.scrollTop = MIN_PADDING
+        loader = false
       }
     } else {
       loader = false
@@ -295,6 +300,14 @@
     <div class="fixed inset-0 z-9999 bg-black pointer-events-none" out:fade
     ></div>
   {/if}
+  <!--
+    The cavitation-container expands so that the scroll-container has
+    content that makes it scroll.
+    It additionally grows with all the elements on the canvas.
+    It does have a minimum width and height of the whole screen plus padding
+    so that even when the canvas is empty, it has some padding to display
+    scrollability
+    -->
   <div
     bind:this={cavitationContainer}
     id="cavitation-container"
@@ -304,17 +317,33 @@
       class="absolute left-0 top-0 bottom-0 right-0"
       style={`background-image: url(${background}); background-size: ${320 * CS.zoom}px ${200 * CS.zoom}px;`}
     ></div>
+    <!--
+      The origin-container is the position relative to which the pinned elements
+      in the canvas are rendered. It's not neccesarily on the center of the canvas, as
+      the pinned elements might be un-evenly distributed.
+      The origin-container position however is adjusted so that the pinned elements
+      are centered
+
+      -->
     <div
       bind:this={originContainer}
       id="origin-container"
       class={cx('absolute w-0 h-0', {})}
     >
-      <!-- <Pin id="center" pos={{ x: -1552, y: -1108 }}>
-        <div
-          class="h-10 w-10 -transform-1/2 bg-red-500 rounded-full z-99999 absolute"
-        ></div>
+      <Pin id="center" data={{ x: 0, y: 0 }} debug={true}>
+        <div class="h-400px w-300px -translate-x-1/2 bg-red-500 z-99999"
+          >Center</div
+        >
+      </Pin>
+      <!-- <Pin id="aars" data={{ x: 100, y: 150 }}>
+        <div class="h-3px w-3px -translate-x-1/2 bg-green z-999999"></div>
+      </Pin>
+      <Pin id="aar2s" data={{ x: 400, y: 150 }}>
+        <div class="h-3px w-3px -translate-x-100% bg-green z-999999"></div>
       </Pin> -->
-      {@render children()}
+      {#if children}
+        {@render children()}
+      {/if}
     </div>
     <!-- </div> -->
   </div>

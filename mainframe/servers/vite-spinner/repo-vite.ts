@@ -23,22 +23,22 @@ export default async function repoVite(
           accessibleFromLocalNetwork: runModeConfig.accessibleFromLocalNetwork,
         },
       }),
-    build: () =>
-      generateViteConfig({
-        repo,
-        wenv,
-        mode: {
-          mode: 'build',
-        },
-      }),
-    buildPrerenderer: () =>
-      generateViteConfig({
-        repo,
-        wenv,
-        mode: {
-          mode: 'build-prerenderer',
-        },
-      }),
+    // build: () =>
+    //   generateViteConfig({
+    //     repo,
+    //     wenv,
+    //     mode: {
+    //       mode: 'build',
+    //     },
+    //   }),
+    // buildPrerenderer: () =>
+    //   generateViteConfig({
+    //     repo,
+    //     wenv,
+    //     mode: {
+    //       mode: 'build-prerenderer',
+    //     },
+    //   }),
   }
 
   async function devRun() {
@@ -57,41 +57,41 @@ export default async function repoVite(
     return server
   }
 
-  async function buildProjection() {
-    const buildPrerendererConfig = await configs.buildPrerenderer()
-    if (buildPrerendererConfig) {
-      try {
-        await build(buildPrerendererConfig)
-        console.log('PRE-Renderer built')
-      } catch (e) {
-        console.error(e)
-        console.log('PRE-Renderer built failed')
-        return
-      }
-    } else {
-      console.log('Skipping PRE-Renderer build')
-    }
+  // async function buildProjection() {
+  //   const buildPrerendererConfig = await configs.buildPrerenderer()
+  //   if (buildPrerendererConfig) {
+  //     try {
+  //       await build(buildPrerendererConfig)
+  //       console.log('PRE-Renderer built')
+  //     } catch (e) {
+  //       console.error(e)
+  //       console.log('PRE-Renderer built failed')
+  //       return
+  //     }
+  //   } else {
+  //     console.log('Skipping PRE-Renderer build')
+  //   }
 
-    const buildConfig = await configs.build()
-    try {
-      await build(buildConfig!)
-      console.log('REPO BUILT!')
-    } catch (e) {
-      console.error(e)
-      console.log('REPO BUILD FAILED')
-    }
-  }
+  //   const buildConfig = await configs.build()
+  //   try {
+  //     await build(buildConfig!)
+  //     console.log('REPO BUILT!')
+  //   } catch (e) {
+  //     console.error(e)
+  //     console.log('REPO BUILD FAILED')
+  //   }
+  // }
 
-  async function publishProjection() {
-    const origin = await remoteUrl($path(`repos/${repo}`))
-    if (origin) {
-      await forcePushToOriginOnWwwBranch($path(`projections/${repo}`), origin)
-    }
-  }
+  // async function publishProjection() {
+  //   const origin = await remoteUrl($path(`repos/${repo}`))
+  //   if (origin) {
+  //     await forcePushToOriginOnWwwBranch($path(`projections/${repo}`), origin)
+  //   }
+  // }
 
   return {
     devRun,
-    buildProjection,
-    publishProjection,
+    // buildProjection,
+    // publishProjection,
   }
 }

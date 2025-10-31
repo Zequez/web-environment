@@ -31,6 +31,12 @@ export function gatherElements(container: HTMLElement) {
       if (!id) return null
       const layer = h.getAttribute('data-layer')
       const title = h.getAttribute('data-title')
+      // Assumes the containing element of the PIN has -translate-x-1/2
+      // In the future the PIN center position may be configurated
+      // Or we can just try to read the transform property from the DOM
+      // Or read getBoundingClientRect instead
+      // ...the point is, there is no neccesity right now so I'll just write
+      // this note so that these lines of code make sense.
       const left = h.offsetLeft - h.offsetWidth / 2
       const right = h.offsetLeft + h.offsetWidth / 2
       const top = h.offsetTop
@@ -57,30 +63,55 @@ export function gatherElements(container: HTMLElement) {
     .filter((e) => e) as ActualElement[]
 }
 
-export function getCavitationSizeAndOrigin(elements: ActualElement[]): {
+export function getCavitationSizeAndOrigin(
+  elements: ActualElement[],
+  padding: number = 0,
+): {
   size: { w: number; h: number }
   origin: { x: number; y: number }
 } {
+  const p = padding
+  const p2 = padding * 2
   if (elements.length === 0) {
     return {
-      size: { w: window.innerWidth, h: window.innerHeight },
-      origin: { x: -window.innerWidth / 2, y: -window.innerHeight / 2 },
+      size: { w: window.innerWidth + p2, h: window.innerHeight + p2 },
+      origin: { x: -window.innerWidth / 2 - p, y: -window.innerHeight / 2 - p },
     }
   }
 
-  const leftMost = Math.min(...elements.map((r) => r.left))
-  const rightMost = Math.max(...elements.map((r) => r.right))
-  const topMost = Math.min(...elements.map((r) => r.top))
-  const bottomMost = Math.max(...elements.map((r) => r.bottom))
+  // else if (elements.length === 1) {
+  //   return {
+  //     size: { w: window.innerWidth + p2, h: window.innerHeight + p2 },
+  //     origin: { x: window.innerWidth / 2 + p, y: window.innerHeight / 2 + p },
+  //   }
+  // }
+
+  console.log(elements)
+
+  let winEl = {
+    left: -window.innerWidth / 2,
+    right: window.innerWidth / 2,
+    top: -window.innerHeight / 2,
+    bottom: window.innerHeight / 2,
+  }
+
+  const leftMost = Math.min(...elements.map((r) => r.left), winEl.left)
+  const rightMost = Math.max(...elements.map((r) => r.right), winEl.right)
+  const topMost = Math.min(...elements.map((r) => r.top), winEl.top)
+  const bottomMost = Math.max(...elements.map((r) => r.bottom), winEl.bottom)
+
+  console.log('LRTB most', leftMost, rightMost, topMost, bottomMost)
 
   const w = rightMost - leftMost
   const h = bottomMost - topMost
 
-  const cavitationW = Math.max(w, window.innerWidth)
-  const cavitationH = Math.max(h, window.innerHeight)
+  console.log('Height, width', w, h)
+
+  const cavitationW = w + p2
+  const cavitationH = h + p2
 
   return {
     size: { w: cavitationW, h: cavitationH },
-    origin: { x: -leftMost, y: -topMost },
+    origin: { x: -leftMost + p, y: -topMost + p },
   }
 }
