@@ -70,10 +70,6 @@
     )
   }
 
-  $effect(() => {
-    console.log('CHILDREN CHANGED', children)
-  })
-
   onMount(() => {
     recalculateCavitationSize()
     const id = window.location.hash.slice(1) || 'origin'

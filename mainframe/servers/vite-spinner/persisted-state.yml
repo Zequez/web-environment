@@ -52,6 +52,10 @@ repos:
     port: 19737
     accessibleFromLocalNetwork: false
   webenv:
-    started: false
+    started: true
     port: 19738
+    accessibleFromLocalNetwork: false
+  test:
+    started: true
+    port: 19739
     accessibleFromLocalNetwork: false

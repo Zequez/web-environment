@@ -4,6 +4,7 @@
   import { store as canvasStore } from '@/center/canvas'
   import type { Repo } from '@/mainframe/servers/git-server/messages'
   import PowerIcon from '~icons/fa6-solid/power-off'
+  import GitRepo from './GitRepo.svelte'
 
   let CS = canvasStore.getContext()
 
@@ -44,7 +45,7 @@
   <div
     onmousedown={drag.handleDragOnMouseDown}
     class={[
-      ' px3 rounded-t-2 h12 cursor-move flexcs ',
+      ' px3 rounded-t-2 h12 cursor-move flexcs b-b b-black/10 ',
       {
         'bg-green-500/20 ': props.viteServer,
         'bg-gray-200 ': !props.viteServer,
@@ -69,15 +70,36 @@
   </div>
 
   <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div
-    class="w-230px h-36 rounded-b-2"
-    onmousedown={(ev) => ev.stopPropagation()}
-  >
-    <div class="text-center shadow-[inset_0_0_3px_0_#0005] bg-gray-100">
+  <div class="w-270px rounded-b-2" onmousedown={(ev) => ev.stopPropagation()}>
+    <div class="text-center bg-gray-100">
       {#if props.viteServer}
         {props.viteServer}
       {:else}
         ...
+      {/if}
+    </div>
+    <div>
+      {#if props.repo.status[0] === 'git'}
+        <GitRepo
+          repo={{
+            name: props.repo.name!,
+            mode: 'local-only-git',
+            branch: 'main',
+            uncommittedChanges: [],
+          }}
+        />
+      {:else if props.repo.status[0] === 'git-full'}
+        <GitRepo
+          repo={{
+            name: props.repo.name!,
+            mode: 'remote-git',
+            branch: 'main',
+            url: props.repo.status[1],
+            remoteAhead: 0,
+            localAhead: 0,
+            uncommittedChanges: [],
+          }}
+        />
       {/if}
     </div>
   </div>

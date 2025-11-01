@@ -27,8 +27,8 @@ type WenvUnoCSSConfig = {
 }
 
 const DEFAULT_FONTS = {
-  sans: 'Alegreya Sans SC:400,700',
-  serif: 'Alegreya SC:400,700',
+  sans: 'Arimo:400,700',
+  serif: 'Andada Pro:400,700',
   mono: 'Fira Code:400,700',
 }
 

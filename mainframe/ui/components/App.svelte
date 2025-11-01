@@ -24,6 +24,7 @@
   let reposPositions = $state<{ [key: string]: { x: number; y: number } }>({
     ...reposPos,
   })
+  import MainframeRepo from './MainframeRepo.svelte'
 
   console.log('REPOS POS', reposPos)
 
@@ -86,6 +87,7 @@
   // }
 </script>
 
+<MainframeRepo />
 {#if loaded}
   <Canvas background={navBg}>
     {#each namedRepos as repo, i (repo.name)}
@@ -106,13 +108,6 @@
         />
       </Pin>
     {/each}
-    <!-- <Pin id="origin" data={{ x: 0, y: 0 }} debug={true}></Pin> -->
-    <!-- <Pin id="a" data={{ x: -300, y: -300 }} debug={true}>
-    <div class="text-gray-700 bg-white p4 rounded-2">Hey</div>
-  </Pin> -->
-    <!-- <Pin id="b" data={{ x: 200, y: 200 }} debug={true}>
-    <div class="text-gray-700 bg-white p4 rounded-2">Hey</div>
-  </Pin> -->
   </Canvas>
 {:else}
   <div class="absolute size-full bg-gray-100 text-12 flexcc"

@@ -17,17 +17,17 @@
 >
   {#if knownHost}
     <span
-      class="text-[8px] bg-gray-7 text-white b b-black/10 rounded-sm px.5 group-hover:(bg-gray-8 transition-duration-0 transition-delay-0) transition-delay-150"
+      class=" bg-gray-7 text-white b b-black/10 rounded-sm px.5 group-hover:(bg-gray-8 transition-duration-0 transition-delay-0) transition-delay-150"
     >
       {knownHost[0]}
     </span>
     <span
-      class="text-[8px] bg-gray-2 b b-black/10 rounded-sm px.5 transition-all group-hover:(bg-gray-8 text-white transition-duration-50 transition-delay-50) transition-duration-0 transition-delay-100"
+      class=" bg-gray-2 b b-black/10 rounded-sm px.5 transition-all group-hover:(bg-gray-8 text-white transition-duration-50 transition-delay-50) transition-duration-0 transition-delay-100"
     >
       {knownHost[1]}
     </span>
     <span
-      class="text-[8px] bg-gray-2 b b-black/10 rounded-sm px.5 transition-all group-hover:(bg-gray-8 text-white transition-duration-50 transition-delay-100) transition-duration-0 transition-delay-50"
+      class=" bg-gray-2 b b-black/10 rounded-sm px.5 transition-all group-hover:(bg-gray-8 text-white transition-duration-50 transition-delay-100) transition-duration-0 transition-delay-50"
     >
       {knownHost[2]}
     </span>

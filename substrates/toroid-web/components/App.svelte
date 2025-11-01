@@ -66,8 +66,6 @@
     description?: string
   }
 
-  console.log('sssss')
-
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const preRenderingPathname =
