@@ -23,6 +23,14 @@ function start() {
           await reposMonitor.add(msg[1])
           break
         }
+        case 'duplicate-repo': {
+          await reposMonitor.duplicate(msg[1])
+          break
+        }
+        case 'rename-repo': {
+          await reposMonitor.rename(msg[1], msg[2])
+          break
+        }
         // case 'init-repo-git': {
         //   await reposMonitor.initGit(cmd[1])
         //   break

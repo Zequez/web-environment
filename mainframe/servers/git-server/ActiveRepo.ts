@@ -1,13 +1,14 @@
 import { readdir, stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { Repo, SyncStatus } from './messages'
-import { mkdir } from 'fs/promises'
+import { mkdir, cp, rename } from 'fs/promises'
+import path from 'path'
 import trash from 'trash'
 import chalk from 'chalk'
 import * as git from './git'
 
 function sanitizeRepoName(name: string) {
-  return name.replace(/[^a-z0-9\-_]/gi, '')
+  return name.replace(/[^a-z0-9\-_\.]/gi, '')
 }
 
 export class ActiveRepo implements Repo {
@@ -20,7 +21,7 @@ export class ActiveRepo implements Repo {
   mergeConflicts: boolean = false
 
   constructor(name: string | null) {
-    const safeName = name ? name.replace(/[^a-z0-9\-_]/gi, '') : null
+    const safeName = name ? sanitizeRepoName(name) : null
     this.name = safeName
     this.path = name ? join('./repos', name) : join('./')
   }
@@ -130,6 +131,31 @@ export class ActiveRepo implements Repo {
   async trash() {
     await trash(this.path)
     this.setStatus('unknown')
+  }
+
+  async duplicate() {
+    const name = this.name + '-copy'
+    const dest = join('./repos', name)
+    // Copy all files except .git repository
+    await cp(this.path, dest, {
+      recursive: true,
+      filter: (filePath) => {
+        // Skip anything inside .git
+        return (
+          !filePath.includes(`${path.sep}.git${path.sep}`) &&
+          !filePath.endsWith(`${path.sep}.git`)
+        )
+      },
+    })
+    return new ActiveRepo(name)
+  }
+
+  async rename(newName: string) {
+    const safeNewName = sanitizeRepoName(newName)
+    const dest = join('./repos', safeNewName)
+    await rename(this.path, dest)
+    this.path = dest
+    this.name = safeNewName
   }
 
   async addRemote(url: string) {

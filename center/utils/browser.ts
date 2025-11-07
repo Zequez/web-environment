@@ -104,3 +104,28 @@ export function observeChildren(
 
   return () => observer.disconnect()
 }
+
+export function copyToClipboard(text: string) {
+  // Create an off-screen element
+  const el = document.createElement('textarea')
+  el.value = text
+
+  // Make it non-visible but still selectable
+  el.setAttribute('readonly', '')
+  el.style.position = 'absolute'
+  el.style.left = '-9999px'
+
+  document.body.appendChild(el)
+
+  // Select text
+  el.select()
+  el.setSelectionRange(0, el.value.length) // for iOS
+
+  // Copy
+  const success = document.execCommand('copy')
+
+  // Cleanup
+  document.body.removeChild(el)
+
+  return success
+}

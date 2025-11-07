@@ -96,6 +96,29 @@ export function startReposMonitor() {
     }
   }
 
+  async function duplicate(name: string) {
+    const repo = R.get(name)
+    if (repo) {
+      const newRepo = await repo.duplicate()
+      await newRepo.analyze()
+      R.set(newRepo.name, newRepo)
+      notify()
+    }
+  }
+
+  async function rename(name: string, newName: string) {
+    const repo = R.get(name)
+    const maybeExists = R.get(newName)
+    if (maybeExists || !repo) {
+      return false
+    } else {
+      await repo.rename(newName)
+      R.set(repo.name, repo)
+      R.delete(name)
+      notify()
+    }
+  }
+
   async function addRemote(name: string, url: string) {
     const repo = R.get(name)
     if (repo) {
@@ -141,6 +164,8 @@ export function startReposMonitor() {
     subscribe,
     add,
     remove,
+    rename,
+    duplicate,
     sync,
     addRemote,
     get repos() {

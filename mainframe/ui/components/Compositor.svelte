@@ -36,8 +36,9 @@
   import { type ElectronBridge } from '@/mainframe/electron/preload'
   import SyncButton from './SyncButton.svelte'
   import FetchedButton from './FetchedButton.svelte'
-  import GitRemoteDisplay from './GitRemoteDisplay.svelte'
+  import GitRemoteDisplay from './GitRemoteDisplay2.svelte'
   import { tunnel } from '@/center/tunnel'
+  import { lsState } from '@/center/utils/runes.svelte'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -47,8 +48,16 @@
   let viteSpinnerSocket = $state<WebSocket>(null!)
 
   let mainframeRepo = $derived(repos.find((r) => !r.name) || null)
-  let subRepos = $derived(repos.filter((r) => r.name))
+  let reposOrder = lsState<{ v: string[] }>('repos-order', { v: [] })
+  let subRepos: Repo[] = $derived.by(() => {
+    const r = repos.filter((r) => r.name)
+    console.log(r)
+    return reposOrder.v
+      .map((name) => r.find((r) => r.name === name))
+      .filter((r) => r) as Repo[]
+  })
   let runningViteServers = $state<{ [key: string]: string }>({})
+  let isRenaming = $state<{ from: string; to: string } | null>(null)
 
   type RepoSyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
@@ -65,6 +74,12 @@
         console.log('[GIT] 🔻', data)
         switch (data[0]) {
           case 'repos-list': {
+            data[1].forEach((repo: Repo) => {
+              if (!repo.name) return
+              if (reposOrder.v.indexOf(repo.name!) === -1) {
+                reposOrder.v.push(repo.name)
+              }
+            })
             repos = data[1]
           }
         }
@@ -104,6 +119,8 @@
       | [type: 'add-repo', name: string]
       | [type: 'init-repo-git', name: string]
       | [type: 'remove-repo', name: string]
+      | [type: 'duplicate-repo', name: string]
+      | [type: 'rename-repo', name: string, newName: string]
       | [type: 'add-remote', name: string, url: string]
       | [type: 'sync', name: string | null]
       | [type: 'fetch', name: string | null]
@@ -125,6 +142,14 @@
         if (confirm('Repo will be moved to trash')) {
           gitSend(['remove-repo', c[1]])
         }
+        break
+      }
+      case 'duplicate-repo': {
+        gitSend(['duplicate-repo', c[1]])
+        break
+      }
+      case 'rename-repo': {
+        gitSend(['rename-repo', c[1], c[2]])
         break
       }
       case 'add-remote': {
@@ -186,6 +211,22 @@
       ellipsisMenuOpen = null
     }
   }
+
+  async function startRenaming(repo: string) {
+    isRenaming = {
+      from: repo,
+      to: repo,
+    }
+    await tick()
+    document.getElementById('rename-input')!.focus()
+  }
+
+  function doneRenaming() {
+    if (isRenaming) {
+      cmd('rename-repo', isRenaming.from, isRenaming.to)
+      isRenaming = null
+    }
+  }
 </script>
 
 {#snippet MiniBtn(text: string, onClick: () => void)}
@@ -203,106 +244,61 @@
 
 <div class="flex flex-col h-full">
   <!-- MAINFRAME BAR -->
-  <div
-    class="flex bg-[hsl(129deg_34%_42%_/_100%)] bg-gradient-to-r from-#0001 to-#0000"
-  >
-    <button
-      onclick={() => openOnFileExplorer(null)}
-      class="w12 h12 relative flex-shrink-0 overflow-hidden b-2.5
-      b-[hsl(9_4%_39%_/_1)] group"
-    >
-      <div
-        class="shadow-[inset_0_0_10px_0_#0002,inset_0_1px_1px_2px_#0003] absolute size-full z-20"
-      ></div>
-      <img
-        alt="Evironment icon"
-        class="scale-300 saturate-10 group-hover:saturate-120 transition-all hue-rotate-290 relative z-10"
-        src="/dock-icon.png"
-      />
-    </button>
-    <div class="flex-grow py1 px2 shadow-[inset_10px_0_50px_0_#0005]">
-      <div class="h2/3 bg-blu-500 text-white/90 text-shadow-[0_1px_0px_#0005]">
-        Environment by <a href="https://ezequielshwartzman.org">
-          Ezequiel Schwartzman
-        </a>
-      </div>
-      <div class="h1/3 bg-gren-300 flex">
-        {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
-          {@const syncStatus = mainframeRepo.status[2]}
-          <div class="relative">
-            <button
-              class={cx(
-                'bg-white hover:bg-green-2 active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-[8px] font-bold text-black/70 mr1 uppercase',
-                {
-                  'opacity-0': mainframeRepo.fetching,
-                },
-              )}
-              disabled={mainframeRepo.fetching}
-              onclick={mainframeAction}
-            >
-              <span class="group-hover:opacity-0">
-                {#if syncStatus === 'in-sync'}
-                  Up to date
-                {:else if syncStatus === 'ahead'}
-                  Local changes
-                {:else if syncStatus === 'behind'}
-                  Updates available
-                {:else if syncStatus === 'diverged'}
-                  Merge needed
-                {/if}
-              </span>
-              <span class="hidden group-hover:flexcc absolute size-full">
-                {#if syncStatus === 'behind'}
-                  Apply
-                {:else}
-                  Refresh
-                {/if}
-              </span>
-            </button>
-            {#if mainframeRepo.fetching}
-              <div class="absolute size-full top-0 flexcc text-8px text-white">
-                FETCHING...
-              </div>
-            {/if}
-          </div>
-          <span class="text-[10px] mx1 text-white">
-            <LeftArrowIcon />
-          </span>
-
+  <div class="flexcc bg-slate-500 bg-gradient-to-r from-#0001 to-#0000">
+    <div class="flexcs h-12 space-x-3 px3">
+      <button
+        onclick={() => openOnFileExplorer(null)}
+        class="w6 h6 flexcc text-white hover:text-lime-400 p1"
+      >
+        <FolderIcon />
+      </button>
+      {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
+        {@const syncStatus = mainframeRepo.status[2]}
+        <div class="relative">
           <button
-            class="group flexcs"
-            onclick={electronAPI.openExternal.bind(
-              null,
-              mainframeRepo.status[1],
+            class={cx(
+              'bg-white hover:bg-lime-4 active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 font-bold text-black/70 mr1 uppercase',
+              {
+                'opacity-0': mainframeRepo.fetching,
+              },
             )}
+            disabled={mainframeRepo.fetching}
+            onclick={mainframeAction}
           >
-            <GitRemoteDisplay url={mainframeRepo.status[1]} />
+            <span class="group-hover:opacity-0">
+              {#if syncStatus === 'in-sync'}
+                Up to date
+              {:else if syncStatus === 'ahead'}
+                Local changes detected
+              {:else if syncStatus === 'behind'}
+                Updates available
+              {:else if syncStatus === 'diverged'}
+                Merge needed
+              {/if}
+            </span>
+            <span class="hidden group-hover:flexcc absolute size-full">
+              {#if syncStatus === 'behind'}
+                Apply update
+              {:else}
+                Refresh
+              {/if}
+            </span>
           </button>
-        {/if}
-      </div>
+          {#if mainframeRepo.fetching}
+            <div class="absolute size-full top-0 flexcc text-8px text-white">
+              FETCHING...
+            </div>
+          {/if}
+        </div>
+
+        <GitRemoteDisplay url={mainframeRepo.status[1]} />
+      {/if}
     </div>
   </div>
-  <!-- <div class="h12 bg-gray-900"></div> -->
   <!-- REPOS LIST -->
   <div class="flex-grow">
     <div></div>
     <table class="w-full border-collapse">
-      <thead>
-        <tr
-          class="uppercase font-thin tracking-wider bg-gray-800 text-white text-sm"
-        >
-          <th class="w30 font-normal text-left pl1">Project</th>
-          <th class="w30 font-normal text-left pl1 b-l b-white/10">
-            Code Status
-          </th>
-          <th class="w30 font-normal text-left pl1 b-l b-white/10">
-            Environment
-          </th>
-          <th class="w30 font-normal text-left pl1 b-l b-white/10">
-            Web Projection
-          </th>
-        </tr>
-      </thead>
       <tbody>
         {#each subRepos as repo (repo.name)}
           {@const syncStatus =
@@ -312,13 +308,29 @@
               class="h-full p0 pl2 pr1 bg-gray-700 b-t b-white/10 flexcc relative"
             >
               <div
-                class="uppercase h8 flexcs flex-grow text-white font-semibold text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
+                class="cursor-move font-mono h8 flexcs flex-grow text-white text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
               >
                 {repo.name}
               </div>
+              {#if isRenaming && repo.name === isRenaming.from}
+                <input
+                  type="text"
+                  bind:value={isRenaming.to}
+                  id="rename-input"
+                  onkeypress={(ev) => {
+                    if (ev.key === 'Enter') {
+                      doneRenaming()
+                    } else if (ev.key === 'Escape') {
+                      isRenaming = null
+                    }
+                  }}
+                  onblur={() => doneRenaming()}
+                  class="absolute inset-1.5 right-8 bg-gray-800 b b-white/60 text-white font-mono text-3 outline-none"
+                />
+              {/if}
               <button
                 onclick={() => openEllipsisMenu(repo.name!)}
-                class="text-white/60 rounded-md h6 w6 flexcc hover:(bg-white/10 text-white/80)"
+                class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
               >
                 <EllipsisVerticalIcon />
               </button>
@@ -332,6 +344,19 @@
                     class="block text-left px1 hover:bg-black/10"
                   >
                     Open Filesystem
+                  </button>
+
+                  <button
+                    onclick={() => startRenaming(repo.name!)}
+                    class="block text-left px1 hover:bg-black/10"
+                  >
+                    Rename
+                  </button>
+                  <button
+                    onclick={() => cmd('duplicate-repo', repo.name!)}
+                    class="block text-left px1 hover:bg-black/10"
+                  >
+                    Duplicate
                   </button>
                   <button
                     onclick={() => cmd('remove-repo', repo.name!)}
@@ -369,15 +394,7 @@
                     onConfirm={(url) => cmd('add-remote', repo.name!, url)}
                   />
                 {:else if repo.status[0] === 'git-full'}
-                  <button
-                    class="group flexcs"
-                    onclick={electronAPI.openExternal.bind(
-                      null,
-                      repo.status[1],
-                    )}
-                  >
-                    <GitRemoteDisplay url={repo.status[1]} />
-                  </button>
+                  <GitRemoteDisplay url={repo.status[1]} />
                 {/if}
               </div>
             </td>

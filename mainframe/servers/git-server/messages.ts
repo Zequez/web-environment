@@ -14,6 +14,8 @@ export type FrontMsg =
   | ['add-repo', name: string]
   | ['init-repo-git', name: string]
   | ['remove-repo', name: string]
+  | ['duplicate-repo', name: string]
+  | ['rename-repo', name: string, newName: string]
   | ['add-remote', name: string, remote: string]
   | ['sync', name: string | null]
   | ['fetch', name: string | null]

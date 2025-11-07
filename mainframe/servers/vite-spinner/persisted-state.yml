@@ -4,7 +4,7 @@ repos:
     port: 19725
     accessibleFromLocalNetwork: false
   ezequiel:
-    started: true
+    started: false
     port: 19726
     accessibleFromLocalNetwork: false
   possibility-team:
@@ -40,19 +40,19 @@ repos:
     port: 19734
     accessibleFromLocalNetwork: false
   casa-nami:
-    started: true
+    started: false
     port: 19735
     accessibleFromLocalNetwork: false
   agroeco:
-    started: true
+    started: false
     port: 19736
     accessibleFromLocalNetwork: false
   mogotes:
-    started: true
+    started: false
     port: 19737
     accessibleFromLocalNetwork: false
   webenv:
-    started: true
+    started: false
     port: 19738
     accessibleFromLocalNetwork: false
   test:
