@@ -4,7 +4,7 @@ repos:
     port: 19725
     accessibleFromLocalNetwork: false
   ezequiel:
-    started: false
+    started: true
     port: 19726
     accessibleFromLocalNetwork: false
   possibility-team:
@@ -60,7 +60,7 @@ repos:
     port: 19739
     accessibleFromLocalNetwork: false
   nodos.lat:
-    started: false
+    started: true
     port: 19740
     accessibleFromLocalNetwork: false
   potato:

@@ -19,7 +19,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 ipcMain.handle('open-folder', async (event: any, name: any) => {
-  const sanitized = name ? name.replace(/[^a-z0-9\-_]/gi, '') : ''
+  const sanitized = name ? name.replace(/[^a-z0-9\-_\.]/gi, '') : ''
   console.log('NAME', name)
   console.log('SANITIZED', sanitized)
   const result = path.join(
