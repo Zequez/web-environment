@@ -48,6 +48,9 @@
   import NiftyBtn from './NiftyBtn.svelte'
   import BootToggle from './BootToggle.svelte'
   import LocalhostLink from './LocalhostLink.svelte'
+  import { openInBrowser, openOnFileExplorer } from '../electron-bridge'
+  import MoveThingy from './MoveThingy.svelte'
+  import CompRepo from './CompRepo.svelte'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -57,14 +60,15 @@
   let viteSpinnerSocket = $state<WebSocket>(null!)
 
   let mainframeRepo = $derived(repos.find((r) => !r.name) || null)
-  let reposOrder = lsState<{ v: string[] }>('repos-order', { v: [] })
-  let subRepos: Repo[] = $derived.by(() => {
-    const r = repos.filter((r) => r.name)
-    console.log(r)
-    return reposOrder.v
-      .map((name) => r.find((r) => r.name === name))
-      .filter((r) => r) as Repo[]
-  })
+  let reposOrder = lsState<{ v: string[][] }>('repos-order5', { v: [[]] })
+  let subRepos: Repo[] = $derived(repos.filter((r) => r.name))
+
+  // $derived.by(() => {
+  //   const r = repos.filter((r) => r.name)
+  //   return reposOrder.v
+  //     .map((name) => r.find((r) => r.name === name))
+  //     .filter((r) => r) as Repo[]
+  // })
   let runningViteServers = $state<{ [key: string]: string }>({})
   let isRenaming = $state<{ from: string; to: string } | null>(null)
 
@@ -85,8 +89,16 @@
           case 'repos-list': {
             data[1].forEach((repo: Repo) => {
               if (!repo.name) return
-              if (reposOrder.v.indexOf(repo.name!) === -1) {
-                reposOrder.v.push(repo.name)
+              let found = false
+              for (let col of reposOrder.v) {
+                if (col.indexOf(repo.name!) !== -1) {
+                  found = true
+                  break
+                }
+              }
+
+              if (!found) {
+                reposOrder.v[0].push(repo.name!)
               }
             })
             repos = data[1]
@@ -214,10 +226,6 @@
     }
   }
 
-  function openOnFileExplorer(name: string | null) {
-    electronAPI.openFolder(name)
-  }
-
   function mainframeAction() {
     if (mainframeRepo && mainframeRepo.status[0] === 'git-full') {
       const syncStatus = mainframeRepo.status[2]
@@ -242,33 +250,68 @@
     }
   }
 
-  async function startRenaming(repo: string) {
-    isRenaming = {
-      from: repo,
-      to: repo,
-    }
-    await tick()
-    document.getElementById('rename-input')!.focus()
-  }
-
-  function doneRenaming() {
-    if (isRenaming) {
-      if (isRenaming.from !== isRenaming.to) {
-        cmd('rename-repo', isRenaming.from, isRenaming.to)
+  function moveRepo(repo: string, direction: 'up' | 'down' | 'left' | 'right') {
+    let i = -1
+    let j = -1
+    for (let k = 0; k < reposOrder.v.length; k++) {
+      const l = reposOrder.v[k].indexOf(repo)
+      if (reposOrder.v[k].indexOf(repo) !== -1) {
+        i = k
+        j = l
+        break
       }
-      isRenaming = null
+    }
+
+    if (i === -1 || j === -1) {
+      return
+    }
+
+    if (direction === 'down' || direction === 'up') {
+      let col = [...reposOrder.v[i]]
+      if (direction === 'down') {
+        if (j === col.length - 1) {
+          return
+        }
+        const [bef, aft] = col.splice(j, 2)
+        col.splice(j, 0, aft, bef)
+      } else {
+        if (j === 0) {
+          return
+        }
+        const [bef, aft] = col.splice(j - 1, 2)
+        col.splice(j - 1, 0, aft, bef)
+      }
+      reposOrder.v[i] = col
+    }
+
+    if (direction === 'left' || direction === 'right') {
+      let colFrom = [...reposOrder.v[i]]
+
+      if (direction === 'left') {
+        if (i === 0) {
+          return
+        }
+        const [repoName] = colFrom.splice(j, 1)
+        reposOrder.v.splice(i, 1, colFrom)
+        let colTo = [...reposOrder.v[i - 1]]
+        colTo.push(repoName)
+        reposOrder.v.splice(i - 1, 1, colTo)
+      } else if (direction === 'right') {
+        const [repoName] = colFrom.splice(j, 1)
+        reposOrder.v.splice(i, 1, colFrom)
+        if (i === reposOrder.v.length - 1) {
+          reposOrder.v.push([repoName])
+        } else {
+          let colTo = [...reposOrder.v[i + 1]]
+          colTo.push(repoName)
+          reposOrder.v.splice(i + 1, 1, colTo)
+        }
+      }
     }
   }
-</script>
 
-{#snippet MiniBtn(text: string, onClick: () => void)}
-  <button
-    class="flexcs bg-black/10 b font-semibold b-black/10 hover:bg-black/20 h4 px1 rounded-sm text-[10px] uppercase text-black/80"
-    onclick={onClick}
-  >
-    {text}
-  </button>
-{/snippet}
+  $inspect(reposOrder)
+</script>
 
 <svelte:window
   on:click={ellipsisMenuOpen ? handleWindowClickWhileMenuOpen : null}
@@ -332,172 +375,41 @@
     </div>
   </div>
   <!-- REPOS LIST -->
-  <div class="flex-grow">
-    <div class="flex flex-col space-y-1.5 p1.5">
-      {#each subRepos as repo (repo.name)}
-        {@const syncStatus =
-          repo.status[0] === 'git-full' ? repo.status[2] : null}
-        {@const name = repo.name!}
-        <div class="bg-gray-200 p-0 w-260px rounded-1 shadow-[0_0_0_1px_#0006]">
-          <!-- HEADER -->
-          <div
-            class="bg-gray-700 rounded-t-1 flexcc relative px1.5 space-x-1.5"
-          >
-            <BootToggle
-              status={runningViteServers[name] ? 'on' : 'off'}
-              onclick={() => {
+  <div class="flex-grow flex">
+    {#each reposOrder.v as col, i (i)}
+      <div class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5">
+        {#each col as repoName, j (j)}
+          {@const repo = subRepos.find((r) => r.name === repoName)}
+          {#if repo}
+            {@const name = repo.name!}
+            <CompRepo
+              {repo}
+              isRunning={runningViteServers[name]}
+              menuOpen={name === ellipsisMenuOpen}
+              onToggleBoot={() => {
                 if (runningViteServers[name]) {
                   cmd('stop-vite', name)
                 } else {
                   cmd('start-vite', name)
                 }
               }}
+              onClickMenu={() => openEllipsisMenu(name)}
+              onRename={(newName) => cmd('rename-repo', name, newName)}
+              onRemoveRemote={() => cmd('remove-remote', name)}
+              onDuplicate={() => cmd('duplicate-repo', name)}
+              onRemove={() => cmd('remove-repo', name)}
+              onCommit={(msg) => cmd('commit', name, msg)}
+              onAddRemote={(url) => cmd('add-remote', name, url)}
+              onFetch={() => cmd('fetch', name)}
+              onSync={() => cmd('sync', name)}
+              onBuild={() => cmd('build', name)}
+              onPublish={() => cmd('publish', name)}
+              onMove={(direction) => moveRepo(name, direction)}
             />
-            <div
-              class="cursor-move font-mono h8 flexcs flex-grow text-white text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
-            >
-              {name}
-            </div>
-            {#if isRenaming && name === isRenaming.from}
-              <input
-                type="text"
-                bind:value={isRenaming.to}
-                id="rename-input"
-                onkeypress={(ev) => {
-                  if (ev.key === 'Enter') {
-                    doneRenaming()
-                  } else if (ev.key === 'Escape') {
-                    isRenaming = null
-                  }
-                }}
-                onblur={() => doneRenaming()}
-                class="absolute inset-1.5 right-8 bg-gray-800 b b-white/60 text-white font-mono text-3 outline-none"
-              />
-            {/if}
-            <button
-              onclick={() => openEllipsisMenu(repo.name!)}
-              class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
-            >
-              <EllipsisVerticalIcon />
-            </button>
-            {#if ellipsisMenuOpen === repo.name}
-              <div
-                class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
-                id="ellipsis-menu"
-              >
-                <button
-                  onclick={() => openOnFileExplorer(repo.name)}
-                  class="block text-left px1.5 hover:bg-black/10"
-                >
-                  Open Filesystem
-                </button>
-                {#if repo.status[0] === 'git-full'}
-                  <button
-                    onclick={() => cmd('remove-remote', repo.name!)}
-                    class="block text-left px1.5 hover:bg-black/10"
-                  >
-                    Remove Remote
-                  </button>
-                {/if}
-                <button
-                  onclick={() => startRenaming(repo.name!)}
-                  class="block text-left px1.5 hover:bg-black/10"
-                >
-                  Rename
-                </button>
-                <button
-                  onclick={() => cmd('duplicate-repo', repo.name!)}
-                  class="block text-left px1.5 hover:bg-black/10"
-                >
-                  Duplicate
-                </button>
-                <button
-                  onclick={() => cmd('remove-repo', repo.name!)}
-                  class="block text-left px1.5 hover:bg-black/10"
-                >
-                  Delete
-                </button>
-              </div>
-            {/if}
-          </div>
-          <div class="flex flex-col space-y-1.5 p1.5">
-            <!-- VITE CONTROL -->
-            {#if runningViteServers[name]}
-              <LocalhostLink localUrl={runningViteServers[name]} />
-            {/if}
-            <!-- <div class="">
-              <div class="flexcs space-x-1">
-                {#if runningViteServers[repo.name!]}
-                  <a
-                    href={runningViteServers[repo.name!]}
-                    onclick={(ev) => {
-                      ev.preventDefault()
-                      electronAPI.openExternal(runningViteServers[repo.name!])
-                    }}
-                    class="bg-gray-300 hover:bg-black/20 text-black/80 text-xs rounded-sm px1 py0.5"
-                  >
-                    {runningViteServers[repo.name!]}
-                  </a>
-                {/if}
-              </div>
-            </div> -->
-            <!-- UNCOMMITTED CHANGES -->
-            {#if repo.uncommittedChanges}
-              <div class="">
-                <UncommittedChangesLogger
-                  onConfirm={(msg) => {
-                    cmd('commit', repo.name!, msg)
-                  }}
-                  changes={repo.uncommittedChanges}
-                />
-              </div>
-            {/if}
-            <!-- GIT REMOTE -->
-            {#if repo.status[0] === 'git'}
-              <SetupRemote
-                repoName={repo.name!}
-                onConfirm={(url) => cmd('add-remote', repo.name!, url)}
-              />
-            {:else if repo.status[0] === 'git-full'}
-              <GitRemoteDisplay url={repo.status[1]} />
-              <div class="flexce relative">
-                <FetchedButton
-                  lastFetchedAt={repo.lastFetchedAt}
-                  isFetching={repo.fetching}
-                  onFetch={() => cmd('fetch', repo.name)}
-                />
-                <div class="flex-grow"></div>
-                <SyncButton
-                  status={syncStatus}
-                  onAction={() => cmd('sync', repo.name)}
-                />
-                {#if repo.mergeConflicts}
-                  <div
-                    class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
-                  >
-                    Merge conflict
-                  </div>
-                {/if}
-              </div>
-            {/if}
-
-            <!-- PUBLISHING -->
-            {#if repo.wenv?.cname}
-              <div class="">
-                {#if repo.name}
-                  <div class="flex space-x-1">
-                    {@render MiniBtn('Build', () => cmd('build', repo.name!))}
-                    {@render MiniBtn('Publish', () =>
-                      cmd('publish', repo.name!),
-                    )}
-                  </div>
-                {/if}
-              </div>
-            {/if}
-          </div>
-        </div>
-      {/each}
-    </div>
+          {/if}
+        {/each}
+      </div>
+    {/each}
   </div>
   <!-- ADD REPO INPUT -->
   <div class="p2">

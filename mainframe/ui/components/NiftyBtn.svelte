@@ -2,7 +2,7 @@
   const P: {
     children: any
     disabled?: boolean
-    color?: 'lime' | 'sky'
+    color?: 'lime' | 'sky' | 'yellow'
     expand?: boolean
     onclick?: () => void
   } = $props()
@@ -11,6 +11,7 @@
     {
       lime: 'bg-lime-500 shadow-lime-700',
       sky: 'bg-sky-500 shadow-sky-700 ',
+      yellow: 'bg-yellow-500 shadow-yellow-700 ',
     }[P.color || 'lime'],
   )
 </script>

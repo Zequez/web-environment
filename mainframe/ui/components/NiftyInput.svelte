@@ -11,6 +11,7 @@
     onConfirm?: () => void
     onCancel?: () => void
     placeholder?: string
+    disabled?: boolean
     class?: ClassValue
   } = $props()
 
@@ -26,6 +27,7 @@
 <input
   bind:this={el}
   bind:value
+  disabled={P.disabled}
   onkeydown={(ev) => {
     if (ev.key === 'Enter') {
       P.onConfirm?.()
