@@ -75,6 +75,7 @@
 
 {#if Icon}
   <button
+    aria-label={`${text} -> ${action}`}
     title={text}
     onclick={onAction}
     class={cx(
@@ -95,11 +96,15 @@
       <div class="absolute z-20 inset-0.25 rounded-[4px] bg-white/95"></div>
     {/if}
     <Icon
+      aria-hidden={true}
       class={cx('w-4 relative z-30 text-xs flexcc', {
         'animate-spin': status === 'unknown',
       })}
     />
-    <span class="relative z-30 inline-block flex-grow text-center text-3">
+    <span
+      aria-hidden={true}
+      class="relative z-30 inline-block flex-grow text-center text-3"
+    >
       {action}
     </span>
   </button>

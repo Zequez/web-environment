@@ -10,15 +10,16 @@
     content: P.status === 'off' ? 'Start' : 'Stop',
     placement: 'top',
   }}
+  aria-label="Turn {P.status === 'off' ? 'On' : 'Off'}"
   onclick={() => P.onclick()}
   class={[
-    'hover:brightness-110 h5 w5 flexcc rounded-1 relative overflow-hidden',
+    'hover:brightness-110 h5 w5 flexcc rounded-1 relative overflow-hidden p1',
     {
-      'bg-gray-700 shadow-[inset_0_.7px_0_0.6px_#0003,0_0_0_1px_#0004] p1 pt1.5 translate-y-1px':
+      'bg-gray-700 shadow-[inset_0_.7px_0_0.6px_#0003,0_0_0_1px_#0004] translate-y-1px':
         P.status === 'booting' || P.status === 'on',
       'text-yellow-400 animate-pulse': P.status === 'booting',
       'text-lime-400': P.status === 'on',
-      'text-white bg-gray-500 shadow-[0_1.5px_0_.5px_#0004] p1':
+      'text-white bg-gray-500 shadow-[0_1.5px_0_.5px_#0004]':
         P.status === 'off',
     },
   ]}

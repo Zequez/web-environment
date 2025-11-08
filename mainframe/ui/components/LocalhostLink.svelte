@@ -8,7 +8,7 @@
   const P: { localUrl: string } = $props()
 </script>
 
-<div class="flexcc h6 space-x-1.5">
+<div class="flexcc h6 space-x-1.5 text-black/80">
   <button
     class="font-mono lh-6 text-3 group relative flex-grow bg-gray-50 rounded-1 shadow-[inset_0_0_0_0.5px_#0003]"
     onclick={() => copyToClipboard(P.localUrl)}

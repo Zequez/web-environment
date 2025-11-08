@@ -7,19 +7,25 @@
   const P: { changes: string; onConfirm: (msg: string) => void } = $props()
 
   let commitMsg = $state('')
+  let changesIsFocused = $state(false)
 </script>
 
 <div class="flex space-x-1.5">
-  <div
-    class="text-3 flexcc"
+  <button
+    tabindex={0}
+    aria-label="Uncommitted Changes"
+    class="text-3 flexcc cursor-default"
+    onfocus={() => (changesIsFocused = true)}
+    onblur={() => (changesIsFocused = false)}
     use:tooltip={{
+      constant: changesIsFocused,
       content: `<pre>${P.changes}</pre>`,
       html: true,
       placement: 'top',
     }}
   >
     <ChangeIcon />
-  </div>
+  </button>
 
   <NiftyInput
     placeholder="Message"

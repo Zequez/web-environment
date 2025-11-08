@@ -6,6 +6,10 @@
   animation: scaleOut 0.01s ease forwards !important;
 }
 
+.svooltip {
+  z-index: 9999;
+}
+
 @keyframes scaleIn {
   from {
     opacity: 0;

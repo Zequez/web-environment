@@ -56,7 +56,7 @@ repos:
     port: 19738
     accessibleFromLocalNetwork: false
   test:
-    started: true
+    started: false
     port: 19739
     accessibleFromLocalNetwork: false
   nodos.lat:

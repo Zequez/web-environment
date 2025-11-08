@@ -28,6 +28,7 @@
 <div class="whitespace-nowrap flexcs w-24 flex-shrink-0">
   {#if lastFetchedAt}
     <button
+      aria-label="Refresh"
       disabled={isFetching}
       onclick={onFetch}
       class={'bg-sky-400 hover:brightness-110 flex-shrink-0 disabled:(saturate-0 pointer-events-none) text-white flexcc rounded-1 text-xs h5 w5 b b-black/10 mr2'}
@@ -40,7 +41,10 @@
         ]}
       />
     </button>
-    <div class="text-xs flex-grow text-left text-black/70">
+    <div
+      aria-label="Fetch status"
+      class="text-xs flex-grow text-left text-black/70"
+    >
       {#if isFetching}
         Fetching<ThreeDots />
       {:else if lastFetchedAt}

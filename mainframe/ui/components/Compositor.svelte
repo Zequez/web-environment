@@ -295,6 +295,7 @@
     <div class="flexcs space-x-3">
       <button
         onclick={() => openOnFileExplorer(null)}
+        aria-label="Open filesystem"
         class="w6 h6 flexcc text-white hover:text-lime-400 p1"
       >
         <FolderIcon />
@@ -364,7 +365,10 @@
   <!-- REPOS LIST -->
   <div class="flex-grow flex overflow-auto bg-slate-800">
     {#each reposOrder.v as col, i (i)}
-      <div class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5">
+      <div
+        class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5"
+        aria-label="Column {i}"
+      >
         {#each col as repoName, j (j)}
           {@const repo = subRepos.find((r) => r.name === repoName)}
           {#if repo}

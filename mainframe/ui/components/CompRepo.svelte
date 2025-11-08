@@ -1,4 +1,5 @@
 <script lang="ts">
+  import FolderIcon from '~icons/fa6-solid/folder-open'
   import type { Repo } from '@/mainframe/servers/git-server/messages'
   import BootToggle from './BootToggle.svelte'
   import MoveThingy from './MoveThingy.svelte'
@@ -13,6 +14,10 @@
   import SyncButton from './SyncButton.svelte'
   import NiftyBtn from './NiftyBtn.svelte'
   import NiftyInput from './NiftyInput.svelte'
+  import VersioningToggle from './VersioningToggle.svelte'
+  import { lsState } from '@/center/utils/runes.svelte'
+  import { tooltip } from '@/center/svooltip'
+  import WebPublishingToggle from './WebPublishingToggle.svelte'
 
   const p: {
     repo: Repo
@@ -40,6 +45,12 @@
   const name = $derived(repo.name!)
 
   let isRenaming = $state<{ from: string; to: string } | null>(null)
+  let versioningToggled = lsState(`versioningToggled-${p.repo.name!}`, {
+    v: true,
+  })
+  let webPublishingToggled = lsState(`webPublishingToggled-${p.repo.name!}`, {
+    v: false,
+  })
 
   async function startRenaming(repo: string) {
     isRenaming = {
@@ -60,17 +71,36 @@
   }
 </script>
 
-<div class="bg-gray-200 p-0 w-full rounded-1 shadow-[0_0_0_1px_#0006]">
+<div
+  aria-label={name}
+  class="bg-gray-200 p-0 w-full rounded-1 shadow-[0_0_0_1px_#0006]"
+>
   <!-- HEADER -->
   <div class="bg-gray-700 rounded-t-1 flexcc relative px1.5 space-x-1.5 group">
     <BootToggle
       status={p.isRunning ? 'on' : 'off'}
       onclick={() => p.onToggleBoot()}
     />
+    <VersioningToggle
+      onToggle={() => (versioningToggled.v = !versioningToggled.v)}
+      gitStatus={repo.status[0]}
+      toggled={versioningToggled.v}
+    />
+    <WebPublishingToggle
+      onToggle={() => (webPublishingToggled.v = !webPublishingToggled.v)}
+      toggled={webPublishingToggled.v}
+    />
     <div
       class="relative font-mono h8 flexcs flex-grow text-white text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
     >
-      <span>{name}</span>
+      <span
+        >{name}
+        <button
+          aria-label="Open in filesystem"
+          class="text-2 text-white/50 hover:text-white/100"
+          onclick={() => openOnFileExplorer(name)}><FolderIcon /></button
+        ></span
+      >
       {#if isRenaming && name === isRenaming.from}
         <input
           type="text"
@@ -97,6 +127,7 @@
       />
     </div>
     <button
+      aria-label="Open menu"
       onclick={() => p.onClickMenu()}
       class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
     >
@@ -107,12 +138,6 @@
         class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
         id="ellipsis-menu"
       >
-        <button
-          onclick={() => openOnFileExplorer(repo.name)}
-          class="block text-left px1.5 hover:bg-black/10"
-        >
-          Open Filesystem
-        </button>
         {#if repo.status[0] === 'git-full'}
           <button
             onclick={() => p.onRemoveRemote()}
@@ -120,6 +145,17 @@
           >
             Remove Remote
           </button>
+          {#if repo.status[1].match(/github/)}
+            <button
+              onclick={() =>
+                openInBrowser(
+                  repo.status[1]!.replace(/.git$/, '') + '/settings/pages',
+                )}
+              class="block text-left px1.5 hover:bg-black/10"
+            >
+              Github Pages
+            </button>
+          {/if}
         {/if}
         <button
           onclick={() => startRenaming(repo.name!)}
@@ -142,94 +178,93 @@
       </div>
     {/if}
   </div>
-  <div class="flex flex-col space-y-1.5 p1.5">
-    <!-- VITE CONTROL -->
-    {#if p.isRunning}
-      <LocalhostLink localUrl={p.isRunning} />
-    {/if}
-    <!-- <div class="">
-              <div class="flexcs space-x-1">
-                {#if runningViteServers[repo.name!]}
-                  <a
-                    href={runningViteServers[repo.name!]}
-                    onclick={(ev) => {
-                      ev.preventDefault()
-                      electronAPI.openExternal(runningViteServers[repo.name!])
-                    }}
-                    class="bg-gray-300 hover:bg-black/20 text-black/80 text-xs rounded-sm px1 py0.5"
-                  >
-                    {runningViteServers[repo.name!]}
-                  </a>
-                {/if}
-              </div>
-            </div> -->
-    <!-- UNCOMMITTED CHANGES -->
-    {#if repo.uncommittedChanges}
-      <div class="">
-        <UncommittedChangesLogger
-          onConfirm={(msg) => {
-            p.onCommit(msg)
-          }}
-          changes={repo.uncommittedChanges}
-        />
-      </div>
-    {/if}
-    <!-- GIT REMOTE -->
-    {#if repo.status[0] === 'git'}
-      <SetupRemote
-        repoName={repo.name!}
-        onConfirm={(url) => p.onAddRemote(url)}
-      />
-    {:else if repo.status[0] === 'git-full'}
-      <GitRemoteDisplay url={repo.status[1]} />
-      <div class="flexce relative">
-        <FetchedButton
-          lastFetchedAt={repo.lastFetchedAt}
-          isFetching={repo.fetching}
-          onFetch={() => p.onFetch()}
-        />
-        <div class="flex-grow"></div>
-        <SyncButton status={syncStatus} onAction={() => p.onSync()} />
-        {#if repo.mergeConflicts}
+  {#if p.isRunning || versioningToggled.v || webPublishingToggled.v}
+    <div class="flex flex-col space-y-3 p1.5">
+      <!-- VITE CONTROL -->
+      {#if p.isRunning}
+        <LocalhostLink localUrl={p.isRunning} />
+      {/if}
+      {#if versioningToggled.v}
+        <div class="relative space-y-1.5">
           <div
-            class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
-          >
-            Merge conflict
-          </div>
-        {/if}
-      </div>
-    {/if}
+            class="absolute top-0 bottom-0 -left-2 w-1 rounded-1 bg-lime-500 shadow-[1px_1px_0_0] shadow-lime-700"
+          ></div>
 
-    <!-- PUBLISHING -->
-    {#if repo.wenv?.cname && repo.status[0] === 'git-full'}
-      <div class="flex flex-col space-y-1.5">
-        {#if repo.name}
-          <div class="flex space-x-1.5">
-            <NiftyBtn color="yellow" expand={true} onclick={() => p.onBuild()}
-              >Build</NiftyBtn
-            >
-            <NiftyBtn color="sky" expand={true} onclick={() => p.onPublish()}
-              >Publish</NiftyBtn
-            >
-          </div>
-          <NiftyInput
-            value={repo.wenv.cname}
-            disabled={true}
-            class="font-mono text-center text-3 lh-6"
-          />
-          {#if repo.status[0] === 'git-full' && repo.status[1].match(/github/)}
-            <div class="h6 text-center">
-              <button
-                class="text-3 underline underline-dashed font-mono hover:underline-solid hover:text-sky-500"
-                onclick={() =>
-                  openInBrowser(
-                    repo.status[1]!.replace(/.git$/, '') + '/settings/pages',
-                  )}>Setup branch www on Github Pages</button
-              >
+          <!-- UNCOMMITTED CHANGES -->
+          {#if repo.uncommittedChanges}
+            <UncommittedChangesLogger
+              onConfirm={(msg) => {
+                p.onCommit(msg)
+              }}
+              changes={repo.uncommittedChanges}
+            />
+          {/if}
+          <!-- GIT REMOTE -->
+          {#if repo.status[0] === 'git'}
+            <SetupRemote
+              repoName={repo.name!}
+              onConfirm={(url) => p.onAddRemote(url)}
+            />
+          {:else if repo.status[0] === 'git-full'}
+            <GitRemoteDisplay url={repo.status[1]} />
+            <div class="flexce relative">
+              <FetchedButton
+                lastFetchedAt={repo.lastFetchedAt}
+                isFetching={repo.fetching}
+                onFetch={() => p.onFetch()}
+              />
+              <div class="flex-grow"></div>
+              <SyncButton status={syncStatus} onAction={() => p.onSync()} />
+              {#if repo.mergeConflicts}
+                <div
+                  class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
+                >
+                  Merge conflict
+                </div>
+              {/if}
             </div>
           {/if}
-        {/if}
-      </div>
-    {/if}
-  </div>
+        </div>
+      {/if}
+
+      <!-- PUBLISHING -->
+      {#if webPublishingToggled.v}
+        <div class="relative">
+          <div
+            class="absolute top-0 bottom-0 -left-2 w-1 rounded-1 bg-yellow-500 shadow-[1px_1px_0_0] shadow-yellow-700"
+          ></div>
+          {#if repo.wenv?.cname && repo.status[0] === 'git-full'}
+            <div class="flex flex-col space-y-1.5">
+              {#if repo.name}
+                <div class="flex space-x-1.5">
+                  <NiftyBtn
+                    color="yellow"
+                    expand={true}
+                    onclick={() => p.onBuild()}>Build</NiftyBtn
+                  >
+                  <NiftyBtn
+                    color="sky"
+                    expand={true}
+                    onclick={() => p.onPublish()}>Publish</NiftyBtn
+                  >
+                </div>
+                <NiftyInput
+                  value={repo.wenv.cname}
+                  disabled={true}
+                  class="font-mono text-center text-3 lh-6"
+                />
+              {/if}
+            </div>
+          {:else}
+            <div class="text-3 font-mono">
+              1. Add cname property to wenv.yml file<br />
+              2. Connect to Github repository<br />
+              3. Configure Github pages for repo<br />
+              4. Configure domain DNS
+            </div>
+          {/if}
+        </div>
+      {/if}
+    </div>
+  {/if}
 </div>

@@ -17,6 +17,7 @@
 
 <button
   onclick={() => openInBrowser(P.url)}
+  aria-label="Open {P.url} in browser"
   class={[
     P.class,
     'flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 shadow-[0_1px_0_0_#0006]',
