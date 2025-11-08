@@ -17,7 +17,7 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "build": "vite build"
+    "start": "bun run ./mainframe/bin/wenv.ts start"
   },
   "dependencies": {
     "@box2d/core": "^0.11.0",

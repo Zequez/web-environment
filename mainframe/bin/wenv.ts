@@ -10,6 +10,14 @@ import { hideBin } from 'yargs/helpers'
 import chalk, { type ChalkInstance } from 'chalk'
 import runWatchProcess from '../run-watch-process'
 
+import { $path } from '@/center/utils/system'
+import { mkdirSync, existsSync } from 'fs'
+
+const reposPath = $path('repos')
+if (!existsSync(reposPath)) {
+  mkdirSync(reposPath)
+}
+
 function printTitle(title: string, color: ChalkInstance) {
   const eq = title.replace(/./g, '=')
   console.log(color(eq))
