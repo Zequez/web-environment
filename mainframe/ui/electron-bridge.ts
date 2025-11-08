@@ -6,7 +6,6 @@ export function openInBrowser(url: string) {
 }
 
 export function openOnFileExplorer(name: string | null) {
-  console.log('NAME', name)
   const electronAPI = (window as any).electronAPI as ElectronBridge
   electronAPI.openFolder(name)
 }

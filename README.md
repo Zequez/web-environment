@@ -1,19 +1,38 @@
 # Web Environment
 
-This is an evergreen code environment designed with a one-planet-one-team mindset.
-One coding environment for everybody to collaborate in.
+![Screenshot](https://github.com/zequez/web-environment/blob/main/assets/web-env-screenshot.png?raw=true)
 
-If you intend to contribute to the environment itself, you fork it and
-maintain your own evergreen code environment.
+Evergreen coding environment with:
 
-If you want to use the environment as a foundation and all-tools-included workshop for building stuff, then you just clone it and run it! The environment has no "production" version, it's meant to be used in dev mode.
+- Integrated UI for managing multiple repositories in a dashboard
+- Curated libraries and development tools
+- Booting button for each repo, with auto-port-assignment
+- Building and publishing buttons (only Github Pages for now)
+- Visually simplified version control for non-technical people
+- Visual self-updater from sourced Git repository
+- The whole collection of all my personal utility tools available on every repo
 
-The environment has no name, it has no brand. It's evergreen because it's always alive
-and evolving.
+# Architectural Paradigm Shifts
 
-Made for my own delight.
+## Subrepos
 
-Welcome aboard!
+There is a /repos folder where repositories are stored.
+
+All the repositories use the same package.json and all the other configuration files from the parent repository.
+
+Cross-referencing repositories is OK, as long as there is an agreement on names.
+
+On VSCode you work on a single project with the root repository, and everything type-checks, and refactoring works well.
+
+## Always on deveploment and no central authority
+
+There is no production version, it is meant to be run on development mode and self-update from whichever repo you pull it from.
+
+# Motivation / Neccesity
+
+I'm holding space for a constellation of autonomous bioregional digital nodes and I needed something
+that could scale horizontally with thousands of independently stewarded websites without any cost or central point of failure,
+while still collaborating on the code level to share the tools.
 
 # Steward
 
