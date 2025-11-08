@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ElectronBridge } from '@/mainframe/electron/preload'
+  import { openInBrowser } from '../electron-bridge'
   import GithubIcon from '~icons/fa6-brands/github'
 
   const P: { url: string } = $props()
@@ -12,12 +12,10 @@
   }
 
   let [host, path] = $derived(extractRepo(P.url))
-
-  const electronAPI = (window as any).electronAPI as ElectronBridge
 </script>
 
 <button
-  onclick={electronAPI.openExternal.bind(null, P.url)}
+  onclick={() => openInBrowser(P.url)}
   class="flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 shadow-[0_1px_0_0_#0006]"
 >
   {#if host === 'github'}

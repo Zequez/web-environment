@@ -78,7 +78,7 @@
     title={text}
     onclick={onAction}
     class={cx(
-      `${color} h6 relative block flexcc b b-black/10 px2 overflow-hidden group py1 rounded-md whitespace-nowrap w24 flex-shrink-0`,
+      `${color} h6 relative block flexcc b b-black/10 px2 overflow-hidden group py1 rounded-1 font-mono uppercase whitespace-nowrap w24 flex-shrink-0`,
       {
         'b b-black/10 text-white shadow-[0_1px_2px_1px_#0003] bg-gradient-to-b active:bg-gradient-to-t active:top-0.15 from-white/10 to-white/0 ':
           actionable,
@@ -99,7 +99,7 @@
         'animate-spin': status === 'unknown',
       })}
     />
-    <span class="relative z-30 inline-block flex-grow text-center text-sm">
+    <span class="relative z-30 inline-block flex-grow text-center text-3">
       {action}
     </span>
   </button>

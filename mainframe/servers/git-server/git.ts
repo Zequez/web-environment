@@ -3,6 +3,7 @@ import { join } from 'path'
 import type { SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
 import { wait } from '@/center/utils/neutral'
+import chalk from 'chalk'
 
 export async function ensurePathIsRepo(repoPath: string) {
   if (!(await exists(repoPath))) {
@@ -74,8 +75,14 @@ export async function aheadBehind(repoPath: string) {
   return [ahead, behind]
 }
 
+export async function getUncommittedChanges(repoPath: string) {
+  const changes = await Bun.$`cd ${repoPath} && git status --short`.quiet()
+  return changes.text().trim()
+}
+
 export async function hasUncommittedChanges(repoPath: string) {
   const changes = await Bun.$`cd ${repoPath} && git status --short`.quiet()
+  console.log('CHANGES', changes.text().trim())
   return !(changes.text().trim() === '')
 }
 
@@ -86,8 +93,9 @@ export async function lastFetchedAt(repoPath: string) {
 
 export async function assesSyncStatus(
   repoPath: string,
-): Promise<[syncStatus: SyncStatus, commitPending: boolean]> {
-  const commitPending = await hasUncommittedChanges(repoPath)
+): Promise<[syncStatus: SyncStatus, uncommittedChanges: string]> {
+  const uncommittedChanges = await getUncommittedChanges(repoPath)
+  const commitPending = uncommittedChanges !== ''
   const zeroLocalCommits = await zeroCommits(repoPath, 'local')
   const zeroRemoteCommits = await zeroCommits(repoPath, 'remote')
 
@@ -107,13 +115,13 @@ export async function assesSyncStatus(
   }
 
   if (behind && ahead) {
-    return ['diverged', commitPending]
+    return ['diverged', uncommittedChanges]
   } else if (behind && !ahead) {
-    return ['behind', false]
+    return ['behind', uncommittedChanges]
   } else if (ahead && !behind) {
-    return ['ahead', commitPending]
+    return ['ahead', uncommittedChanges]
   } else {
-    return ['in-sync', false]
+    return ['in-sync', uncommittedChanges]
   }
 }
 
@@ -121,12 +129,31 @@ export async function fetch(repoPath: string) {
   await Bun.$`cd ${repoPath} && git fetch`
 }
 
-export async function autoCommit(repoPath: string) {
-  await Bun.$`cd ${repoPath} && git add -A && git commit -m "Auto-commit ${new Date().toISOString()}"`
+export async function autoCommit(repoPath: string, message?: string) {
+  const commitMessage = message
+    ? message.replace(/"/g, '\\"')
+    : `Auto-commit ${new Date().toISOString()}`
+  await Bun.$`cd ${repoPath} && git add -A && git commit -m "${commitMessage}"`
 }
 
 export async function pull(repoPath: string) {
-  await Bun.$`cd ${repoPath} && git pull origin main`
+  const result = await Bun.$`cd ${repoPath} && git pull origin main`
+    .nothrow()
+    .quiet()
+  const stderr = result.stderr.toString().toLowerCase()
+  const stdout = result.stdout.toString().toLowerCase()
+  if (stdout.match(/already up to date/)) {
+    return true
+  } else if (stderr.match(/does not appear to be a git repository/)) {
+    return false
+  } else if (stderr.match(/could not read from remote repository/)) {
+    return true // Probably no internet
+  } else if (stderr.match(/couldn't find remote ref main/)) {
+    return true // Remote is empty; no worries
+  } else {
+    console.error({ error: stdout + stderr })
+    return false
+  }
 }
 
 export async function push(repoPath: string) {
@@ -210,4 +237,8 @@ export async function forcePushToOriginOnWwwBranch(
   await addRemote(dirPath, origin)
   await autoCommit(dirPath)
   await Bun.$`cd ${dirPath} && git push --set-upstream origin www -f`
+}
+
+export async function removeRemote(repoPath: string) {
+  await Bun.$`cd ${repoPath} && git remote rm origin`
 }

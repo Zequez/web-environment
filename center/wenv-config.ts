@@ -11,11 +11,21 @@ export type WEnvConfig = {
   }
 }
 
+let defaultConfig = {
+  substrate: 'nothing-web',
+}
+
 export function readRepoWenvConfig(repo: string): WEnvConfig {
-  const content = fs.readFileSync(`./repos/${repo}/wenv.yml`, 'utf-8')
-  if (content) {
-    return parse(content) as WEnvConfig
+  if (fs.existsSync(`./repos/${repo}/wenv.yml`)) {
+    const contentRaw = fs.readFileSync(`./repos/${repo}/wenv.yml`, 'utf-8')
+    if (contentRaw) {
+      return parse(contentRaw) as WEnvConfig
+    } else {
+      console.log('Warning wenv.yml is empty, using default values')
+      return defaultConfig
+    }
   } else {
-    return {}
+    console.log('Warning no wenv.yml found, using default values')
+    return defaultConfig
   }
 }

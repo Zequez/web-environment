@@ -119,10 +119,27 @@ export function startReposMonitor() {
     }
   }
 
+  async function commit(name: string, message: string) {
+    const repo = R.get(name)
+    if (repo) {
+      await repo.commit(message)
+      notify()
+    }
+  }
+
   async function addRemote(name: string, url: string) {
     const repo = R.get(name)
     if (repo) {
       await repo.addRemote(url)
+      notify()
+    }
+  }
+
+  async function removeRemote(name: string) {
+    const repo = R.get(name)
+    if (repo) {
+      await repo.removeRemote()
+      console.log(repo.toJSON())
       notify()
     }
   }
@@ -143,7 +160,18 @@ export function startReposMonitor() {
     }
   }
 
-  async function fetchAll(name: string) {}
+  async function fetchAll() {
+    for (let repo of R.values()) {
+      await repo.fetch()
+    }
+  }
+
+  async function analyzeAll() {
+    for (let repo of R.values()) {
+      await repo.analyzeLocal()
+    }
+    notify()
+  }
 
   function sanitizeRepoName(name: string) {
     return name.replace(/[^a-z0-9\-_]/gi, '')
@@ -166,8 +194,12 @@ export function startReposMonitor() {
     remove,
     rename,
     duplicate,
+    commit,
     sync,
     addRemote,
+    removeRemote,
+    fetchAll,
+    analyzeAll,
     get repos() {
       return R
     },

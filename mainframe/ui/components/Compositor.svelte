@@ -5,9 +5,11 @@
   import PlayIcon from '~icons/fa6-solid/play'
   import StopIcon from '~icons/fa6-solid/stop'
   import FolderIcon from '~icons/fa6-solid/folder-open'
+  import ChangeIcon from '~icons/fa6-solid/file-invoice'
   import InternetIcon from '~icons/fa6-solid/globe'
   import TrashIcon from '~icons/fa6-solid/trash'
   import OpenIcon from '~icons/fa6-solid/square-arrow-up-right'
+  import PowerIcon from '~icons/fa6-solid/power-off'
   import UploadIcon from '~icons/fa6-solid/upload'
   import EllipsisVerticalIcon from '~icons/fa6-solid/ellipsis-vertical'
 
@@ -32,6 +34,7 @@
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
 
+  import { tooltip } from '@/center/svooltip'
   import AddRemoteInput from './AddRemoteInput.svelte'
   import { type ElectronBridge } from '@/mainframe/electron/preload'
   import SyncButton from './SyncButton.svelte'
@@ -39,6 +42,12 @@
   import GitRemoteDisplay from './GitRemoteDisplay2.svelte'
   import { tunnel } from '@/center/tunnel'
   import { lsState } from '@/center/utils/runes.svelte'
+  import SetupRemote from './SetupRemote.svelte'
+  import NiftyInput from './NiftyInput.svelte'
+  import UncommittedChangesLogger from './UncommittedChangesLogger.svelte'
+  import NiftyBtn from './NiftyBtn.svelte'
+  import BootToggle from './BootToggle.svelte'
+  import LocalhostLink from './LocalhostLink.svelte'
 
   const electronAPI = (window as any).electronAPI as ElectronBridge
 
@@ -120,10 +129,15 @@
       | [type: 'init-repo-git', name: string]
       | [type: 'remove-repo', name: string]
       | [type: 'duplicate-repo', name: string]
+      | [type: 'remove-remote', name: string]
       | [type: 'rename-repo', name: string, newName: string]
+      | [type: 'commit', name: string, message: string]
       | [type: 'add-remote', name: string, url: string]
       | [type: 'sync', name: string | null]
       | [type: 'fetch', name: string | null]
+      | [type: 'fetch-all']
+      | [type: 'analyze-all']
+      // ---
       | [type: 'build', name: string]
       | [type: 'publish', name: string]
       | [type: 'start-vite', name: string]
@@ -148,6 +162,10 @@
         gitSend(['duplicate-repo', c[1]])
         break
       }
+      case 'remove-remote': {
+        gitSend(['remove-remote', c[1]])
+        break
+      }
       case 'rename-repo': {
         gitSend(['rename-repo', c[1], c[2]])
         break
@@ -156,12 +174,24 @@
         gitSend(['add-remote', c[1], c[2]])
         break
       }
+      case 'commit': {
+        gitSend(['commit', c[1], c[2]])
+        break
+      }
       case 'sync': {
         gitSend(['sync', c[1]])
         break
       }
       case 'fetch': {
         gitSend(['fetch', c[1]])
+        break
+      }
+      case 'fetch-all': {
+        gitSend(['fetch-all'])
+        break
+      }
+      case 'analyze-all': {
+        gitSend(['analyze-all'])
         break
       }
       case 'build': {
@@ -223,7 +253,9 @@
 
   function doneRenaming() {
     if (isRenaming) {
-      cmd('rename-repo', isRenaming.from, isRenaming.to)
+      if (isRenaming.from !== isRenaming.to) {
+        cmd('rename-repo', isRenaming.from, isRenaming.to)
+      }
       isRenaming = null
     }
   }
@@ -244,8 +276,12 @@
 
 <div class="flex flex-col h-full">
   <!-- MAINFRAME BAR -->
-  <div class="flexcc bg-slate-500 bg-gradient-to-r from-#0001 to-#0000">
-    <div class="flexcs h-12 space-x-3 px3">
+  <div class="flexcs h12 px3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000">
+    <div class="flex space-x-3">
+      <NiftyBtn onclick={() => cmd('analyze-all')}>Analyze All</NiftyBtn>
+      <NiftyBtn onclick={() => cmd('fetch-all')}>Fetch All</NiftyBtn>
+    </div>
+    <div class="flexcs h-12 space-x-1.5 px3">
       <button
         onclick={() => openOnFileExplorer(null)}
         class="w6 h6 flexcc text-white hover:text-lime-400 p1"
@@ -257,7 +293,7 @@
         <div class="relative">
           <button
             class={cx(
-              'bg-white hover:bg-lime-4 active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 font-bold text-black/70 mr1 uppercase',
+              'bg-white hover:bg-lime-4 font-mono active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 text-black/70 mr1 uppercase',
               {
                 'opacity-0': mainframeRepo.fetching,
               },
@@ -297,158 +333,171 @@
   </div>
   <!-- REPOS LIST -->
   <div class="flex-grow">
-    <div></div>
-    <table class="w-full border-collapse">
-      <tbody>
-        {#each subRepos as repo (repo.name)}
-          {@const syncStatus =
-            repo.status[0] === 'git-full' ? repo.status[2] : null}
-          <tr class="bg-gray-200 p-0 h8 last:(b-b-1 b-black/10)">
-            <td
-              class="h-full p0 pl2 pr1 bg-gray-700 b-t b-white/10 flexcc relative"
+    <div class="flex flex-col space-y-1.5 p1.5">
+      {#each subRepos as repo (repo.name)}
+        {@const syncStatus =
+          repo.status[0] === 'git-full' ? repo.status[2] : null}
+        {@const name = repo.name!}
+        <div class="bg-gray-200 p-0 w-260px rounded-1 shadow-[0_0_0_1px_#0006]">
+          <!-- HEADER -->
+          <div
+            class="bg-gray-700 rounded-t-1 flexcc relative px1.5 space-x-1.5"
+          >
+            <BootToggle
+              status={runningViteServers[name] ? 'on' : 'off'}
+              onclick={() => {
+                if (runningViteServers[name]) {
+                  cmd('stop-vite', name)
+                } else {
+                  cmd('start-vite', name)
+                }
+              }}
+            />
+            <div
+              class="cursor-move font-mono h8 flexcs flex-grow text-white text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
             >
+              {name}
+            </div>
+            {#if isRenaming && name === isRenaming.from}
+              <input
+                type="text"
+                bind:value={isRenaming.to}
+                id="rename-input"
+                onkeypress={(ev) => {
+                  if (ev.key === 'Enter') {
+                    doneRenaming()
+                  } else if (ev.key === 'Escape') {
+                    isRenaming = null
+                  }
+                }}
+                onblur={() => doneRenaming()}
+                class="absolute inset-1.5 right-8 bg-gray-800 b b-white/60 text-white font-mono text-3 outline-none"
+              />
+            {/if}
+            <button
+              onclick={() => openEllipsisMenu(repo.name!)}
+              class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
+            >
+              <EllipsisVerticalIcon />
+            </button>
+            {#if ellipsisMenuOpen === repo.name}
               <div
-                class="cursor-move font-mono h8 flexcs flex-grow text-white text-xs w30 flex-shrink-0 overflow-hidden text-ellipsis"
+                class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
+                id="ellipsis-menu"
               >
-                {repo.name}
-              </div>
-              {#if isRenaming && repo.name === isRenaming.from}
-                <input
-                  type="text"
-                  bind:value={isRenaming.to}
-                  id="rename-input"
-                  onkeypress={(ev) => {
-                    if (ev.key === 'Enter') {
-                      doneRenaming()
-                    } else if (ev.key === 'Escape') {
-                      isRenaming = null
-                    }
-                  }}
-                  onblur={() => doneRenaming()}
-                  class="absolute inset-1.5 right-8 bg-gray-800 b b-white/60 text-white font-mono text-3 outline-none"
-                />
-              {/if}
-              <button
-                onclick={() => openEllipsisMenu(repo.name!)}
-                class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
-              >
-                <EllipsisVerticalIcon />
-              </button>
-              {#if ellipsisMenuOpen === repo.name}
-                <div
-                  class="absolute flex flex-col whitespace-nowrap top-0 py1 text-black/75 right-0 mr8 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
-                  id="ellipsis-menu"
+                <button
+                  onclick={() => openOnFileExplorer(repo.name)}
+                  class="block text-left px1.5 hover:bg-black/10"
                 >
+                  Open Filesystem
+                </button>
+                {#if repo.status[0] === 'git-full'}
                   <button
-                    onclick={() => openOnFileExplorer(repo.name)}
-                    class="block text-left px1 hover:bg-black/10"
+                    onclick={() => cmd('remove-remote', repo.name!)}
+                    class="block text-left px1.5 hover:bg-black/10"
                   >
-                    Open Filesystem
+                    Remove Remote
                   </button>
-
-                  <button
-                    onclick={() => startRenaming(repo.name!)}
-                    class="block text-left px1 hover:bg-black/10"
+                {/if}
+                <button
+                  onclick={() => startRenaming(repo.name!)}
+                  class="block text-left px1.5 hover:bg-black/10"
+                >
+                  Rename
+                </button>
+                <button
+                  onclick={() => cmd('duplicate-repo', repo.name!)}
+                  class="block text-left px1.5 hover:bg-black/10"
+                >
+                  Duplicate
+                </button>
+                <button
+                  onclick={() => cmd('remove-repo', repo.name!)}
+                  class="block text-left px1.5 hover:bg-black/10"
+                >
+                  Delete
+                </button>
+              </div>
+            {/if}
+          </div>
+          <div class="flex flex-col space-y-1.5 p1.5">
+            <!-- VITE CONTROL -->
+            {#if runningViteServers[name]}
+              <LocalhostLink localUrl={runningViteServers[name]} />
+            {/if}
+            <!-- <div class="">
+              <div class="flexcs space-x-1">
+                {#if runningViteServers[repo.name!]}
+                  <a
+                    href={runningViteServers[repo.name!]}
+                    onclick={(ev) => {
+                      ev.preventDefault()
+                      electronAPI.openExternal(runningViteServers[repo.name!])
+                    }}
+                    class="bg-gray-300 hover:bg-black/20 text-black/80 text-xs rounded-sm px1 py0.5"
                   >
-                    Rename
-                  </button>
-                  <button
-                    onclick={() => cmd('duplicate-repo', repo.name!)}
-                    class="block text-left px1 hover:bg-black/10"
-                  >
-                    Duplicate
-                  </button>
-                  <button
-                    onclick={() => cmd('remove-repo', repo.name!)}
-                    class="block text-left px1 hover:bg-black/10"
-                  >
-                    Delete
-                  </button>
-                </div>
-              {/if}
-            </td>
-            <td class="p0 pl1">
-              <div class={cx('flexcc space-x-4 h8 pr1')}>
-                <div class="rounded-md flexcc relative">
-                  <SyncButton
-                    status={syncStatus}
-                    onAction={() => cmd('sync', repo.name)}
-                  />
-                  {#if repo.mergeConflicts}
-                    <div
-                      class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
-                    >
-                      Merge conflict
-                    </div>
-                  {/if}
-                </div>
+                    {runningViteServers[repo.name!]}
+                  </a>
+                {/if}
+              </div>
+            </div> -->
+            <!-- UNCOMMITTED CHANGES -->
+            {#if repo.uncommittedChanges}
+              <div class="">
+                <UncommittedChangesLogger
+                  onConfirm={(msg) => {
+                    cmd('commit', repo.name!, msg)
+                  }}
+                  changes={repo.uncommittedChanges}
+                />
+              </div>
+            {/if}
+            <!-- GIT REMOTE -->
+            {#if repo.status[0] === 'git'}
+              <SetupRemote
+                repoName={repo.name!}
+                onConfirm={(url) => cmd('add-remote', repo.name!, url)}
+              />
+            {:else if repo.status[0] === 'git-full'}
+              <GitRemoteDisplay url={repo.status[1]} />
+              <div class="flexce relative">
                 <FetchedButton
                   lastFetchedAt={repo.lastFetchedAt}
                   isFetching={repo.fetching}
                   onFetch={() => cmd('fetch', repo.name)}
                 />
                 <div class="flex-grow"></div>
-
-                {#if repo.status[0] === 'git'}
-                  <AddRemoteInput
-                    onConfirm={(url) => cmd('add-remote', repo.name!, url)}
-                  />
-                {:else if repo.status[0] === 'git-full'}
-                  <GitRemoteDisplay url={repo.status[1]} />
+                <SyncButton
+                  status={syncStatus}
+                  onAction={() => cmd('sync', repo.name)}
+                />
+                {#if repo.mergeConflicts}
+                  <div
+                    class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
+                  >
+                    Merge conflict
+                  </div>
                 {/if}
               </div>
-            </td>
-            <td class="p0 pl1 b-l b-black/10">
-              {#if repo.name}
-                {@const btnClass =
-                  'whitespace-nowrap flexcc bg-black/10 rounded-sm text-xs text-black/80 px1 py0.5 hover:bg-black/20'}
-                <div class="flexcs space-x-1">
-                  <div
-                    class={cx('h5 w5 b b-black/10 rounded-full', {
-                      'bg-green-500': runningViteServers[repo.name],
-                      'bg-gray-500': !runningViteServers[repo.name],
-                    })}
-                  ></div>
-                  {#if !runningViteServers[repo.name]}
-                    <button
-                      class={btnClass}
-                      onclick={() => cmd('start-vite', repo.name!)}
-                    >
-                      <PlayIcon class="mr1" /> Start
-                    </button>
-                  {:else}
-                    <button
-                      class={btnClass}
-                      onclick={() => cmd('stop-vite', repo.name!)}
-                    >
-                      <StopIcon class="mr1" /> Stop
-                    </button>
-                    <a
-                      href={runningViteServers[repo.name]}
-                      onclick={(ev) => {
-                        ev.preventDefault()
-                        electronAPI.openExternal(runningViteServers[repo.name!])
-                      }}
-                      class="bg-gray-300 hover:bg-black/20 text-black/80 text-xs rounded-sm px1 py0.5"
-                    >
-                      {runningViteServers[repo.name]}
-                    </a>
-                  {/if}
-                </div>
-              {/if}
-            </td>
-            <td class="p0 pl1 b-l b-black/10">
-              {#if repo.name}
-                <div class="flex space-x-1">
-                  {@render MiniBtn('Build', () => cmd('build', repo.name!))}
-                  {@render MiniBtn('Publish', () => cmd('publish', repo.name!))}
-                </div>
-              {/if}
-            </td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+            {/if}
+
+            <!-- PUBLISHING -->
+            {#if repo.wenv?.cname}
+              <div class="">
+                {#if repo.name}
+                  <div class="flex space-x-1">
+                    {@render MiniBtn('Build', () => cmd('build', repo.name!))}
+                    {@render MiniBtn('Publish', () =>
+                      cmd('publish', repo.name!),
+                    )}
+                  </div>
+                {/if}
+              </div>
+            {/if}
+          </div>
+        </div>
+      {/each}
+    </div>
   </div>
   <!-- ADD REPO INPUT -->
   <div class="p2">

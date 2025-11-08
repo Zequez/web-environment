@@ -6,6 +6,7 @@ import path from 'path'
 import trash from 'trash'
 import chalk from 'chalk'
 import * as git from './git'
+import { readRepoWenvConfig, type WEnvConfig } from '@/center/wenv-config'
 
 function sanitizeRepoName(name: string) {
   return name.replace(/[^a-z0-9\-_\.]/gi, '')
@@ -17,8 +18,9 @@ export class ActiveRepo implements Repo {
   _fetching: boolean = false
   lastFetchedAt: number = 0
   path: string
-  uncommittedChanges: boolean = false
+  uncommittedChanges: string = ''
   mergeConflicts: boolean = false
+  wenv: WEnvConfig | undefined = undefined
 
   constructor(name: string | null) {
     const safeName = name ? sanitizeRepoName(name) : null
@@ -78,6 +80,8 @@ export class ActiveRepo implements Repo {
 
     const remoteUrl = await git.remoteUrl(this.path)
 
+    await this.analyzeLocal()
+
     if (remoteUrl) {
       this.setStatus('git-full', remoteUrl, 'unknown')
       await this.analyzeSyncStatus()
@@ -121,6 +125,13 @@ export class ActiveRepo implements Repo {
     }
   }
 
+  async analyzeLocal() {
+    if (this.name) {
+      this.wenv = await readRepoWenvConfig(this.name!)
+    }
+    this.uncommittedChanges = await git.getUncommittedChanges(this.path)
+  }
+
   async fetch() {
     this.setFetching(true)
     await git.fetch(this.path)
@@ -158,14 +169,32 @@ export class ActiveRepo implements Repo {
     this.name = safeNewName
   }
 
+  async commit(message: string) {
+    if (this.uncommittedChanges) {
+      await git.autoCommit(this.path, message)
+      this.uncommittedChanges = ''
+    }
+  }
+
   async addRemote(url: string) {
     if (this.status[0] === 'git') {
       const resolvedUrl = await git.addRemote(this.path, url)
       this.setStatus('git-full', resolvedUrl, 'unknown')
       this.setFetching(true)
-      await git.pull(this.path)
+      if (await git.pull(this.path)) {
+        this.setFetching(false)
+        this.analyzeSyncStatus()
+      } else {
+        this.removeRemote()
+      }
+    }
+  }
+
+  async removeRemote() {
+    if (this.status[0] === 'git-full') {
+      await git.removeRemote(this.path)
+      this.setStatus('git')
       this.setFetching(false)
-      this.analyzeSyncStatus()
     }
   }
 
@@ -195,6 +224,8 @@ export class ActiveRepo implements Repo {
       mergeConflicts: this.mergeConflicts,
       fetching: this.fetching,
       lastFetchedAt: this.lastFetchedAt,
+      uncommittedChanges: this.uncommittedChanges,
+      wenv: this.wenv,
     }
   }
 }

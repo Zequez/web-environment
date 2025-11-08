@@ -3,6 +3,7 @@
   import { onMount } from 'svelte'
   import RotateIcon from '~icons/fa6-solid/rotate'
   import DownloadIcon from '~icons/fa6-solid/download'
+  import ThreeDots from '@/center/components/ThreeDots.svelte'
   const {
     lastFetchedAt,
     isFetching,
@@ -29,7 +30,7 @@
     <button
       disabled={isFetching}
       onclick={onFetch}
-      class={'bg-blue-400 hover:bg-blue-500 disabled:(saturate-0 pointer-events-none) text-white flexcc rounded-md text-xs h6 w6 b b-black/10 mr2'}
+      class={'bg-sky-400 hover:brightness-110 flex-shrink-0 disabled:(saturate-0 pointer-events-none) text-white flexcc rounded-1 text-xs h5 w5 b b-black/10 mr2'}
     >
       <RotateIcon
         class={[
@@ -40,11 +41,13 @@
       />
     </button>
     <div class="text-xs flex-grow text-left text-black/70">
-      {isFetching
-        ? 'Fetching'
-        : lastFetchedAt
-          ? `${lastFetchedAtAgo} ago`
-          : 'Fetch'}
+      {#if isFetching}
+        Fetching<ThreeDots />
+      {:else if lastFetchedAt}
+        {lastFetchedAtAgo} ago
+      {:else}
+        Fetch
+      {/if}
     </div>
   {/if}
 </div>

@@ -27,6 +27,10 @@ function start() {
           await reposMonitor.duplicate(msg[1])
           break
         }
+        case 'remove-remote': {
+          await reposMonitor.removeRemote(msg[1])
+          break
+        }
         case 'rename-repo': {
           await reposMonitor.rename(msg[1], msg[2])
           break
@@ -43,6 +47,10 @@ function start() {
           await reposMonitor.addRemote(msg[1], msg[2])
           break
         }
+        case 'commit': {
+          await reposMonitor.commit(msg[1], msg[2])
+          break
+        }
         case 'sync': {
           await reposMonitor.sync(msg[1])
           break
@@ -52,7 +60,11 @@ function start() {
           break
         }
         case 'fetch-all': {
-          // await reposMonitor.fetchAll()
+          await reposMonitor.fetchAll()
+          break
+        }
+        case 'analyze-all': {
+          await reposMonitor.analyzeAll()
           break
         }
       }
