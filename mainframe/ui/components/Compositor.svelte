@@ -1,17 +1,8 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte'
+  import { onMount } from 'svelte'
   import { cx } from '@/center/utils'
-  import LeftArrowIcon from '~icons/fa6-solid/arrow-left'
-  import PlayIcon from '~icons/fa6-solid/play'
-  import StopIcon from '~icons/fa6-solid/stop'
+
   import FolderIcon from '~icons/fa6-solid/folder-open'
-  import ChangeIcon from '~icons/fa6-solid/file-invoice'
-  import InternetIcon from '~icons/fa6-solid/globe'
-  import TrashIcon from '~icons/fa6-solid/trash'
-  import OpenIcon from '~icons/fa6-solid/square-arrow-up-right'
-  import PowerIcon from '~icons/fa6-solid/power-off'
-  import UploadIcon from '~icons/fa6-solid/upload'
-  import EllipsisVerticalIcon from '~icons/fa6-solid/ellipsis-vertical'
 
   import AddRepoInput from './AddRepoInput.svelte'
   import {
@@ -24,35 +15,19 @@
     FrontMsg,
     Repo,
   } from '@/mainframe/servers/git-server/messages'
-  // import type {
-  //   BackMsg as PublishingBackMsg,
-  //   FrontMsg as PublishingFrontMsg,
-  // } from '@/mainframe/servers/publishing-server'
 
   import type {
     BackMsg as ViteSpinnerBackMsg,
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
 
-  import { tooltip } from '@/center/svooltip'
-  import AddRemoteInput from './AddRemoteInput.svelte'
-  import { type ElectronBridge } from '@/mainframe/electron/preload'
-  import SyncButton from './SyncButton.svelte'
-  import FetchedButton from './FetchedButton.svelte'
   import GitRemoteDisplay from './GitRemoteDisplay2.svelte'
   import { tunnel } from '@/center/tunnel'
   import { lsState } from '@/center/utils/runes.svelte'
-  import SetupRemote from './SetupRemote.svelte'
-  import NiftyInput from './NiftyInput.svelte'
-  import UncommittedChangesLogger from './UncommittedChangesLogger.svelte'
   import NiftyBtn from './NiftyBtn.svelte'
-  import BootToggle from './BootToggle.svelte'
-  import LocalhostLink from './LocalhostLink.svelte'
-  import { openInBrowser, openOnFileExplorer } from '../electron-bridge'
-  import MoveThingy from './MoveThingy.svelte'
+  import { openOnFileExplorer } from '../electron-bridge'
   import CompRepo from './CompRepo.svelte'
-
-  const electronAPI = (window as any).electronAPI as ElectronBridge
+  import ThreeDots from '@/center/components/ThreeDots.svelte'
 
   let repos: Repo[] = $state<Repo[]>([])
   let gitSocket = $state<WebSocket>(null!)
@@ -63,16 +38,7 @@
   let reposOrder = lsState<{ v: string[][] }>('repos-order5', { v: [[]] })
   let subRepos: Repo[] = $derived(repos.filter((r) => r.name))
 
-  // $derived.by(() => {
-  //   const r = repos.filter((r) => r.name)
-  //   return reposOrder.v
-  //     .map((name) => r.find((r) => r.name === name))
-  //     .filter((r) => r) as Repo[]
-  // })
   let runningViteServers = $state<{ [key: string]: string }>({})
-  let isRenaming = $state<{ from: string; to: string } | null>(null)
-
-  type RepoSyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'
 
   onMount(() => {
     gitSocket = new WebSocket(`ws://localhost:${SERVER_GIT_PORT}`)
@@ -317,65 +283,86 @@
   on:click={ellipsisMenuOpen ? handleWindowClickWhileMenuOpen : null}
 />
 
-<div class="flex flex-col h-full">
+<div class="flex inset-0 h-full">
   <!-- MAINFRAME BAR -->
-  <div class="flexcs h12 px3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000">
-    <div class="flex space-x-3">
-      <NiftyBtn onclick={() => cmd('analyze-all')}>Analyze All</NiftyBtn>
-      <NiftyBtn onclick={() => cmd('fetch-all')}>Fetch All</NiftyBtn>
+  <div
+    class="flex flex-col h-full w-300px space-y-3 p3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000"
+  >
+    <div class="font-mono uppercase text-white text-shadow-[0_1px_0_#0008]">
+      Coding Environment
     </div>
-    <div class="flexcs h-12 space-x-1.5 px3">
+    <p class="text-3 font-mono text-white">Updating from this repository</p>
+    <div class="flexcs space-x-3">
       <button
         onclick={() => openOnFileExplorer(null)}
         class="w6 h6 flexcc text-white hover:text-lime-400 p1"
       >
         <FolderIcon />
       </button>
-      {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
-        {@const syncStatus = mainframeRepo.status[2]}
-        <div class="relative">
-          <button
-            class={cx(
-              'bg-white hover:bg-lime-4 font-mono active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 text-black/70 mr1 uppercase',
-              {
-                'opacity-0': mainframeRepo.fetching,
-              },
-            )}
-            disabled={mainframeRepo.fetching}
-            onclick={mainframeAction}
-          >
-            <span class="group-hover:opacity-0">
-              {#if syncStatus === 'in-sync'}
-                Up to date
-              {:else if syncStatus === 'ahead'}
-                Local changes detected
-              {:else if syncStatus === 'behind'}
-                Updates available
-              {:else if syncStatus === 'diverged'}
-                Merge needed
-              {/if}
-            </span>
-            <span class="hidden group-hover:flexcc absolute size-full">
-              {#if syncStatus === 'behind'}
-                Apply update
-              {:else}
-                Refresh
-              {/if}
-            </span>
-          </button>
-          {#if mainframeRepo.fetching}
-            <div class="absolute size-full top-0 flexcc text-8px text-white">
-              FETCHING...
-            </div>
-          {/if}
-        </div>
 
-        <GitRemoteDisplay url={mainframeRepo.status[1]} />
+      {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
+        <GitRemoteDisplay class="flex-grow" url={mainframeRepo.status[1]} />
       {/if}
+    </div>
+    {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
+      {@const syncStatus = mainframeRepo.status[2]}
+      <div class="relative w-full">
+        <button
+          class={cx(
+            'bg-white hover:bg-lime-4 w-full font-mono active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 text-black/70 mr1 uppercase',
+            {
+              'opacity-0': mainframeRepo.fetching,
+            },
+          )}
+          disabled={mainframeRepo.fetching}
+          onclick={mainframeAction}
+        >
+          <span class="group-hover:opacity-0">
+            {#if syncStatus === 'in-sync'}
+              Up to date
+            {:else if syncStatus === 'ahead'}
+              Local changes detected
+            {:else if syncStatus === 'behind'}
+              Updates available
+            {:else if syncStatus === 'diverged'}
+              Merge needed
+            {/if}
+          </span>
+          <span class="hidden group-hover:flexcc absolute size-full">
+            {#if syncStatus === 'behind'}
+              Apply update
+            {:else}
+              Refresh
+            {/if}
+          </span>
+        </button>
+        {#if mainframeRepo.fetching}
+          <div
+            class="absolute size-full top-0 flexcc text-4 font-mono text-white"
+          >
+            FETCHING<ThreeDots />
+          </div>
+        {/if}
+      </div>
+    {/if}
+    <div class="flex-grow"></div>
+
+    <AddRepoInput
+      takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
+      onConfirm={(name) => cmd('add-repo', name)}
+    />
+    <div class="b-t b-dashed b-white/50"></div>
+    <div class="flex w-full space-x-3">
+      <NiftyBtn expand={true} onclick={() => cmd('analyze-all')}
+        >Analyze All</NiftyBtn
+      >
+      <NiftyBtn expand={true} onclick={() => cmd('fetch-all')}
+        >Fetch All</NiftyBtn
+      >
     </div>
   </div>
   <!-- REPOS LIST -->
-  <div class="flex-grow flex">
+  <div class="flex-grow flex overflow-auto bg-slate-800">
     {#each reposOrder.v as col, i (i)}
       <div class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5">
         {#each col as repoName, j (j)}
@@ -410,12 +397,5 @@
         {/each}
       </div>
     {/each}
-  </div>
-  <!-- ADD REPO INPUT -->
-  <div class="p2">
-    <AddRepoInput
-      takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
-      onConfirm={(name) => cmd('add-repo', name)}
-    />
   </div>
 </div>

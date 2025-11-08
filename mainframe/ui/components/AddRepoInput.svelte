@@ -1,6 +1,7 @@
 <script lang="ts">
   import { cx } from '@/center/utils'
-  import FolderIcon from '~icons/fa6-solid/folder-open'
+  import NiftyInput from './NiftyInput.svelte'
+  import NiftyBtn from './NiftyBtn.svelte'
 
   const p: {
     onConfirm: (name: string) => void
@@ -11,9 +12,11 @@
   let nameIsTaken = $derived(name && p.takenNames.includes(name))
   let nameIsValid = $derived(name && !nameIsTaken)
 
-  function handleSubmit(ev: Event) {
-    ev.preventDefault()
-    ev.stopPropagation()
+  function handleSubmit(ev?: Event) {
+    if (ev) {
+      ev.preventDefault()
+      ev.stopPropagation()
+    }
     if (nameIsValid) {
       p.onConfirm(name)
       name = ''
@@ -21,23 +24,22 @@
   }
 </script>
 
-<form class="flexcc space-x-2 h10" onsubmit={handleSubmit}>
-  <FolderIcon />
-  <input
-    bind:value={name}
-    class={cx('rounded-md h8 px2 outline-green-500 flex-grow', {
-      'b b-black/10 outline-green-500': !nameIsTaken,
-      'b b-red-500 outline-red-500': nameIsTaken,
-    })}
-    placeholder="Name"
-  />
-  <button
-    type="submit"
-    disabled={!nameIsValid}
-    class={cx(
-      'bg-green-500 text-white h8 flexcc px2 rounded-md b b-black/10  hover:bg-green-400 disabled:(saturate-0 hover:bg-green-500 opacity-50)',
-    )}
+<div class="">
+  <div
+    class="font-mono uppercase text-white lh-12 -mt3 text-shadow-[0_1px_0_#0008]"
+    >Add a project</div
   >
-    Add
-  </button>
-</form>
+  <div class="flexcc space-x-3">
+    <!-- <FolderIcon /> -->
+    <NiftyInput
+      bind:value={name}
+      onConfirm={() => handleSubmit()}
+      class={cx(' flex-grow', {
+        'outline-transparent': !nameIsTaken,
+        'b b-red-500 outline-red-500': nameIsTaken,
+      })}
+      placeholder="Name or URL"
+    />
+    <NiftyBtn disabled={!nameIsValid}>Add</NiftyBtn>
+  </div>
+</div>

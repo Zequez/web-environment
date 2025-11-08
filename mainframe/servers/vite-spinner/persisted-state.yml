@@ -63,3 +63,7 @@ repos:
     started: false
     port: 19740
     accessibleFromLocalNetwork: false
+  potato:
+    started: true
+    port: 19741
+    accessibleFromLocalNetwork: false

@@ -1,8 +1,9 @@
 <script lang="ts">
+  import type { ClassValue } from 'svelte/elements'
   import { openInBrowser } from '../electron-bridge'
   import GithubIcon from '~icons/fa6-brands/github'
 
-  const P: { url: string } = $props()
+  const P: { url: string; class?: ClassValue } = $props()
 
   function extractRepo(url: string): [host: 'github' | string, path: string] {
     const noHttp = url.replace('https://', '').replace('http://', '')
@@ -16,7 +17,10 @@
 
 <button
   onclick={() => openInBrowser(P.url)}
-  class="flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 shadow-[0_1px_0_0_#0006]"
+  class={[
+    P.class,
+    'flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 shadow-[0_1px_0_0_#0006]',
+  ]}
 >
   {#if host === 'github'}
     <GithubIcon class="mr1 text-3 flex-shrink-0" />
