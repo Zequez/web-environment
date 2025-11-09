@@ -1,6 +1,6 @@
 # Web Environment
 
-![Screenshot](https://github.com/zequez/web-environment/blob/main/assets/web-env-screenshot.png?raw=true)
+![Screenshot](https://github.com/zequez/web-environment/blob/main/changelog/latest-screenshot.png?raw=true)
 
 Evergreen coding environment with:
 
