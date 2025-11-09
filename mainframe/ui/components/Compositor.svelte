@@ -39,12 +39,12 @@
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
 
-  import GitRemoteDisplay from './GitRemoteDisplay2.svelte'
+  import GitRemoteDisplay from './SubRepo/versioning/GitRemoteDisplay2.svelte'
   import { tunnel } from '@/center/tunnel'
   import { lsState } from '@/center/utils/runes.svelte'
-  import NiftyBtn from './NiftyBtn.svelte'
+  import NiftyBtn from './common/NiftyBtn.svelte'
   import { openOnFileExplorer } from '../electron-bridge'
-  import CompRepo from './CompRepo.svelte'
+  import CompRepo from './SubRepo/SubRepo.svelte'
   import ThreeDots from '@/center/components/ThreeDots.svelte'
 
   let repos: Repo[] = $state<Repo[]>([])
@@ -280,19 +280,6 @@
     }
   }
 
-  let ellipsisMenuOpen = $state<string | null>(null)
-  async function openEllipsisMenu(repo: string) {
-    setTimeout(() => {
-      ellipsisMenuOpen = repo
-    })
-  }
-
-  function handleWindowClickWhileMenuOpen(ev: MouseEvent) {
-    if (ellipsisMenuOpen) {
-      ellipsisMenuOpen = null
-    }
-  }
-
   function moveRepo(repo: string, direction: 'up' | 'down' | 'left' | 'right') {
     let i = -1
     let j = -1
@@ -352,13 +339,7 @@
       }
     }
   }
-
-  $inspect(reposOrder)
 </script>
-
-<svelte:window
-  on:click={ellipsisMenuOpen ? handleWindowClickWhileMenuOpen : null}
-/>
 
 <div class="flex inset-0 h-full">
   <!-- MAINFRAME BAR -->
@@ -453,7 +434,6 @@
             <CompRepo
               {repo}
               isRunning={runningViteServers[name]}
-              menuOpen={name === ellipsisMenuOpen}
               onToggleBoot={() => {
                 if (runningViteServers[name]) {
                   cmd('stop-vite', name)
@@ -463,7 +443,6 @@
               }}
               buildStatus={buildStatus[name] || { status: 'never' }}
               publishingStatus={publishingStatus[name] || { status: 'never' }}
-              onClickMenu={() => openEllipsisMenu(name)}
               onRename={(newName) => cmd('rename-repo', name, newName)}
               onRemoveRemote={() => cmd('remove-remote', name)}
               onDuplicate={() => cmd('duplicate-repo', name)}

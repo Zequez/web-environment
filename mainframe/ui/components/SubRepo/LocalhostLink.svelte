@@ -2,7 +2,7 @@
   import { copyToClipboard } from '@/center/utils'
   import OpenExternalIcon from '~icons/fa6-solid/square-arrow-up-right'
   import OpenWindowIcon from '~icons/fa6-solid/window-maximize'
-  import { openInBrowser } from '../electron-bridge'
+  import { openInBrowser } from '../../electron-bridge'
   import { tooltip } from '@/center/svooltip'
 
   const P: { localUrl: string } = $props()

@@ -58,7 +58,7 @@ ipcMain.handle('open-view', async (event: any, repo: string | null) => {
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 1200,
+    width: 1300,
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'), // optional

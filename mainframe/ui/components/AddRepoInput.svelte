@@ -1,7 +1,7 @@
 <script lang="ts">
   import { cx } from '@/center/utils'
-  import NiftyInput from './NiftyInput.svelte'
-  import NiftyBtn from './NiftyBtn.svelte'
+  import NiftyInput from './common/NiftyInput.svelte'
+  import NiftyBtn from './common/NiftyBtn.svelte'
 
   const p: {
     onConfirm: (name: string) => void

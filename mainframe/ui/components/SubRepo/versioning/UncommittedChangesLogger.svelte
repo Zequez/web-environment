@@ -1,8 +1,8 @@
 <script lang="ts">
   import ChangeIcon from '~icons/fa6-solid/file-invoice'
   import { tooltip } from '@/center/svooltip'
-  import NiftyInput from './NiftyInput.svelte'
-  import NiftyBtn from './NiftyBtn.svelte'
+  import NiftyInput from '../../common/NiftyInput.svelte'
+  import NiftyBtn from '../../common/NiftyBtn.svelte'
 
   const P: { changes: string; onConfirm: (msg: string) => void } = $props()
 

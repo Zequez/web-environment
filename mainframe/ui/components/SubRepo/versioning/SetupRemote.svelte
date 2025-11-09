@@ -1,6 +1,6 @@
 <script lang="ts">
   import AddRemoteInput from './AddRemoteInput.svelte'
-  import NiftyBtn from './NiftyBtn.svelte'
+  import NiftyBtn from '../../common/NiftyBtn.svelte'
 
   let P: { onConfirm: (url: string) => void; repoName: string } = $props()
 

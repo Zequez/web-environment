@@ -1,35 +1,38 @@
 <script lang="ts">
   import FolderIcon from '~icons/fa6-solid/folder-open'
-  import type { Repo } from '@/mainframe/servers/git-server/messages'
-  import BootToggle from './BootToggle.svelte'
-  import MoveThingy from './MoveThingy.svelte'
   import EllipsisVerticalIcon from '~icons/fa6-solid/ellipsis-vertical'
   import { tick } from 'svelte'
-  import { openInBrowser, openOnFileExplorer } from '../electron-bridge'
-  import LocalhostLink from './LocalhostLink.svelte'
-  import UncommittedChangesLogger from './UncommittedChangesLogger.svelte'
-  import SetupRemote from './SetupRemote.svelte'
-  import GitRemoteDisplay from './GitRemoteDisplay2.svelte'
-  import FetchedButton from './FetchedButton.svelte'
-  import SyncButton from './SyncButton.svelte'
-  import NiftyBtn from './NiftyBtn.svelte'
-  import NiftyInput from './NiftyInput.svelte'
-  import VersioningToggle from './VersioningToggle.svelte'
+
+  import type { Repo } from '@/mainframe/servers/git-server/messages'
   import { lsState } from '@/center/utils/runes.svelte'
-  import { tooltip } from '@/center/svooltip'
-  import WebPublishingToggle from './WebPublishingToggle.svelte'
   import ThreeDots from '@/center/components/ThreeDots.svelte'
-  import type { PublishingStatus, BuildingStatus } from './Compositor.svelte'
+
+  import { openInBrowser, openOnFileExplorer } from '../../electron-bridge'
+  import type { PublishingStatus, BuildingStatus } from '../Compositor.svelte'
+
+  import NiftyBtn from '../common/NiftyBtn.svelte'
+  import NiftyInput from '../common/NiftyInput.svelte'
+
+  import MoveThingy from './header/MoveThingy.svelte'
+  import BootToggle from './header/BootToggle.svelte'
+  import VersioningToggle from './header/VersioningToggle.svelte'
+  import WebPublishingToggle from './header/WebPublishingToggle.svelte'
+
+  import LocalhostLink from './LocalhostLink.svelte'
+
+  import UncommittedChangesLogger from './versioning/UncommittedChangesLogger.svelte'
+  import SetupRemote from './versioning/SetupRemote.svelte'
+  import GitRemoteDisplay from './versioning/GitRemoteDisplay2.svelte'
+  import FetchedButton from './versioning/FetchedButton.svelte'
+  import SyncButton from './versioning/SyncButton.svelte'
 
   const p: {
     repo: Repo
     isRunning: string
     buildStatus: BuildingStatus
     publishingStatus: PublishingStatus
-    menuOpen: boolean
     onToggleBoot: () => void
     onRename: (newName: string) => void
-    onClickMenu: () => void
     onRemoveRemote: () => void
     onDuplicate: () => void
     onRemove: () => void
@@ -73,7 +76,24 @@
       isRenaming = null
     }
   }
+
+  let headerMenuOpen = $state<boolean>(false)
+  function handleOpenHeaderMenu() {
+    setTimeout(() => {
+      headerMenuOpen = true
+    })
+  }
+
+  function handleWindowClickWhileHeaderMenuOpen(ev: MouseEvent) {
+    if (headerMenuOpen) {
+      headerMenuOpen = false
+    }
+  }
 </script>
+
+<svelte:window
+  on:click={headerMenuOpen ? handleWindowClickWhileHeaderMenuOpen : null}
+/>
 
 <div
   aria-label={name}
@@ -132,12 +152,12 @@
     </div>
     <button
       aria-label="Open menu"
-      onclick={() => p.onClickMenu()}
+      onclick={() => handleOpenHeaderMenu()}
       class="text-white/60 rounded-1 h6 w6 flexcc hover:(bg-white/10 text-white/80)"
     >
       <EllipsisVerticalIcon />
     </button>
-    {#if p.menuOpen}
+    {#if headerMenuOpen}
       <div
         class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
         id="ellipsis-menu"

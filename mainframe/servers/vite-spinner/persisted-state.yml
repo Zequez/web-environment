@@ -56,7 +56,7 @@ repos:
     port: 19738
     accessibleFromLocalNetwork: false
   test:
-    started: false
+    started: true
     port: 19739
     accessibleFromLocalNetwork: false
   nodos.lat:
@@ -66,4 +66,8 @@ repos:
   potato:
     started: true
     port: 19741
+    accessibleFromLocalNetwork: false
+  self-editing-copy:
+    started: true
+    port: 19742
     accessibleFromLocalNetwork: false

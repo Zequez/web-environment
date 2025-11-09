@@ -3,13 +3,13 @@
   import { tunnel } from '@/center/tunnel'
   import { onMount } from 'svelte'
   import navBg from '../photos/navBg.jpg'
-  import reposPos from '../../tunnels/reposPos2.ts'
+  import reposPos from '../../../tunnels/reposPos2.ts'
 
   import type {
     BackMsg as ViteSpinnerBackMsg,
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
-  import { init } from '../mainframe-store.svelte.ts'
+  import { init } from '../../mainframe-store.svelte.ts'
 
   const S = init()
 

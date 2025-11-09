@@ -1,8 +1,8 @@
 <script lang="ts">
   import ArrowLeftIcon from '~icons/fa6-solid/arrow-left'
-  import NiftyBtn from './NiftyBtn.svelte'
-  import NiftyInput from './NiftyInput.svelte'
-  import { openInBrowser } from '../electron-bridge'
+  import NiftyBtn from '../../common/NiftyBtn.svelte'
+  import NiftyInput from '../../common/NiftyInput.svelte'
+  import { openInBrowser } from '../../../electron-bridge'
 
   const p: {
     onConfirm: (name: string) => void
