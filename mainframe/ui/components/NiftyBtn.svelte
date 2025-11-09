@@ -25,9 +25,9 @@
     'text-3 font-mono text-white uppercase text-shadow-[0_1px_0_#0004] ',
     'hover:brightness-110',
     'disabled:(saturate-0 hover:brightness-100 opacity-50)',
-    'active:(translate-y-0px shadow-[0_0.5px_0_0]) ',
     {
       'w-full': P.expand,
+      'active:(translate-y-0px shadow-[0_0.5px_0_0])': !P.disabled,
     },
   ]}
 >

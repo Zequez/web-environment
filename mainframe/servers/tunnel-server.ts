@@ -1,5 +1,6 @@
 import { SERVER_TUNNEL_PORT } from '@/center/ports'
 import { $path } from '@/center/utils/system'
+import path from 'path'
 import { readFileSync } from 'node:fs'
 import { type ServerWebSocket } from 'bun'
 
@@ -44,6 +45,8 @@ const server = Bun.serve({
         })
       }
 
+      const forceUncached = fileRaw.startsWith('// @tunneled!')
+
       if (fun!.startsWith('stream')) {
         console.log('Upgrading request to WebSocket')
         const params = Object.fromEntries(url.searchParams)
@@ -67,6 +70,7 @@ const server = Bun.serve({
                   filePath,
                   fun,
                   args: body,
+                  forceUncached,
                 },
               })
             ) {
@@ -87,19 +91,27 @@ const server = Bun.serve({
       }
 
       try {
-        const file = await import(filePath)
-        const body = await req.json()
-        console.log('RUN', `${pathnameFile} => ${fun}(${JSON.stringify(body)})`)
-        const result = await file[fun as any](...body)
-        console.log(` => ${JSON.stringify(result)}`)
-        return new Response(JSON.stringify(result), { headers })
+        const args = await req.json()
+        const result = await runFun({
+          filePath,
+          pathnameFile,
+          fun: fun!,
+          args,
+          forceUncached,
+        })
+        const stringified = JSON.stringify(result)
+        console.log(` => ${stringified}`)
+        return new Response(stringified, { headers })
       } catch (e) {
         console.log(e)
-        return new Response(JSON.stringify({ error: String(e) }), {
-          status: 400,
-          statusText: `Something wrong running function ${e}`,
-          headers,
-        })
+        return new Response(
+          JSON.stringify({ success: false, error: String(e) }),
+          {
+            status: 400,
+            statusText: `Something wrong running function ${e}`,
+            headers,
+          },
+        )
       }
     }
 
@@ -112,18 +124,27 @@ const server = Bun.serve({
     async open(ws) {
       console.log('Stream client connected', ws.data)
 
-      const { filePath, pathnameFile, fun, args } = ws.data as {
+      const { filePath, pathnameFile, fun, args, forceUncached } = ws.data as {
         filePath: string
         pathnameFile: string
         fun: string
         args: any[]
+        forceUncached: boolean
       }
 
-      const file = await import(filePath)
-      console.log('RUN', `${pathnameFile} => ${fun}(${JSON.stringify(args)})`)
-      const result = await file[fun as any](...args, (response: any) => {
-        ws.send(JSON.stringify(response))
+      const result = await runFun({
+        filePath,
+        pathnameFile,
+        fun: fun!,
+        args,
+        forceUncached,
+        callback: (response: any) => {
+          const stringified = JSON.stringify(response)
+          console.log(` => ${stringified}`)
+          ws.send(stringified)
+        },
       })
+
       clientsSubscriptions.set(ws, () => {
         if (typeof result === 'function') {
           result()
@@ -153,3 +174,116 @@ const clientsSubscriptions = new Map<ServerWebSocket<any>, () => void>()
 //   const result = await file[fun as any](body)
 //   console.log(` => ${JSON.stringify(result)}`)
 // }
+
+async function runFun({
+  filePath,
+  pathnameFile,
+  fun,
+  args,
+  forceUncached,
+  callback,
+}: {
+  filePath: string
+  pathnameFile: string
+  fun: string
+  args: any[]
+  forceUncached: boolean
+  callback?: (response: any) => void
+}) {
+  if (forceUncached) {
+    console.log('Forcing uncachesd')
+    // console.log(process._getActiveHandles())
+    // console.log(Object.keys(require.cache))
+    // console.log(require.cache[filePath])
+
+    // delete require.cache[filePath]
+
+    // console.log(require.cache[filePath])
+    return await runFileOnSpawnedProcess(filePath, fun, args, callback)
+  } else {
+    const file = await import(filePath)
+    console.log('RUN', `${pathnameFile} => ${fun}(${JSON.stringify(args)})`)
+    if (callback) {
+      return await file[fun as any](...args, callback)
+    } else {
+      return await file[fun as any](...args)
+    }
+  }
+}
+
+async function runFileOnSpawnedProcess(
+  filePath: string,
+  fun: string,
+  args: any[],
+  callback?: (msg: any) => void,
+) {
+  let stderrBuffer = ''
+  let proc: any = null
+  const promise = new Promise((resolve, reject) => {
+    let TIMEOUT = 30
+    let done = false
+    const proc = Bun.spawn(
+      [
+        'bun',
+        path.join(__dirname, 'tunnel-server-ipc-runner.ts'),
+        filePath,
+        fun,
+        JSON.stringify(args),
+        callback ? 'callback' : '',
+      ],
+      {
+        stdout: 'inherit',
+        stderr: 'pipe',
+        ipc: (msg) => {
+          done = true
+          if (callback) {
+            callback(msg)
+          } else {
+            resolve(msg)
+          }
+        },
+      },
+    )
+
+    const decoder = new TextDecoder()
+    ;(async () => {
+      const reader = proc.stderr!.getReader()
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+
+        const text = decoder.decode(value)
+        stderrBuffer += text
+        process.stderr.write(text)
+      }
+    })()
+
+    proc.exited.then(() => {
+      if (!done) {
+        const decoder = new TextDecoder()
+        // No IPC message received → treat as failure
+        resolve({
+          success: false,
+          error: stderrBuffer.trim().replace(/\u001b\[[0-9;]*m/g, ''),
+        })
+      }
+    })
+
+    setTimeout(() => {
+      if (!done) {
+        proc.kill()
+        resolve({ success: false, error: 'TIMEOUT' })
+      }
+    }, TIMEOUT * 1000)
+  })
+
+  if (!callback) {
+    return promise
+  } else {
+    return () => {
+      if (proc) {
+        proc.kill()
+      }
+    }
+  }
+}

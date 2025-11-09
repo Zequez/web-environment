@@ -18,13 +18,17 @@
   import { lsState } from '@/center/utils/runes.svelte'
   import { tooltip } from '@/center/svooltip'
   import WebPublishingToggle from './WebPublishingToggle.svelte'
+  import ThreeDots from '@/center/components/ThreeDots.svelte'
+  import type { PublishingStatus, BuildingStatus } from './Compositor.svelte'
 
   const p: {
     repo: Repo
     isRunning: string
+    buildStatus: BuildingStatus
+    publishingStatus: PublishingStatus
+    menuOpen: boolean
     onToggleBoot: () => void
     onRename: (newName: string) => void
-    menuOpen: boolean
     onClickMenu: () => void
     onRemoveRemote: () => void
     onDuplicate: () => void
@@ -239,15 +243,37 @@
                 <div class="flex space-x-1.5">
                   <NiftyBtn
                     color="yellow"
+                    disabled={p.buildStatus.status === 'pending'}
                     expand={true}
-                    onclick={() => p.onBuild()}>Build</NiftyBtn
+                    onclick={() => p.onBuild()}
                   >
+                    {#if p.buildStatus.status === 'pending'}
+                      Building<ThreeDots />
+                    {:else}
+                      Build
+                    {/if}
+                  </NiftyBtn>
                   <NiftyBtn
                     color="sky"
                     expand={true}
-                    onclick={() => p.onPublish()}>Publish</NiftyBtn
+                    disabled={p.buildStatus.status !== 'success' ||
+                      p.publishingStatus.status === 'pending'}
+                    onclick={() => p.onPublish()}
                   >
+                    {#if p.publishingStatus.status === 'pending'}
+                      Publishing<ThreeDots />
+                    {:else}
+                      Publish
+                    {/if}
+                  </NiftyBtn>
                 </div>
+                {#if p.buildStatus.status === 'failed' || p.publishingStatus.status === 'failed'}
+                  <pre
+                    class="text-2 max-w-none max-h-200px p1.5 bg-gray-900 text-red-200 overflow-auto">
+                    {(p.buildStatus as any).error ||
+                      (p.publishingStatus as any).error}
+                  </pre>
+                {/if}
                 <NiftyInput
                   value={repo.wenv.cname}
                   disabled={true}

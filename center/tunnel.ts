@@ -2,8 +2,14 @@ import { SERVER_TUNNEL_PORT } from '@/center/ports'
 import type { Repo } from '@/mainframe/servers/git-server/messages'
 
 type ApiMap = {
-  'mainframe/tunnels/publishing.ts/buildRepo': (repo: string) => boolean
-  'mainframe/tunnels/publishing.ts/publishRepo': (repo: string) => boolean
+  'mainframe/tunnels/building.ts/buildRepo': (repo: string) => {
+    success: boolean
+    error?: string
+  }
+  'mainframe/tunnels/publishing.ts/publishRepo': (repo: string) => {
+    success: boolean
+    error?: string
+  }
   'mainframe/tunnels/list-repos.ts': () => Repo[]
   'mainframe/tunnels/saveCanvaReposPositions.ts': (repos: {
     [key: string]: { x: number; y: number }

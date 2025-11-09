@@ -236,7 +236,43 @@ export async function forcePushToOriginOnWwwBranch(
   await init(dirPath, 'www')
   await addRemote(dirPath, origin)
   await autoCommit(dirPath)
-  await Bun.$`cd ${dirPath} && git push --set-upstream origin www -f`
+  // await Bun.$`cd ${dirPath} && git push --set-upstream origin www -f`
+
+  const proc = Bun.spawn({
+    cmd: [
+      'git',
+      '-C',
+      dirPath,
+      'push',
+      '--set-upstream',
+      'origin',
+      'www',
+      '-f',
+    ],
+    stderr: 'pipe',
+    stdout: 'inherit',
+  })
+
+  const decoder = new TextDecoder()
+  const reader = proc.stderr!.getReader()
+  let stderrOutput = ''
+
+  while (true) {
+    const { value, done } = await reader.read()
+    if (done) break
+    const text = decoder.decode(value)
+    stderrOutput += text
+    process.stderr.write(text)
+  }
+
+  const exitCode = await proc.exited
+  if (exitCode !== 0) {
+    return { success: false, error: stderrOutput }
+  } else {
+    return {
+      success: true,
+    }
+  }
 }
 
 export async function removeRemote(repoPath: string) {

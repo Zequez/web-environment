@@ -1,3 +1,21 @@
+<script lang="ts" module>
+  export type BuildingStatus =
+    | { status: 'never' }
+    | { status: 'pending'; estimate: number }
+    | { status: 'failed'; error: string }
+    | {
+        status: 'success'
+      }
+
+  export type PublishingStatus =
+    | { status: 'never' }
+    | { status: 'pending'; estimate: number }
+    | { status: 'failed'; error: string }
+    | {
+        status: 'success'
+      }
+</script>
+
 <script lang="ts">
   import { onMount } from 'svelte'
   import { cx } from '@/center/utils'
@@ -39,6 +57,35 @@
   let subRepos: Repo[] = $derived(repos.filter((r) => r.name))
 
   let runningViteServers = $state<{ [key: string]: string }>({})
+
+  let buildStatus = lsState<{
+    [key: string]: BuildingStatus
+  }>('build-status2', {}, (statuses) => {
+    for (let k in statuses) {
+      if (statuses[k].status === 'pending') {
+        statuses[k] = { status: 'never' }
+      }
+    }
+    return statuses
+  })
+
+  let buildTimeTracking = lsState<{ [key: string]: number }>(
+    'build-time-tracking',
+    {},
+  )
+
+  let publishingStatus = lsState<{ [key: string]: PublishingStatus }>(
+    'publishing-status',
+    {},
+    (statuses) => {
+      for (let k in statuses) {
+        if (statuses[k].status === 'pending') {
+          statuses[k] = { status: 'never' }
+        }
+      }
+      return statuses
+    },
+  )
 
   onMount(() => {
     gitSocket = new WebSocket(`ws://localhost:${SERVER_GIT_PORT}`)
@@ -173,12 +220,42 @@
         break
       }
       case 'build': {
-        await tunnel('mainframe/tunnels/publishing.ts/buildRepo', c[1])
+        buildStatus[c[1]] = {
+          status: 'pending',
+          estimate: buildTimeTracking[c[1]] || 3,
+        }
+        const startTime = Date.now()
+        const response = await tunnel(
+          'mainframe/tunnels/building.ts/buildRepo',
+          c[1],
+        )
+        const endTime = Date.now()
+        const buildTime = endTime - startTime
+        if (response.success) {
+          buildStatus[c[1]] = { status: 'success' }
+          if (!buildTimeTracking[c[1]]) {
+            buildTimeTracking[c[1]] = buildTime
+          } else {
+            buildTimeTracking[c[1]] = (buildTimeTracking[c[1]] + buildTime) / 2
+          }
+        } else {
+          buildStatus[c[1]] = { status: 'failed', error: response.error! }
+        }
+
         // viteSpinnerSend(['build', c[1]])
         break
       }
       case 'publish': {
-        await tunnel('mainframe/tunnels/publishing.ts/publishRepo', c[1])
+        publishingStatus[c[1]] = { status: 'pending', estimate: 3 }
+        const response = await tunnel(
+          'mainframe/tunnels/publishing.ts/publishRepo',
+          c[1],
+        )
+        if (response.success) {
+          publishingStatus[c[1]] = { status: 'success' }
+        } else {
+          publishingStatus[c[1]] = { status: 'failed', error: response.error! }
+        }
         break
       }
       case 'start-vite': {
@@ -384,6 +461,8 @@
                   cmd('start-vite', name)
                 }
               }}
+              buildStatus={buildStatus[name] || { status: 'never' }}
+              publishingStatus={publishingStatus[name] || { status: 'never' }}
               onClickMenu={() => openEllipsisMenu(name)}
               onRename={(newName) => cmd('rename-repo', name, newName)}
               onRemoveRemote={() => cmd('remove-remote', name)}

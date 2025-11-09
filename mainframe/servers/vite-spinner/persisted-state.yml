@@ -60,7 +60,7 @@ repos:
     port: 19739
     accessibleFromLocalNetwork: false
   nodos.lat:
-    started: true
+    started: false
     port: 19740
     accessibleFromLocalNetwork: false
   potato:

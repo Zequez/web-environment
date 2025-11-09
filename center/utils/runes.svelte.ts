@@ -91,13 +91,23 @@ function readFromLS<K>(key: string, def: K) {
   }
 }
 
-export function lsState<K>(key: string, def: K, reset?: boolean) {
+export function lsState<K>(
+  key: string,
+  def: K,
+  reset?: boolean | ((v: K) => K),
+) {
   if (typeof localStorage === 'undefined') return def
-  if (reset) {
+  if (typeof reset === 'boolean') {
     localStorage.removeItem(key)
   }
 
-  let data = $state<K>(readFromLS(key, def))
+  let initialState = readFromLS(key, def)
+
+  if (typeof reset === 'function') {
+    initialState = reset(initialState)
+  }
+
+  let data = $state<K>(initialState)
 
   $effect(() => {
     saveToLS(key, data)
