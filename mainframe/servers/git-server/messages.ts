@@ -1,4 +1,5 @@
 import type { WEnvConfig } from '@/center/wenv-config'
+import type { CommitLog } from './git'
 
 export type Repo = {
   name: string | null
@@ -9,6 +10,7 @@ export type Repo = {
   lastFetchedAt: number
   uncommittedChanges: string
   wenv?: WEnvConfig
+  localLogHistory: CommitLog[]
 }
 
 export type SyncStatus = 'ahead' | 'behind' | 'diverged' | 'in-sync' | 'unknown'

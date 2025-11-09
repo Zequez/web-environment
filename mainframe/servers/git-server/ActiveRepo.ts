@@ -6,6 +6,7 @@ import path from 'path'
 import trash from 'trash'
 import chalk from 'chalk'
 import * as git from './git'
+import type { CommitLog } from './git'
 import { readRepoWenvConfig, type WEnvConfig } from '@/center/wenv-config'
 
 function sanitizeRepoName(name: string) {
@@ -21,6 +22,7 @@ export class ActiveRepo implements Repo {
   path: string
   uncommittedChanges: string = ''
   mergeConflicts: boolean = false
+  localLogHistory: CommitLog[] = []
   wenv: WEnvConfig | undefined = undefined
 
   constructor(name: string | null) {
@@ -140,6 +142,7 @@ export class ActiveRepo implements Repo {
       this.wenv = await readRepoWenvConfig(this.name!)
     }
     this.uncommittedChanges = await git.getUncommittedChanges(this.path)
+    this.localLogHistory = await git.getLogHistory(this.path)
   }
 
   async fetch() {
@@ -239,6 +242,7 @@ export class ActiveRepo implements Repo {
       lastFetchedAt: this.lastFetchedAt,
       uncommittedChanges: this.uncommittedChanges,
       wenv: this.wenv,
+      localLogHistory: this.localLogHistory,
     }
   }
 }

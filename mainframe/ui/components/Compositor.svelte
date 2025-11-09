@@ -112,6 +112,11 @@
                 reposOrder.v[0].push(repo.name!)
               }
             })
+            data[1].forEach((repo) => {
+              repo.localLogHistory.forEach((log) => {
+                log.date = new Date(log.date)
+              })
+            })
             repos = data[1]
           }
         }
@@ -330,35 +335,39 @@
 
 <div class="flex inset-0 h-full">
   <!-- MAINFRAME BAR -->
-  <div
-    class="flex flex-col h-full w-300px space-y-3 p3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000 text-white"
-  >
-    <div class="font-mono uppercase text-shadow-[0_1px_0_#0008]">
-      Coding Environment
+  <div class="flex flex-col h-full w-320px relative bg-slate-500 text-white">
+    <div class="h-full flex-grow overflow-auto p3 space-y-3">
+      <div
+        class="font-mono lh-6 uppercase text-shadow-[0_1px_0_#0008] text-center"
+      >
+        Field Repo
+      </div>
+      <!-- <p class="text-3 font-mono">Updating from this repository</p> -->
+      {#if mainframeRepo}
+        <FieldRepo
+          repo={mainframeRepo}
+          onFetch={() => cmd('fetch', null)}
+          onSync={() => cmd('sync', null)}
+          onCommit={(msg) => cmd('commit', null, msg)}
+        />
+      {/if}
+      <div class="flex-grow"></div>
     </div>
-    <p class="text-3 font-mono">Updating from this repository</p>
-    {#if mainframeRepo}
-      <FieldRepo
-        repo={mainframeRepo}
-        onFetch={() => cmd('fetch', null)}
-        onSync={() => cmd('sync', null)}
-        onCommit={(msg) => cmd('commit', null, msg)}
-      />
-    {/if}
-    <div class="flex-grow"></div>
 
-    <AddRepoInput
-      takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
-      onConfirm={(name) => cmd('add-repo', name)}
-    />
-    <div class="b-t b-dashed b-white/50"></div>
-    <div class="flex w-full space-x-3">
-      <NiftyBtn expand={true} onclick={() => cmd('analyze-all')}
-        >Analyze All</NiftyBtn
-      >
-      <NiftyBtn expand={true} onclick={() => cmd('fetch-all')}
-        >Fetch All</NiftyBtn
-      >
+    <div class=" flex flex-col space-y-3 p3 bg-slate-600 b-t b-black/20">
+      <AddRepoInput
+        takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
+        onConfirm={(name) => cmd('add-repo', name)}
+      />
+      <div class="b-t b-dashed b-white/50"></div>
+      <div class="flex w-full space-x-3">
+        <NiftyBtn expand={true} onclick={() => cmd('analyze-all')}
+          >Analyze All</NiftyBtn
+        >
+        <NiftyBtn expand={true} onclick={() => cmd('fetch-all')}
+          >Fetch All</NiftyBtn
+        >
+      </div>
     </div>
   </div>
   <!-- REPOS LIST -->

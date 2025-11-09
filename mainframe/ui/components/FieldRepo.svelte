@@ -1,12 +1,14 @@
 <script lang="ts">
   import FolderIcon from '~icons/fa6-solid/folder-open'
   import type { Repo } from '@/mainframe/servers/git-server/messages'
-  import { openOnFileExplorer } from '../electron-bridge'
+  import { openInBrowser, openOnFileExplorer } from '../electron-bridge'
   import GitRemoteDisplay from './common/GitRemoteDisplay.svelte'
   import ThreeDots from '@/center/components/ThreeDots.svelte'
   import FetchNSync from './SubRepo/versioning/FetchNSync.svelte'
   import UncommittedChangesLogger from './SubRepo/versioning/UncommittedChangesLogger.svelte'
   import { lsState } from '@/center/utils/runes.svelte'
+  import type { CommitLog } from '@/mainframe/servers/git-server/git'
+  import NiftyBtn from './common/NiftyBtn.svelte'
 
   const {
     repo,
@@ -24,6 +26,18 @@
   const localChangesToggled = lsState('mainframe-local-changes-toggle', {
     v: false,
   })
+
+  let logGroupedByDate = repo.localLogHistory.reduce(
+    (acc, change) => {
+      let date = change.date.toISOString().split('T')[0]
+      if (!acc[date]) {
+        acc[date] = []
+      }
+      acc[date].push(change)
+      return acc
+    },
+    {} as Record<string, CommitLog[]>,
+  )
 
   const parsedChanges = $derived.by(() => {
     if (repo.uncommittedChanges) {
@@ -71,10 +85,10 @@
     '??': 'text-gray-200',
   }
 
-  $inspect(parsedChanges)
+  $inspect(logGroupedByDate)
 </script>
 
-<div class="flex flex-col space-y-3">
+<div class="flex flex-col space-y-3 h-full">
   {#if status[0] === 'git-full'}
     <div class="flexcs space-x-3">
       <button
@@ -121,4 +135,30 @@
       </div>
     </div>
   {/if}
+
+  <div class="font-mono text-3">
+    {#each Object.entries(logGroupedByDate) as [date, changes] (date)}
+      {@const dateObj = new Date(date)}
+      <div class="text-3 underline">{dateObj.toDateString()}</div>
+      <div class="pl2 pb3">
+        {#each changes as log}
+          <div
+            ><span class={['opacity-50']}>{log.hash.slice(0, 6)}</span>
+            {log.message}</div
+          >
+        {/each}
+      </div>
+    {/each}
+
+    {#if repo.status[0] === 'git-full'}
+      {@const url = repo.status[1].replace(/\.git$/, '')}
+      <div class="flexcc mb3">
+        <NiftyBtn
+          color="gray"
+          onclick={() => openInBrowser(`${url}/commits/main/`)}
+          >View all</NiftyBtn
+        >
+      </div>
+    {/if}
+  </div>
 </div>

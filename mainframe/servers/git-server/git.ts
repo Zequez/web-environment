@@ -2,8 +2,14 @@ import { stat, exists } from 'fs/promises'
 import { join } from 'path'
 import type { SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
-import { wait } from '@/center/utils/neutral'
-import chalk from 'chalk'
+
+export type CommitLog = {
+  date: Date
+  message: string
+  author: string
+  hash: string
+  isFirst: boolean
+}
 
 export async function ensurePathIsRepo(repoPath: string) {
   if (!(await exists(repoPath))) {
@@ -277,4 +283,37 @@ export async function forcePushToOriginOnWwwBranch(
 
 export async function removeRemote(repoPath: string) {
   await Bun.$`cd ${repoPath} && git remote rm origin`
+}
+
+export async function getLogHistory(repoPath: string): Promise<CommitLog[]> {
+  // Custom format: <hash>|<author>|<date>|<message>
+  const format = '%H|%an|%ad|%s'
+
+  try {
+    const firstCommitHash = (
+      await Bun.$`cd ${repoPath} && git rev-list --max-parents=0 HEAD`.text()
+    ).trim()
+
+    const result =
+      await Bun.$`cd ${repoPath} && git log -n 20 --date=iso --pretty=format:${format}`.text()
+
+    const lines = result.trim().split('\n')
+
+    const commits: CommitLog[] = lines.map((line, index) => {
+      const [hash, author, date, message] = line.split('|')
+
+      return {
+        hash,
+        author,
+        message,
+        date: new Date(date),
+        isFirst: hash === firstCommitHash,
+      }
+    })
+
+    return commits
+  } catch (e) {
+    console.error('Failed to retrieve git log:', e)
+    return []
+  }
 }
