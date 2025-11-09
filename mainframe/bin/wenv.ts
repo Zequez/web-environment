@@ -83,8 +83,16 @@ yargs(hideBin(process.argv))
       process.on('SIGTERM', cleanup)
       process.on('exit', cleanup)
 
+      await servers.electron.waitUntilItEnds()
+
       await Promise.all(
-        Object.entries(servers).map(([key, value]) => value.waitUntilItEnds()),
+        Object.entries(servers).map(async ([key, value]) => {
+          await value.waitUntilItEnds()
+          if (key === 'electron') {
+            console.log('ELECTRON ENDED. Closing main process.')
+            cleanup()
+          }
+        }),
       )
 
       console.log('\n')

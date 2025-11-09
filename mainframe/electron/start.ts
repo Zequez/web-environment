@@ -3,6 +3,7 @@ import fs from 'fs'
 import { build } from 'vite'
 import viteBuildConfig from './vite.config.ts'
 import { APP_NAME } from './config.ts'
+import { wait } from '@/center/utils/neutral.ts'
 
 export async function startElectron() {
   // Rename ""./node_modules/electron/dist/Electron.app"
@@ -52,12 +53,14 @@ export async function startElectron() {
 
   let electronServerProcess: ReturnType<
     typeof Bun.spawn<{
-      stdout: 'inherit'
+      stdout: 'pipe'
       stderr: 'inherit'
     }>
-  > | null = null
+  > = null!
+  let isRestarting = false
   function restartElectron() {
     console.log('ELECTRON RESTARTING')
+    isRestarting = true
     if (electronServerProcess) {
       electronServerProcess.kill()
     }
@@ -68,10 +71,29 @@ export async function startElectron() {
         '--args',
       ],
       {
-        stdout: 'inherit',
+        stdout: 'pipe',
         stderr: 'inherit',
+        detached: false,
       },
     )
+
+    const decoder = new TextDecoder()
+    ;(async () => {
+      const reader = electronServerProcess.stdout!.getReader()
+      while (true && electronServerProcess.killed === false) {
+        const { value, done } = await reader.read()
+        if (done) break
+
+        const text = decoder.decode(value)
+        process.stdout.write(text)
+        if (text.match(/ELECTRON_CLOSE_SIGNAL/)) {
+          console.log('RECEIVED SIGNAL KILLING WATCHER')
+          process.kill(process.ppid, 'SIGTERM')
+        }
+      }
+    })()
+
+    isRestarting = false
   }
 
   renameElectronApp()
@@ -83,11 +105,21 @@ export async function startElectron() {
       watcher.close()
     },
     get exited() {
-      if (electronServerProcess === null) {
-        return Promise.resolve(true)
-      } else {
-        return electronServerProcess.exited
-      }
+      return new Promise(async (resolve, reject) => {
+        async function waitForExit() {
+          await electronServerProcess.exited
+          if (isRestarting) {
+            console.log('Electron restarting')
+            await wait(100)
+            await waitForExit()
+          } else {
+            console.log('Electron quitted')
+            watcher.close()
+          }
+        }
+        await waitForExit()
+        resolve(true)
+      })
     },
   }
 }

@@ -79,6 +79,11 @@ function createWindow() {
       win.loadURL(VITE_DEV_SERVER_URL)
     }, 100)
   })
+
+  win.on('closed', () => {
+    console.log('ELECTRON_CLOSE_SIGNAL')
+    app.quit()
+  })
 }
 
 app.setName(APP_NAME)
