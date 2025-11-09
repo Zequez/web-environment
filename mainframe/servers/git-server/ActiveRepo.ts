@@ -186,6 +186,7 @@ export class ActiveRepo implements Repo {
     if (this.uncommittedChanges) {
       await git.autoCommit(this.path, message)
       this.uncommittedChanges = ''
+      await this.analyzeLocal()
     }
   }
 

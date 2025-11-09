@@ -27,16 +27,18 @@
     v: false,
   })
 
-  let logGroupedByDate = repo.localLogHistory.reduce(
-    (acc, change) => {
-      let date = change.date.toISOString().split('T')[0]
-      if (!acc[date]) {
-        acc[date] = []
-      }
-      acc[date].push(change)
-      return acc
-    },
-    {} as Record<string, CommitLog[]>,
+  let logGroupedByDate = $derived(
+    repo.localLogHistory.reduce(
+      (acc, change) => {
+        let date = change.date.toISOString().split('T')[0]
+        if (!acc[date]) {
+          acc[date] = []
+        }
+        acc[date].push(change)
+        return acc
+      },
+      {} as Record<string, CommitLog[]>,
+    ),
   )
 
   const parsedChanges = $derived.by(() => {
