@@ -24,6 +24,54 @@
   const localChangesToggled = lsState('mainframe-local-changes-toggle', {
     v: false,
   })
+
+  const parsedChanges = $derived.by(() => {
+    if (repo.uncommittedChanges) {
+      const cleanLines = repo.uncommittedChanges
+        .split('\n')
+        .map((line) => {
+          const m = line.trim().match(/^([^ ]) (.*)/)
+          if (m) {
+            const path = m[2]
+            const pathParts = path.split('/')
+            const fileName = pathParts.pop()!
+            return {
+              action: m[1],
+              path,
+              fileName: fileName,
+              restPath: pathParts.join('/'),
+            }
+          } else {
+            return null
+          }
+        })
+        .filter((l) => l)
+      return cleanLines as {
+        action: 'M' | 'A' | 'D' | '??'
+        path: string
+        restPath: string
+        fileName: string
+      }[]
+    } else {
+      return null
+    }
+  })
+
+  const actionMap = {
+    M: 'modified',
+    A: 'added',
+    D: 'deleted',
+    '??': 'untracked',
+  }
+
+  const actionColor = {
+    M: 'text-yellow-500',
+    A: 'text-green-500',
+    D: 'text-red-500',
+    '??': 'text-gray-200',
+  }
+
+  $inspect(parsedChanges)
 </script>
 
 <div class="flex flex-col space-y-3">
@@ -40,15 +88,28 @@
     </div>
     <FetchNSync {repo} {onFetch} {onSync} />
   {/if}
-  {#if repo.uncommittedChanges}
-    <div class="bg-black/20 rounded-1">
+  {#if parsedChanges}
+    <div class="bg-black/20 rounded-1 shadow-[inset_0_0_0_1px_#0002]">
       <div class="text-white lh-6 text-3 font-mono px3"
         >Local changes detected</div
       >
-      <pre
-        class="w-full max-h-200px overflow-auto text-2 bg-gray-700 text-white"
-        >{repo.uncommittedChanges}</pre
+      <div
+        class="w-full max-h-200px font-mono overflow-auto text-2.5 p3 b b-black/40 shadow-[inset_0_0_1px_2px_#0002] bg-gray-700 text-white"
       >
+        {#each parsedChanges as { action, path, restPath, fileName } (path)}
+          <div class="flexcc">
+            <div class="flexcs w-full overflow-hidden" title={path}>
+              <span>{fileName}</span>
+              <span class="text-2 ml1 opacity-50">{restPath}</span>
+            </div>
+
+            <div
+              class={['w-5 flexcc flex-shrink-0', actionColor[action]]}
+              title={actionMap[action]}>{action}</div
+            >
+          </div>
+        {/each}
+      </div>
       <div class="p3">
         <UncommittedChangesLogger
           changeView={false}

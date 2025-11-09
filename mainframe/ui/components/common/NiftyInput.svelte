@@ -37,7 +37,7 @@
   }}
   class={[
     P.class,
-    'rounded-1 h6 text-3 px2 shadow-[inset_0_0_0_1.5px] shadow-black/20 outline-none flex-grow min-w-0 font-mono focus:shadow-lime-500',
+    'rounded-1 h6 text-3 text-black px2 shadow-[inset_0_0_0_2px] shadow-black/20 outline-none flex-grow min-w-0 font-mono focus:shadow-lime-500',
   ]}
   placeholder={P.placeholder}
 />

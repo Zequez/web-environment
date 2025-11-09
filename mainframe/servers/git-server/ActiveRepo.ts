@@ -16,6 +16,7 @@ export class ActiveRepo implements Repo {
   name: string | null
   _status: Repo['status'] = ['unknown']
   _fetching: boolean = false
+  _syncing: boolean = false
   lastFetchedAt: number = 0
   path: string
   uncommittedChanges: string = ''
@@ -41,8 +42,17 @@ export class ActiveRepo implements Repo {
     return this._fetching
   }
 
+  get syncing() {
+    return this._syncing
+  }
+
   setFetching(fetching: boolean) {
     this._fetching = fetching
+    ActiveRepo.statusChangeNotify()
+  }
+
+  setSyncing(syncing: boolean) {
+    this._syncing = syncing
     ActiveRepo.statusChangeNotify()
   }
 
@@ -200,6 +210,7 @@ export class ActiveRepo implements Repo {
 
   async sync() {
     if (this.status[0] === 'git-full') {
+      this.setSyncing(true)
       const syncStatus = this.status[2]
       if (this.uncommittedChanges) {
         await git.autoCommit(this.path)
@@ -214,6 +225,7 @@ export class ActiveRepo implements Repo {
       }
 
       await this.analyzeSyncStatus()
+      this.setSyncing(false)
     }
   }
 
@@ -223,6 +235,7 @@ export class ActiveRepo implements Repo {
       status: this.status,
       mergeConflicts: this.mergeConflicts,
       fetching: this.fetching,
+      syncing: this.syncing,
       lastFetchedAt: this.lastFetchedAt,
       uncommittedChanges: this.uncommittedChanges,
       wenv: this.wenv,
