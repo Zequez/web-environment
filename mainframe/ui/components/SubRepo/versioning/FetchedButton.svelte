@@ -41,10 +41,7 @@
         ]}
       />
     </button>
-    <div
-      aria-label="Fetch status"
-      class="text-xs flex-grow text-left text-black/70"
-    >
+    <div aria-label="Fetch status" class="text-xs flex-grow text-left">
       {#if isFetching}
         Fetching<ThreeDots />
       {:else if lastFetchedAt}

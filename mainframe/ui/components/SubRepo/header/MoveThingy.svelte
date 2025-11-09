@@ -25,7 +25,7 @@
 {/snippet}
 
 <div
-  class="h-7 w-7 rounded-1 flex flex-wrap bg-white rotate-45 shadow-[1.5px_1.5px_0_0_#0009] -translate-y-1px"
+  class="h-7 w-7 rounded-1 flex flex-wrap bg-white rotate-45 shadow-[1.5px_1.5px_0_0_#0009] -translate-y-1px text-black/70"
 >
   {@render arrow('-rotate-135', 'rounded-tl-1 rounded-br-3', p.onUp, 'Move up')}
   {@render arrow(

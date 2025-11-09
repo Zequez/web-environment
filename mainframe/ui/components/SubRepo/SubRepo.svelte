@@ -22,9 +22,10 @@
 
   import UncommittedChangesLogger from './versioning/UncommittedChangesLogger.svelte'
   import SetupRemote from './versioning/SetupRemote.svelte'
-  import GitRemoteDisplay from './versioning/GitRemoteDisplay2.svelte'
+  import GitRemoteDisplay from '../common/GitRemoteDisplay.svelte'
   import FetchedButton from './versioning/FetchedButton.svelte'
   import SyncButton from './versioning/SyncButton.svelte'
+  import FetchNSync from './versioning/FetchNSync.svelte'
 
   const p: {
     repo: Repo
@@ -100,7 +101,9 @@
   class="bg-gray-200 p-0 w-full rounded-1 shadow-[0_0_0_1px_#0006]"
 >
   <!-- HEADER -->
-  <div class="bg-gray-700 rounded-t-1 flexcc relative px1.5 space-x-1.5 group">
+  <div
+    class="bg-gray-700 rounded-t-1 flexcc relative px1.5 space-x-1.5 group text-white"
+  >
     <BootToggle
       status={p.isRunning ? 'on' : 'off'}
       onclick={() => p.onToggleBoot()}
@@ -203,7 +206,7 @@
     {/if}
   </div>
   {#if p.isRunning || versioningToggled.v || webPublishingToggled.v}
-    <div class="flex flex-col space-y-3 p1.5">
+    <div class="flex flex-col space-y-3 p1.5 text-black">
       <!-- VITE CONTROL -->
       {#if p.isRunning}
         <LocalhostLink localUrl={p.isRunning} />
@@ -231,22 +234,11 @@
             />
           {:else if repo.status[0] === 'git-full'}
             <GitRemoteDisplay url={repo.status[1]} />
-            <div class="flexce relative">
-              <FetchedButton
-                lastFetchedAt={repo.lastFetchedAt}
-                isFetching={repo.fetching}
-                onFetch={() => p.onFetch()}
-              />
-              <div class="flex-grow"></div>
-              <SyncButton status={syncStatus} onAction={() => p.onSync()} />
-              {#if repo.mergeConflicts}
-                <div
-                  class="bg-red-500 inset-0 absolute rounded-md text-white z-50 text-xs flexcc"
-                >
-                  Merge conflict
-                </div>
-              {/if}
-            </div>
+            <FetchNSync
+              {repo}
+              onSync={() => p.onSync()}
+              onFetch={() => p.onFetch()}
+            />
           {/if}
         </div>
       {/if}

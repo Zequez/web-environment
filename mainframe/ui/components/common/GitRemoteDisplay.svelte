@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ClassValue } from 'svelte/elements'
-  import { openInBrowser } from '../../../electron-bridge'
+  import { openInBrowser } from '../../electron-bridge'
   import GithubIcon from '~icons/fa6-brands/github'
 
   const P: { url: string; class?: ClassValue } = $props()
@@ -20,7 +20,7 @@
   aria-label="Open {P.url} in browser"
   class={[
     P.class,
-    'flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 shadow-[0_1px_0_0_#0006]',
+    'flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 text-black shadow-[0_1px_0_0_#0006]',
   ]}
 >
   {#if host === 'github'}

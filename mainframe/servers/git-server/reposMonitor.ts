@@ -119,7 +119,7 @@ export function startReposMonitor() {
     }
   }
 
-  async function commit(name: string, message: string) {
+  async function commit(name: string | null, message: string) {
     const repo = R.get(name)
     if (repo) {
       await repo.commit(message)

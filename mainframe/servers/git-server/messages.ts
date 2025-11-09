@@ -5,6 +5,7 @@ export type Repo = {
   status: ['unknown'] | ['git'] | ['git-full', remote: string, sync: SyncStatus]
   mergeConflicts: boolean
   fetching: boolean
+  syncing: boolean
   lastFetchedAt: number
   uncommittedChanges: string
   wenv?: WEnvConfig
@@ -22,7 +23,7 @@ export type FrontMsg =
   | ['remove-remote', name: string]
   | ['rename-repo', name: string, newName: string]
   | ['add-remote', name: string, remote: string]
-  | ['commit', name: string, message: string]
+  | ['commit', name: string | null, message: string]
   | ['sync', name: string | null]
   | ['fetch', name: string | null]
   | ['fetch-all']

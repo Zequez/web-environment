@@ -18,9 +18,6 @@
 
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { cx } from '@/center/utils'
-
-  import FolderIcon from '~icons/fa6-solid/folder-open'
 
   import AddRepoInput from './AddRepoInput.svelte'
   import {
@@ -39,13 +36,14 @@
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
 
-  import GitRemoteDisplay from './SubRepo/versioning/GitRemoteDisplay2.svelte'
+  import GitRemoteDisplay from './common/GitRemoteDisplay.svelte'
   import { tunnel } from '@/center/tunnel'
   import { lsState } from '@/center/utils/runes.svelte'
   import NiftyBtn from './common/NiftyBtn.svelte'
   import { openOnFileExplorer } from '../electron-bridge'
   import CompRepo from './SubRepo/SubRepo.svelte'
   import ThreeDots from '@/center/components/ThreeDots.svelte'
+  import FieldRepo from './FieldRepo.svelte'
 
   let repos: Repo[] = $state<Repo[]>([])
   let gitSocket = $state<WebSocket>(null!)
@@ -156,7 +154,7 @@
       | [type: 'duplicate-repo', name: string]
       | [type: 'remove-remote', name: string]
       | [type: 'rename-repo', name: string, newName: string]
-      | [type: 'commit', name: string, message: string]
+      | [type: 'commit', name: string | null, message: string]
       | [type: 'add-remote', name: string, url: string]
       | [type: 'sync', name: string | null]
       | [type: 'fetch', name: string | null]
@@ -269,17 +267,6 @@
     }
   }
 
-  function mainframeAction() {
-    if (mainframeRepo && mainframeRepo.status[0] === 'git-full') {
-      const syncStatus = mainframeRepo.status[2]
-      if (syncStatus === 'behind') {
-        cmd('sync', null)
-      } else {
-        cmd('fetch', null)
-      }
-    }
-  }
-
   function moveRepo(repo: string, direction: 'up' | 'down' | 'left' | 'right') {
     let i = -1
     let j = -1
@@ -344,65 +331,19 @@
 <div class="flex inset-0 h-full">
   <!-- MAINFRAME BAR -->
   <div
-    class="flex flex-col h-full w-300px space-y-3 p3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000"
+    class="flex flex-col h-full w-300px space-y-3 p3 bg-slate-500 bg-gradient-to-r from-#0001 to-#0000 text-white"
   >
-    <div class="font-mono uppercase text-white text-shadow-[0_1px_0_#0008]">
+    <div class="font-mono uppercase text-shadow-[0_1px_0_#0008]">
       Coding Environment
     </div>
-    <p class="text-3 font-mono text-white">Updating from this repository</p>
-    <div class="flexcs space-x-3">
-      <button
-        onclick={() => openOnFileExplorer(null)}
-        aria-label="Open filesystem"
-        class="w6 h6 flexcc text-white hover:text-lime-400 p1"
-      >
-        <FolderIcon />
-      </button>
-
-      {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
-        <GitRemoteDisplay class="flex-grow" url={mainframeRepo.status[1]} />
-      {/if}
-    </div>
-    {#if mainframeRepo && mainframeRepo.status[0] === 'git-full'}
-      {@const syncStatus = mainframeRepo.status[2]}
-      <div class="relative w-full">
-        <button
-          class={cx(
-            'bg-white hover:bg-lime-4 w-full font-mono active:(top-1px shadow-none) relative group shadow-[0_1px_1px_0.5px_#0009] flexcc rounded-sm px1 text-3 text-black/70 mr1 uppercase',
-            {
-              'opacity-0': mainframeRepo.fetching,
-            },
-          )}
-          disabled={mainframeRepo.fetching}
-          onclick={mainframeAction}
-        >
-          <span class="group-hover:opacity-0">
-            {#if syncStatus === 'in-sync'}
-              Up to date
-            {:else if syncStatus === 'ahead'}
-              Local changes detected
-            {:else if syncStatus === 'behind'}
-              Updates available
-            {:else if syncStatus === 'diverged'}
-              Merge needed
-            {/if}
-          </span>
-          <span class="hidden group-hover:flexcc absolute size-full">
-            {#if syncStatus === 'behind'}
-              Apply update
-            {:else}
-              Refresh
-            {/if}
-          </span>
-        </button>
-        {#if mainframeRepo.fetching}
-          <div
-            class="absolute size-full top-0 flexcc text-4 font-mono text-white"
-          >
-            FETCHING<ThreeDots />
-          </div>
-        {/if}
-      </div>
+    <p class="text-3 font-mono">Updating from this repository</p>
+    {#if mainframeRepo}
+      <FieldRepo
+        repo={mainframeRepo}
+        onFetch={() => cmd('fetch', null)}
+        onSync={() => cmd('sync', null)}
+        onCommit={(msg) => cmd('commit', null, msg)}
+      />
     {/if}
     <div class="flex-grow"></div>
 
