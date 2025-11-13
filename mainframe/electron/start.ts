@@ -10,11 +10,13 @@ export async function startElectron() {
   // So it shows up like that on the Mac dock
 
   function renameElectronApp() {
-    const electronAppPath = './node_modules/electron/dist/Electron.app'
-    const webSubstrateAppPath = `./node_modules/electron/dist/${APP_NAME}.app`
+    if (process.platform === "darwin") {
+      const electronAppPath = './node_modules/electron/dist/Electron.app'
+      const webSubstrateAppPath = `./node_modules/electron/dist/${APP_NAME}.app`
 
-    if (fs.existsSync(electronAppPath)) {
-      fs.renameSync(electronAppPath, webSubstrateAppPath)
+      if (fs.existsSync(electronAppPath)) {
+        fs.renameSync(electronAppPath, webSubstrateAppPath)
+      }
     }
   }
 
@@ -66,7 +68,7 @@ export async function startElectron() {
     }
     electronServerProcess = Bun.spawn(
       [
-        `./node_modules/electron/dist/${APP_NAME}.app/Contents/MacOS/Electron`,
+        (process.platform === 'darwin' ?  `./node_modules/electron/dist/${APP_NAME}.app/Contents/MacOS/Electron` :  `./node_modules/electron/dist/electron.exe`),
         './mainframe/electron/dist/main.js',
         '--args',
       ],
