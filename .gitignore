@@ -193,3 +193,5 @@ app-test/web-environment
 *.code-workspace
 
 .vscode
+
+mainframe/servers/vite-spinner/persisted-state.yml
