@@ -2,6 +2,17 @@ import { SERVER_TUNNEL_PORT } from '@/center/ports'
 import type { Repo } from '@/mainframe/servers/git-server/messages'
 
 type ApiMap = {
+  'substrates/toroid-web/tunnel.ts/setFile': (params: {
+    file: string
+    data: string
+  }) => boolean
+  'substrates/toroid-web/tunnel.ts/readFile': (params: {
+    file: string
+  }) => boolean
+  'substrates/toroid-web/tunnel.ts/writeFile': (params: {
+    file: string
+    content: string
+  }) => number
   'mainframe/tunnels/building.ts/buildRepo': (repo: string) => {
     success: boolean
     error?: string

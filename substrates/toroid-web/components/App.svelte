@@ -5,6 +5,16 @@
 
     // before the module is replaced, capture scroll
     import.meta.hot.dispose(() => {
+      const el = document.getElementById('edit-scroll-container')
+      if (el) {
+        console.log('Ending, editor element found')
+        let elScrollX = el.scrollLeft
+        let elScrollY = el.scrollTop
+        sessionStorage.setItem(
+          '__hmr_scroll_editor',
+          JSON.stringify({ x: elScrollX, y: elScrollY }),
+        )
+      }
       scrollX = window.scrollX
       scrollY = window.scrollY
       sessionStorage.setItem(
@@ -14,13 +24,28 @@
     })
 
     // after the new module is accepted, restore scroll
-    import.meta.hot.accept(() => {
+    import.meta.hot.accept((a) => {
       const raw = sessionStorage.getItem('__hmr_scroll')
       if (raw) {
         const { x, y } = JSON.parse(raw)
         requestAnimationFrame(() => {
           window.scrollTo(x, y)
         })
+      }
+      const el = document.getElementById('edit-scroll-container')
+      if (el) {
+        console.log('Restoring, editor element found')
+        const raw = sessionStorage.getItem('__hmr_scroll_editor')
+        if (raw) {
+          const { x, y } = JSON.parse(raw)
+          requestAnimationFrame(() => {
+            let el = document.getElementById('edit-scroll-container')
+            if (el) {
+              el.scrollTop = y
+              el.scrollLeft = x
+            }
+          })
+        }
       }
     })
   }
@@ -29,23 +54,31 @@
 <script lang="ts">
   import { onMount, type Component } from 'svelte'
   import { globImportToRecord } from '@/center/utils/neutral'
-  import { onresizeobserver } from '@/center/utils/runes.svelte'
+  import {
+    lsState,
+    onresizeobserver,
+    onTripleKey,
+  } from '@/center/utils/runes.svelte'
 
+  import PenIcon from '~icons/fa6-solid/pen'
   import VerticalRhythmLines from '@/center/components/VerticalRhythmLines.svelte'
   import PagesList from './PagesList.svelte'
-  import Guarda from './Guarda.svelte'
+  import DefaultGuarda from './Guarda.svelte'
   import DefaultContainer from './Container.svelte'
   import DefaultNavContainer from './NavContainer.svelte'
+  import DefaultIcon from '@/assets/favicon.png'
+  import DefaultNavBg from '@/assets/noise20.png'
   import { cssVariables } from '@/center/utils'
+  import Editor from './Editor.svelte'
   // import Editor from './Editor.svelte'
 
   const props: {
     title: string
     nav: string[][]
-    favicon: string
+    favicon?: string
     socialIcon?: string
-    navBg: string
-    Guarda: Component
+    navBg?: string
+    Guarda?: Component
     Container?: Component
     NavContainer?: Component
     themeColors?: {
@@ -66,7 +99,7 @@
     description?: string
   }
 
-  console.log('ssssss')
+  console.log('sssssassss')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -124,6 +157,10 @@
       document.documentElement.scrollTop = scrollTop
       // optionally restore scrollTop or do other state updates
     })
+
+    return () => {
+      console.log('APP IS UNMOUNTING')
+    }
   })
 
   let currentPath = $state(
@@ -202,10 +239,25 @@
 
   const Container = $derived(props.Container || DefaultContainer)
   const NavContainer = $derived(props.NavContainer || DefaultNavContainer)
+
+  let editMode = lsState('edit-mode', { v: false })
+  onTripleKey('3', null, () => {
+    toggleEditMode()
+  })
+
+  function toggleEditMode() {
+    if (!import.meta.env.DEV) return
+    editMode.v = !editMode.v
+    // if (editMode.v) {
+    //   document.documentElement.style.overflow = 'hidden'
+    // } else {
+    //   document.documentElement.style.overflow = ''
+    // }
+  }
 </script>
 
 <svelte:head>
-  <link rel="icon" type="image/jpg" href={props.favicon} />
+  <link rel="icon" type="image/jpg" href={props.favicon || DefaultIcon} />
   <title>{currentPage.metadata?.title || props.title}</title>
   {#if currentPage.metadata?.description}
     <meta name="description" content={currentPage.metadata?.description} />
@@ -224,7 +276,37 @@
   <Editor />
 {/if} -->
 
-<div class="flex flex-col min-h-screen relative" use:cssVariables={themeColors}>
+{#if import.meta.env.DEV}
+  <button
+    onclick={toggleEditMode}
+    class="top-1 right-1 h-6 w-6 fixed z-1000 bg-blue-400 hover:brightness-110 text-2 flexcc b b-black/10 rounded-full text-white active:brightness-95"
+  >
+    <PenIcon />
+  </button>
+
+  {#if editMode.v}
+    <div class="flex fixed inset-0 z-999 bg-white">
+      <div class="w-1/2 b-r-2 b-gray-600">
+        <Editor pageName={currentPageName} />
+      </div>
+      <div class="w-1/2 overflow-y-auto" id="edit-scroll-container">
+        <Container>
+          <currentPage.Component />
+        </Container>
+      </div>
+    </div>
+  {/if}
+{/if}
+
+<div
+  class={[
+    'flex flex-col min-h-screen relative',
+    {
+      'hidden!': editMode.v,
+    },
+  ]}
+  use:cssVariables={themeColors}
+>
   <div bind:this={container} use:onresizeobserver={recalculatePagesListHeight}>
     <Container>
       <currentPage.Component />
@@ -233,7 +315,7 @@
   {#if props.Guarda}
     <props.Guarda />
   {:else}
-    <Guarda image={''} title={props.title} />
+    <DefaultGuarda image={''} title={props.title} />
   {/if}
 
   <NavContainer>
