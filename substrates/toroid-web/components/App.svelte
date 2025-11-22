@@ -38,6 +38,7 @@
         const raw = sessionStorage.getItem('__hmr_scroll_editor')
         if (raw) {
           const { x, y } = JSON.parse(raw)
+
           requestAnimationFrame(() => {
             let el = document.getElementById('edit-scroll-container')
             if (el) {
@@ -69,8 +70,7 @@
   import DefaultIcon from '@/assets/favicon.png'
   import DefaultNavBg from '@/assets/noise20.png'
   import { cssVariables } from '@/center/utils'
-  import Editor from './Editor.svelte'
-  // import Editor from './Editor.svelte'
+  import type Editor from './Editor.svelte'
 
   const props: {
     title: string
@@ -97,6 +97,7 @@
   type Metadata = {
     title?: string
     description?: string
+    noNav?: boolean
   }
 
   console.log('sssssassss')
@@ -159,7 +160,7 @@
     })
 
     return () => {
-      console.log('APP IS UNMOUNTING')
+      // console.log('APP IS UNMOUNTING')
     }
   })
 
@@ -254,6 +255,12 @@
     //   document.documentElement.style.overflow = ''
     // }
   }
+
+  let EditorComp = $state<typeof Editor>()
+
+  import('./Editor.svelte').then((mod) => {
+    EditorComp = mod.default
+  })
 </script>
 
 <svelte:head>
@@ -284,10 +291,10 @@
     <PenIcon />
   </button>
 
-  {#if editMode.v}
+  {#if editMode.v && EditorComp}
     <div class="flex fixed inset-0 z-999 bg-white">
       <div class="w-1/2 b-r-2 b-gray-600">
-        <Editor pageName={currentPageName} />
+        <EditorComp pageName={currentPageName} />
       </div>
       <div class="w-1/2 overflow-y-auto" id="edit-scroll-container">
         <Container>
@@ -318,17 +325,19 @@
     <DefaultGuarda image={''} title={props.title} />
   {/if}
 
-  <NavContainer>
-    {#if !import.meta.env.SSR}
-      <PagesList
-        {pages}
-        currentPage={currentPageName}
-        {pageNameToNavPath}
-        nav={props.nav}
-        {Container}
-      />
-    {/if}
-  </NavContainer>
+  {#if !currentPage.metadata?.noNav}
+    <NavContainer>
+      {#if !import.meta.env.SSR}
+        <PagesList
+          {pages}
+          currentPage={currentPageName}
+          {pageNameToNavPath}
+          nav={props.nav}
+          {Container}
+        />
+      {/if}
+    </NavContainer>
+  {/if}
 
   <VerticalRhythmLines />
 </div>

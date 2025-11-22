@@ -1,19 +1,30 @@
 <script lang="ts">
-  import { onMount, untrack } from 'svelte'
+  import CodeMirror from 'svelte-codemirror-editor'
+  import { EditorView } from '@codemirror/view'
+  import { EditorSelection } from '@codemirror/state'
+  import { svelte } from '@replit/codemirror-lang-svelte'
+  import { oneDark } from '@codemirror/theme-one-dark'
 
-  type EditorState = {
+  type LocalEditorState = {
     cursorPos: number
     scrollPos: number
     value: string
     timestamp: number
   }
-  let props: { state: EditorState; onUpdate: (newState: EditorState) => void } =
-    $props()
 
-  let el: HTMLTextAreaElement
-  let value = $state(props.state.value)
+  let props: {
+    state: LocalEditorState
+    onUpdate: (newState: LocalEditorState) => void
+  } = $props()
 
-  function throttle(ms: number, fn: () => void) {
+  let initialValue = $state(props.state.value)
+  let view = $state<EditorView>()
+
+  $effect(() => {
+    setEditorValue(props.state.value)
+  })
+
+  function debounce(ms: number, fn: () => void) {
     let t: any
     return () => {
       clearTimeout(t)
@@ -21,34 +32,89 @@
     }
   }
 
-  const notifyChange = throttle(100, () => {
+  const notifyChange = debounce(100, () => {
+    if (!view) return
+
+    const cursorPos = view.state.selection.main.head
+    const scrollPos = view.scrollDOM.scrollTop
+    const value = view.state.doc.toString()
+
     props.onUpdate({
-      cursorPos: el.selectionStart,
-      scrollPos: el.scrollTop,
+      cursorPos: cursorPos,
+      scrollPos: scrollPos,
       value: value,
       timestamp: Date.now(),
     })
   })
 
-  $effect(() => {
-    if (props.state.value !== untrack(() => value)) {
-      value = props.state.value
-    }
-  })
+  function handleCodeMirrorReady(cmView: EditorView) {
+    view = cmView
 
-  onMount(() => {
-    el.selectionStart = props.state.cursorPos
-    el.selectionEnd = props.state.cursorPos
-    el.scrollTop = props.state.scrollPos
-    el.focus()
+    const { cursorPos, scrollPos } = props.state
+    if (typeof cursorPos === 'number') {
+      view!.dispatch({
+        selection: EditorSelection.cursor(cursorPos),
+        scrollIntoView: true,
+      })
+    }
+
+    if (typeof scrollPos === 'number') {
+      requestAnimationFrame(() => {
+        view!.scrollDOM.scrollTop = scrollPos
+      })
+    }
+
+    view.scrollDOM.addEventListener('scroll', notifyChange)
+    view.focus()
+  }
+
+  function setEditorValue(newValue: string) {
+    if (!view) return
+
+    const currentValue = view.state.doc.toString()
+    if (currentValue === newValue) return
+
+    const cursorPos = view.state.selection.main.head
+    const scrollPos = view.scrollDOM.scrollTop
+
+    view.dispatch({
+      changes: {
+        from: 0,
+        to: view.state.doc.length,
+        insert: newValue,
+      },
+    })
+
+    const safePos = Math.min(cursorPos, newValue.length)
+
+    requestAnimationFrame(() => {
+      view!.dispatch({
+        selection: EditorSelection.cursor(safePos),
+        scrollIntoView: false,
+      })
+
+      view!.scrollDOM.scrollTop = scrollPos
+    })
+  }
+
+  const updateListener = EditorView.updateListener.of((v) => {
+    if (v.docChanged || v.selectionSet) {
+      notifyChange()
+    }
   })
 </script>
 
-<textarea
-  bind:this={el}
-  onselectionchange={notifyChange}
-  onscroll={notifyChange}
-  class="w-full h-full bg-gray-900 font-mono text-white px2 py1.5"
-  bind:value
-  oninput={notifyChange}
-></textarea>
+<CodeMirror
+  class="w-full min-h-full"
+  bind:value={initialValue}
+  onready={handleCodeMirrorReady}
+  lang={svelte()}
+  theme={oneDark}
+  extensions={[updateListener]}
+  styles={{
+    '&': {
+      maxWidth: '100%',
+      height: '100%',
+    },
+  }}
+/>
