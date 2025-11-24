@@ -3,7 +3,7 @@ import presetIcons from '@unocss/preset-icons'
 import {
   defineConfig,
   presetTypography,
-  presetWind3,
+  presetWind4,
   transformerDirectives,
 } from 'unocss'
 
@@ -52,7 +52,7 @@ export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {
     },
     presets: [
       presetIcons(),
-      presetWind3(),
+      presetWind4(),
       presetTypography(),
       presetWebFonts({
         provider: 'bunny', // default provider
