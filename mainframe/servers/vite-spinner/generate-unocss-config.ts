@@ -106,50 +106,52 @@ export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {
         }
       },
     ],
-    theme: {
-      boxShadow: {
-        solid: '0 1.5px 0 1px var(--un-shadow-color)',
-      },
-      breakpoints: {
-        xs: '360px',
-        sm: '640px',
-        md: '768px',
-        lg: '1024px',
-        xl: '1280px',
-        '2xl': '1536px',
-      },
-      colors: {
-        main: (() => {
-          let colors: [string, string][] = []
-          for (let i = 10; i <= 90; i += 10) {
+    extendTheme: (theme) => {
+      return {
+        ...theme,
+        breakpoints: {
+          xs: '360px',
+          sm: '640px',
+          md: '768px',
+          lg: '1024px',
+          xl: '1280px',
+          '2xl': '1536px',
+        },
+        colors: {
+          ...theme.colors,
+          potato: 'red',
+          main: (() => {
+            let colors: [string, string][] = []
+            for (let i = 10; i <= 90; i += 10) {
+              colors.push([
+                `${i}0`,
+                `hsl(var(--main-hue) var(--main-saturation) ${i}%)`,
+              ])
+            }
             colors.push([
-              `${i}0`,
-              `hsl(var(--main-hue), var(--main-saturation), ${i}%)`,
+              `950`,
+              `hsl(var(--main-hue) var(--main-saturation) 95%)`,
             ])
-          }
-          colors.push([
-            `950`,
-            `hsl(var(--main-hue), var(--main-saturation), 95%)`,
-          ])
-          return Object.fromEntries(colors)
-        })(),
+            return Object.fromEntries(colors)
+          })(),
 
-        alt: (() => {
-          let colors: [string, string][] = []
-          for (let i = 10; i <= 90; i += 10) {
+          alt: (() => {
+            let colors: [string, string][] = []
+            for (let i = 10; i <= 90; i += 10) {
+              colors.push([
+                `${i}0`,
+                `hsl(var(--alt-hue) var(--alt-saturation) ${i}%)`,
+              ])
+            }
+            colors.push([`50`, `hsl(var(--alt-hue) var(--alt-saturation) 5%)`])
             colors.push([
-              `${i}0`,
-              `hsl(var(--alt-hue), var(--alt-saturation), ${i}%)`,
+              `950`,
+              `hsl(var(--alt-hue) var(--alt-saturation) 95%)`,
             ])
-          }
-          colors.push([`50`, `hsl(var(--alt-hue), var(--alt-saturation), 5%)`])
-          colors.push([
-            `950`,
-            `hsl(var(--alt-hue), var(--alt-saturation), 95%)`,
-          ])
-          return Object.fromEntries(colors)
-        })(),
-      },
+            return Object.fromEntries(colors)
+          })(),
+        },
+      }
     },
   })
 }
