@@ -290,9 +290,15 @@ export async function getLogHistory(repoPath: string): Promise<CommitLog[]> {
   const format = '%H|%an|%ad|%s'
 
   try {
-    const firstCommitHash = (
-      await Bun.$`cd ${repoPath} && git rev-list --max-parents=0 HEAD`.text()
-    ).trim()
+    let firstCommitHash = ''
+    try {
+      firstCommitHash = (
+        await Bun.$`cd ${repoPath} && git rev-list --max-parents=0 HEAD`.text()
+      ).trim()
+    } catch (e) {
+      console.log('No first commit')
+      return []
+    }
 
     const result =
       await Bun.$`cd ${repoPath} && git log -n 20 --date=iso --pretty=format:${format}`.text()

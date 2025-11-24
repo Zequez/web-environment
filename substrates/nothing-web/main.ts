@@ -1,4 +1,4 @@
-import '@unocss/reset/tailwind.css'
+import '@unocss/reset/tailwind-v4.css'
 import 'virtual:uno.css'
 import { mount, hydrate } from 'svelte'
 

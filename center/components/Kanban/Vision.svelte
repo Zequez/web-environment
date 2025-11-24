@@ -82,6 +82,10 @@
   >
 {/snippet}
 
+<div class="flex space-x-1.5">
+  <button class="h20 w20 bg-red-400">Hey</button>
+  <div class="h20 w20 bg-blue-400"></div>
+</div>
 <div class="text-white clear-both">
   <div>600x500</div>
   <div class="w-600px h500px bg-green-500/10 float-left">

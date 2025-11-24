@@ -7,7 +7,6 @@
   "author": "Ezequiel Adrián Schwartzman",
   "devDependencies": {
     "@types/bun": "latest",
-    "@unocss/preset-web-fonts": "^66.1.1",
     "electron": "^36.4.0"
   },
   "bin": {
