@@ -1,13 +1,20 @@
 <script lang="ts">
-  import { onMount, tick, type Component, setContext } from 'svelte'
+  import {
+    onMount,
+    tick,
+    type Component,
+    setContext,
+    type Snippet,
+  } from 'svelte'
   import SlotSentinel from './SlotSentinel.svelte'
+  import PageWrapper from '@/repos/toroid-web-example/components/PageWrapper.svelte'
 
   const props: {
     pages: Record<string, { Component: Component }>
     currentPage: string
     pageNameToNavPath: Record<string, string>
     nav: string[][]
-    Container: Component
+    PageWrapper: Component
   } = $props()
 
   // Check if all pages exist
@@ -210,9 +217,9 @@
               },
             ]}
           >
-            <props.Container>
+            <PageWrapper>
               <Page.Component />
-            </props.Container>
+            </PageWrapper>
           </div>
 
           <a

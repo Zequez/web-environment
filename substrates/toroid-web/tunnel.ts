@@ -96,13 +96,16 @@ export async function streamReadFile(
   function report(fileName: string) {
     const content = fs.readFileSync($path(fileName), 'utf-8')
     const lastModified = fs.statSync($path(fileName)).mtime.getTime()
+    console.log(`Reporting file ${fileName}`)
     callback({ file: fileName, content, lastModified: lastModified })
   }
   report(params.file)
 
   const watcher = watch(params.file, {}, async (eventType, fileName) => {
+    // TODO: Renaming files; what to do? How does it work?
+    console.log('WAtcher WATCHENIEANRST', fileName)
     if (fileName) {
-      report(fileName)
+      report(params.file)
     } else {
       callback({ file: null, content: '', lastModified: 0 })
     }

@@ -1,19 +1,16 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte'
   import type { ClassValue } from 'svelte/elements'
 
-  const props: { title: string; image?: string; class?: ClassValue } = $props()
+  const props: { title: string; Content?: () => ReturnType<Snippet> } = $props()
 </script>
 
 <div id="nav-start"></div>
 <div
   class={[
     'print:hidden',
-    'sticky flex-shrink-0 bottom-0 text-center tracking-wide flexcc overflow-hidden w-full',
-    'h6',
-    props.class || [
-      'bg-gray-200 text-gray-600 text-shadow-[0_1px_0_#fff]',
-      'dark:(bg-gray-800! text-gray-300! text-shadow-[0_1px_0_#000])',
-    ],
+    'sticky flex-shrink-0 bottom-0 flexcc overflow-hidden w-full z-99',
+    'min-h6',
   ]}
 >
   <span
@@ -26,9 +23,9 @@
       el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       ev.preventDefault()
     }}
-    class="font-serif relative"
+    class="relative flexcc w-full h-full"
   >
-    {#if props.image}
+    <!-- {#if props.image}
       <div
         class="absolute top-10% right-100% mr1 h-80% opacity-20 dark:filter-invert"
       >
@@ -38,11 +35,19 @@
           alt="Intricate design on left of name"
         />
       </div>
+    {/if} -->
+
+    {#if props.Content}
+      {@render props.Content()}
+    {:else}
+      <span
+        class="font-serif block w-full h-full bg-gray-800 text-white flexcc"
+      >
+        {props.title}
+      </span>
     {/if}
 
-    {props.title}
-
-    {#if props.image}
+    <!-- {#if props.image}
       <div
         class="absolute top-10% left-100% ml1 h-80% scale-x-[-1] opacity-20 dark:filter-invert"
       >
@@ -52,6 +57,6 @@
           alt="Intricate design on right of name"
         />
       </div>
-    {/if}
+    {/if} -->
   </a>
 </div>

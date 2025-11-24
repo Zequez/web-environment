@@ -53,7 +53,7 @@
 </script>
 
 <script lang="ts">
-  import { onMount, type Component } from 'svelte'
+  import { onMount, type Component, type Snippet } from 'svelte'
   import { globImportToRecord } from '@/center/utils/neutral'
   import {
     lsState,
@@ -65,7 +65,7 @@
   import VerticalRhythmLines from '@/center/components/VerticalRhythmLines.svelte'
   import PagesList from './PagesList.svelte'
   import DefaultGuarda from './Guarda.svelte'
-  import DefaultContainer from './Container.svelte'
+  import DefaultPageWrapper from './DefaultPageWrapper.svelte'
   import DefaultNavContainer from './NavContainer.svelte'
   import DefaultIcon from '@/assets/favicon.png'
   import DefaultNavBg from '@/assets/noise20.png'
@@ -81,6 +81,9 @@
     Guarda?: Component
     Container?: Component
     NavContainer?: Component
+    NavContainerBg?: Snippet
+    PageWrapper?: Component
+    RailingBar?: Snippet
     themeColors?: {
       'main-hue': number
       'main-saturation': number
@@ -100,7 +103,7 @@
     noNav?: boolean
   }
 
-  console.log('sssssassss')
+  console.log('aaaaaa')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -238,7 +241,7 @@
     }
   }
 
-  const Container = $derived(props.Container || DefaultContainer)
+  const Container = $derived(props.Container || DefaultPageWrapper)
   const NavContainer = $derived(props.NavContainer || DefaultNavContainer)
 
   let editMode = lsState('edit-mode', { v: false })
@@ -261,6 +264,8 @@
   import('./Editor.svelte').then((mod) => {
     EditorComp = mod.default
   })
+
+  const ResolvedPageWrapper = $derived(props.PageWrapper || DefaultPageWrapper)
 </script>
 
 <svelte:head>
@@ -279,10 +284,6 @@
   onresize={recalculatePagesListHeight}
 />
 
-<!-- {#if import.meta.env.DEV}
-  <Editor />
-{/if} -->
-
 {#if import.meta.env.DEV}
   <button
     onclick={toggleEditMode}
@@ -297,9 +298,9 @@
         <EditorComp pageName={currentPageName} />
       </div>
       <div class="w-1/2 overflow-y-auto" id="edit-scroll-container">
-        <Container>
+        <ResolvedPageWrapper>
           <currentPage.Component />
-        </Container>
+        </ResolvedPageWrapper>
       </div>
     </div>
   {/if}
@@ -315,28 +316,31 @@
   use:cssVariables={themeColors}
 >
   <div bind:this={container} use:onresizeobserver={recalculatePagesListHeight}>
-    <Container>
+    <ResolvedPageWrapper>
       <currentPage.Component />
-    </Container>
+    </ResolvedPageWrapper>
   </div>
-  {#if props.Guarda}
-    <props.Guarda />
-  {:else}
-    <DefaultGuarda image={''} title={props.title} />
-  {/if}
+  <DefaultGuarda title={props.title} Content={props.RailingBar} />
 
   {#if !currentPage.metadata?.noNav}
-    <NavContainer>
-      {#if !import.meta.env.SSR}
-        <PagesList
-          {pages}
-          currentPage={currentPageName}
-          {pageNameToNavPath}
-          nav={props.nav}
-          {Container}
-        />
+    <div class="relative print:hidden flex-grow">
+      {#if props.NavContainerBg}
+        <div class="absolute inset-0 z-9">
+          {@render props.NavContainerBg()}
+        </div>
       {/if}
-    </NavContainer>
+      <div class="relative z-10">
+        {#if !import.meta.env.SSR}
+          <PagesList
+            {pages}
+            currentPage={currentPageName}
+            {pageNameToNavPath}
+            nav={props.nav}
+            PageWrapper={ResolvedPageWrapper}
+          />
+        {/if}
+      </div>
+    </div>
   {/if}
 
   <VerticalRhythmLines />

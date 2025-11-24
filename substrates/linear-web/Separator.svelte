@@ -2,7 +2,7 @@
   import { cx } from '@/center/utils'
   import type { SeparatorConfig } from './WebConfig'
 
-  const separators = import.meta.glob('./separators/*.svg', {
+  const separators = import.meta.glob('@/center/separators/*.svg', {
     eager: true,
     as: 'raw',
   }) as { [key: string]: string }
@@ -25,11 +25,11 @@
   )
 
   const svg = $derived.by(() => {
-    if (!separators[`./separators/${config.id}.svg`]) {
+    if (!separators[`'@/center/separators/${config.id}.svg`]) {
       throw `No SVG named ${config.id} on library`
     }
 
-    return separators[`./separators/${config.id}.svg`]
+    return separators[`'@/center/separators/${config.id}.svg`]
   })
 
   const originalViewbox = $derived.by(() => {

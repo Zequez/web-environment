@@ -179,6 +179,8 @@ land/*
 www/*
 repos/*
 
+!repos/toroid-web-example
+
 back/electron/dist
 projections
 prerenderers

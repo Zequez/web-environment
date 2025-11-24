@@ -125,12 +125,16 @@ export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {
             for (let i = 10; i <= 90; i += 10) {
               colors.push([
                 `${i}0`,
-                `hsl(var(--main-hue) var(--main-saturation) ${i}%)`,
+                `hsl(var(--main-hue) var(--main-saturation) ${100 - i}%)`,
               ])
             }
             colors.push([
-              `950`,
+              `50`,
               `hsl(var(--main-hue) var(--main-saturation) 95%)`,
+            ])
+            colors.push([
+              `950`,
+              `hsl(var(--main-hue) var(--main-saturation) 5%)`,
             ])
             return Object.fromEntries(colors)
           })(),
@@ -140,14 +144,11 @@ export default function generateUnoCSSConfig(config: WenvUnoCSSConfig) {
             for (let i = 10; i <= 90; i += 10) {
               colors.push([
                 `${i}0`,
-                `hsl(var(--alt-hue) var(--alt-saturation) ${i}%)`,
+                `hsl(var(--alt-hue) var(--alt-saturation) ${100 - i}%)`,
               ])
             }
-            colors.push([`50`, `hsl(var(--alt-hue) var(--alt-saturation) 5%)`])
-            colors.push([
-              `950`,
-              `hsl(var(--alt-hue) var(--alt-saturation) 95%)`,
-            ])
+            colors.push([`50`, `hsl(var(--alt-hue) var(--alt-saturation) 95%)`])
+            colors.push([`950`, `hsl(var(--alt-hue) var(--alt-saturation) 5%)`])
             return Object.fromEntries(colors)
           })(),
         },

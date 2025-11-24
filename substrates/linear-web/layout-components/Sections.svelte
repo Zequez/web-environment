@@ -134,8 +134,7 @@
   {#if lastSeparator && lastSeparator!.snapTo === 'prev'}
     <div class="relative bg-main-100 text-main-500">
       <Separator index={C.config.sections.length} config={lastSeparator!} />
-      <div
-        class="absolute inset-0 z-8 bg-[url(./noise20.png)] opacity-50"
+      <div class="absolute inset-0 z-8 bg-[url(./noise20.png)] opacity-50"
       ></div>
       <div class="h-20"></div>
     </div>
