@@ -19,6 +19,7 @@ export type BackMsg = ['repos-list', repos: Repo[]]
 
 export type FrontMsg =
   | ['add-repo', name: string]
+  | ['add-repo-from-url', url: string]
   | ['init-repo-git', name: string]
   | ['remove-repo', name: string]
   | ['duplicate-repo', name: string]

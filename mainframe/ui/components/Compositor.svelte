@@ -173,8 +173,15 @@
   ) {
     switch (c[0]) {
       case 'add-repo': {
-        gitSend(['add-repo', c[1]])
-        break
+        const urlOrName = c[1]
+        console.log('Adding repo!', urlOrName)
+        if (urlOrName.startsWith('http')) {
+          gitSend(['add-repo-from-url', urlOrName])
+          return
+        } else {
+          gitSend(['add-repo', urlOrName])
+          break
+        }
       }
       case 'init-repo-git': {
         gitSend(['init-repo-git', c[1]])

@@ -70,6 +70,26 @@ export function startReposMonitor() {
     }
   }
 
+  async function addFromUrl(url: string) {
+    const nameFromUrl = url.split('/').pop()?.replace(/.git$/, '') || null
+
+    console.log('Creating repo!', nameFromUrl)
+    if (nameFromUrl && !R.has(nameFromUrl)) {
+      const newRepo = await ActiveRepo.createFromUrl(nameFromUrl!, url)
+      if (newRepo) {
+        await newRepo.analyze()
+        console.log('Repo cloned and created!', nameFromUrl, url, newRepo)
+        R.set(nameFromUrl, newRepo)
+        notify()
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return false
+    }
+  }
+
   async function add(name: string) {
     const sanitizedName = sanitizeRepoName(name)
     console.log('Creating repo!', sanitizedName)
@@ -191,6 +211,7 @@ export function startReposMonitor() {
     fetch,
     subscribe,
     add,
+    addFromUrl,
     remove,
     rename,
     duplicate,

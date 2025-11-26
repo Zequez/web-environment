@@ -23,6 +23,10 @@ function start() {
           await reposMonitor.add(msg[1])
           break
         }
+        case 'add-repo-from-url': {
+          await reposMonitor.addFromUrl(msg[1])
+          break
+        }
         case 'duplicate-repo': {
           await reposMonitor.duplicate(msg[1])
           break

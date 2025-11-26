@@ -7,7 +7,6 @@
     type Snippet,
   } from 'svelte'
   import SlotSentinel from './SlotSentinel.svelte'
-  import PageWrapper from '@/repos/toroid-web-example/components/PageWrapper.svelte'
 
   const props: {
     pages: Record<string, { Component: Component }>
@@ -208,9 +207,9 @@
               },
             ]}
           >
-            <PageWrapper>
+            <props.PageWrapper>
               <Page.Component />
-            </PageWrapper>
+            </props.PageWrapper>
           </div>
 
           <a

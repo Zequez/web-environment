@@ -79,6 +79,15 @@ export class ActiveRepo implements Repo {
     }
   }
 
+  static async createFromUrl(name: string, url: string) {
+    const repo = new ActiveRepo(name)
+    if (await git.clone(repo.path, url)) {
+      return repo
+    } else {
+      return null
+    }
+  }
+
   async analyze() {
     console.log(chalk.green('ANALYZING'), this.name)
 

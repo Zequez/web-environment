@@ -1,5 +1,6 @@
 import { stat, exists } from 'fs/promises'
 import { join } from 'path'
+import fs from 'fs'
 import type { SyncStatus } from './messages'
 import { mkdir } from 'fs/promises'
 
@@ -93,8 +94,13 @@ export async function hasUncommittedChanges(repoPath: string) {
 }
 
 export async function lastFetchedAt(repoPath: string) {
-  const fetchHeadStat = await stat(join(repoPath, '.git/FETCH_HEAD'))
-  return fetchHeadStat.mtimeMs
+  const fetchHeadPath = join(repoPath, '.git/FETCH_HEAD')
+  if (fs.existsSync(fetchHeadPath)) {
+    const fetchHeadStat = await stat(join(repoPath, '.git/FETCH_HEAD'))
+    return fetchHeadStat.mtimeMs
+  } else {
+    return 0
+  }
 }
 
 export async function assesSyncStatus(
@@ -296,7 +302,7 @@ export async function getLogHistory(repoPath: string): Promise<CommitLog[]> {
         await Bun.$`cd ${repoPath} && git rev-list --max-parents=0 HEAD`.text()
       ).trim()
     } catch (e) {
-      console.log('No first commit')
+      console.log('No first commit', repoPath)
       return []
     }
 
@@ -321,5 +327,15 @@ export async function getLogHistory(repoPath: string): Promise<CommitLog[]> {
   } catch (e) {
     console.error('Failed to retrieve git log:', e)
     return []
+  }
+}
+
+export async function clone(repoPath: string, url: string) {
+  try {
+    await Bun.$`git clone ${url} ${repoPath}`
+    return true
+  } catch (e) {
+    console.error(e)
+    return false
   }
 }

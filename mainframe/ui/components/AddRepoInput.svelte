@@ -4,7 +4,7 @@
   import NiftyBtn from './common/NiftyBtn.svelte'
 
   const p: {
-    onConfirm: (name: string) => void
+    onConfirm: (nameOrUrl: string) => void
     takenNames: string[]
   } = $props()
 
@@ -40,6 +40,8 @@
       })}
       placeholder="Name or URL"
     />
-    <NiftyBtn disabled={!nameIsValid}>Add</NiftyBtn>
+    <NiftyBtn disabled={!nameIsValid} onclick={() => handleSubmit()}
+      >Add</NiftyBtn
+    >
   </div>
 </div>
