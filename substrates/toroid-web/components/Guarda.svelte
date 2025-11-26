@@ -25,18 +25,6 @@
     }}
     class="relative flexcc w-full h-full"
   >
-    <!-- {#if props.image}
-      <div
-        class="absolute top-10% right-100% mr1 h-80% opacity-20 dark:filter-invert"
-      >
-        <img
-          src={props.image}
-          class="h-full max-w-none"
-          alt="Intricate design on left of name"
-        />
-      </div>
-    {/if} -->
-
     {#if props.Content}
       {@render props.Content()}
     {:else}
@@ -46,17 +34,5 @@
         {props.title}
       </span>
     {/if}
-
-    <!-- {#if props.image}
-      <div
-        class="absolute top-10% left-100% ml1 h-80% scale-x-[-1] opacity-20 dark:filter-invert"
-      >
-        <img
-          src={props.image}
-          class="h-full max-w-none"
-          alt="Intricate design on right of name"
-        />
-      </div>
-    {/if} -->
   </a>
 </div>

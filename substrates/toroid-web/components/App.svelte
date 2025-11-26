@@ -50,6 +50,13 @@
       }
     })
   }
+
+  export type PagesUpdate = {
+    nav: string[][]
+    deleted: string[]
+    renamed: { [key: string]: string }
+    created: string[]
+  }
 </script>
 
 <script lang="ts">
@@ -71,6 +78,10 @@
   import DefaultNavBg from '@/assets/noise20.png'
   import { cssVariables } from '@/center/utils'
   import type Editor from './Editor.svelte'
+  import Kanban from '@/center/components/Kanban/Kanban.svelte'
+  import EditBtn from './EditBtn.svelte'
+  import PagesListEditor from './PagesListEditor.svelte'
+  import { tunnel } from '@/center/tunnel'
 
   const props: {
     title: string
@@ -103,7 +114,27 @@
     noNav?: boolean
   }
 
-  console.log('aaaaaa')
+  function cleanNav() {
+    let nav = [...props.nav]
+
+    let toRemove: string[] = []
+    for (let nav of props.nav) {
+      for (let page of nav) {
+        if (!pages[page]) {
+          toRemove.push(page)
+          console.warn(`Page ${page} not found`)
+        }
+      }
+    }
+
+    nav = nav.map((nav) => nav.filter((p) => !toRemove.includes(p)))
+
+    return nav
+  }
+
+  // Check if all pages exist
+
+  console.log('aaaaaaaaa')
 
   // WORKAROUND FOR A BUG I HAVENT FIGURED OUT YET
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -150,6 +181,8 @@
     document.documentElement.scrollTop = 0
     recalculatePagesListHeight()
   }
+
+  let nav = $state(cleanNav())
 
   onMount(() => {
     window.addEventListener('popstate', (event) => {
@@ -244,28 +277,46 @@
   const Container = $derived(props.Container || DefaultPageWrapper)
   const NavContainer = $derived(props.NavContainer || DefaultNavContainer)
 
-  let editMode = lsState('edit-mode', { v: false })
-  onTripleKey('3', null, () => {
-    toggleEditMode()
-  })
+  let editing = lsState<{ v: 'page' | 'nav' | null }>('editing', { v: null })
 
-  function toggleEditMode() {
+  function toggleEditMode(target: 'page' | 'nav' | null) {
     if (!import.meta.env.DEV) return
-    editMode.v = !editMode.v
-    // if (editMode.v) {
-    //   document.documentElement.style.overflow = 'hidden'
-    // } else {
-    //   document.documentElement.style.overflow = ''
-    // }
+
+    if (editing.v === 'nav') {
+      onDonePagesUpdate()
+    }
+
+    if (editing.v === target) {
+      editing.v = null
+    } else {
+      editing.v = target
+    }
   }
 
   let EditorComp = $state<typeof Editor>()
 
-  import('./Editor.svelte').then((mod) => {
-    EditorComp = mod.default
+  $effect(() => {
+    if (editing.v === 'page') {
+      console.log('Importing editor')
+      import('./Editor.svelte').then((mod) => {
+        EditorComp = mod.default
+      })
+    }
   })
 
   const ResolvedPageWrapper = $derived(props.PageWrapper || DefaultPageWrapper)
+
+  let pagesListEditor = $state<undefined | PagesListEditor>(undefined)
+  function onDonePagesUpdate() {
+    const pagesUpdate = pagesListEditor!.getUpdate()
+    console.log('Updating nav', pagesUpdate)
+    tunnel('substrates/toroid-web/tunnel.ts/setAppNav', {
+      updates: pagesUpdate,
+      repo: __REPO__,
+    }).then((success) => {
+      console.log('Saving nav success?', success)
+    })
+  }
 </script>
 
 <svelte:head>
@@ -284,33 +335,55 @@
   onresize={recalculatePagesListHeight}
 />
 
-{#if import.meta.env.DEV}
-  <button
-    onclick={toggleEditMode}
-    class="top-1 right-1 h-6 w-6 fixed z-1000 bg-blue-400 hover:brightness-110 text-2 flexcc b b-black/10 rounded-full text-white active:brightness-95"
-  >
-    <PenIcon />
-  </button>
-
-  {#if editMode.v && EditorComp}
-    <div class="flex fixed inset-0 z-999 bg-white">
-      <div class="w-1/2 b-r-2 b-gray-600">
-        <EditorComp pageName={currentPageName} />
-      </div>
-      <div class="w-1/2 overflow-y-auto" id="edit-scroll-container">
-        <ResolvedPageWrapper>
-          <currentPage.Component />
-        </ResolvedPageWrapper>
-      </div>
+<div use:cssVariables={themeColors}>
+  {#if import.meta.env.DEV}
+    <div class="bottom-1 right-1 fixed z-1000 flex flex-col space-y-1">
+      {#if editing.v !== null}
+        <EditBtn
+          opened={true}
+          text="page"
+          onclick={() => toggleEditMode(null)}
+        />
+      {:else}
+        <EditBtn
+          opened={editing.v === 'page'}
+          text="page"
+          onclick={() => toggleEditMode('page')}
+        />
+        <EditBtn
+          opened={editing.v === 'nav'}
+          text="Nav"
+          onclick={() => toggleEditMode('nav')}
+        />
+      {/if}
     </div>
+
+    {#if editing.v === 'page' && EditorComp}
+      <div class="flex fixed inset-0 z-999 bg-white">
+        <div class="w-1/2 b-r-2 b-gray-600">
+          <EditorComp pageName={currentPageName} />
+        </div>
+        <div class="w-1/2 overflow-y-auto" id="edit-scroll-container">
+          <ResolvedPageWrapper>
+            <currentPage.Component />
+          </ResolvedPageWrapper>
+        </div>
+      </div>
+    {:else if editing.v === 'nav'}
+      <PagesListEditor
+        bind:this={pagesListEditor}
+        {nav}
+        allPages={Object.keys(pages)}
+      />
+    {/if}
   {/if}
-{/if}
+</div>
 
 <div
   class={[
     'flex flex-col min-h-screen relative',
     {
-      'hidden!': editMode.v,
+      'hidden!': editing.v === 'page',
     },
   ]}
   use:cssVariables={themeColors}

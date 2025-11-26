@@ -19,14 +19,18 @@
   }: {
     cols: string[][]
     // onColsChange: (cols: string[][]) => void
+    onChange?: (cols: string[][]) => void
     containerCols?: number
-    onAddItem: () => string
     renderItem: KanbanItemSnippet
     renderAddItem: KanbanAddItemSnippet
   } = $props()
 
   let containerEl: HTMLElement
   let colWidth = $state<null | number>(null)
+
+  function notify() {
+    props.onChange?.(cols)
+  }
 
   onMount(() => {
     colWidth = containerEl.offsetWidth / containerCols
@@ -35,20 +39,24 @@
   function addItem(col: number, id: string) {
     cols[col].push(id)
     addingItemOnColumn = null
+    notify()
   }
 
   function addColumn() {
     cols.push([])
+    notify()
   }
 
   function removeItem(col: number, item: number) {
     cols[col].splice(item, 1)
+    notify()
   }
 
   function removeColumn(col: number) {
     cols.splice(col, 1)
     removingColumn = null
     clearTimeout(removingColumnTimeout!)
+    notify()
   }
 
   function moveItem(
@@ -67,6 +75,7 @@
     cols[sourceCol].splice(sourcePos, 1)
     const minusOne = sourceCol === targetCol && targetPos > sourcePos ? -1 : 0
     cols[targetCol].splice(targetPos + minusOne, 0, itemVal)
+    notify()
   }
 
   // Confirmations
@@ -114,7 +123,6 @@
   }
 
   function handleDraggingHover(col: number, item: number, ev: MouseEvent) {
-    console.log('Dragging hover', col, item, ev)
     const x = ev.clientX
     const y = ev.clientY
     if (col === cols.length) {
@@ -256,15 +264,16 @@
             ? (ev) => handleDraggingHover(cols.length, 0, ev)
             : undefined}
           class={[
-            'flex-shrink-0 relative w-full z-10 flexcc opacity-25 hover:opacity-100 text-white min-h-full b-3 b-dashed b-white/40 rounded-1 bg-gray-400 hover:(opacity-100 b-solid)',
-            'text-4 @[400px]:(text-8)',
-            {
-              'cursor-pointer': !isDraggingItem,
-              'cursor-inherit': isDraggingItem,
-            },
+            'flex-shrink-0 relative w-full z-10 flexcc',
+            'text-white text-4 @[400px]:(text-8) cursor-pointer',
+            ' b-3 b-dashed b-white/40 bg-gray-400  rounded-1',
+            'opacity-25 hover:(opacity-100 b-solid)',
+            'pt-161%',
           ]}
         >
-          <PlusIcon />
+          <div class="absolute inset-0 flexcc">
+            <PlusIcon />
+          </div>
         </button>
       </div>
     {/if}

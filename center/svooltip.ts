@@ -1,4 +1,4 @@
-import { tooltip } from 'svooltip'
+import { tooltip, type Options } from 'svooltip'
 import 'svooltip/styles.css'
 import './svooltip.css'
 

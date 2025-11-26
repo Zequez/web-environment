@@ -11,4 +11,4 @@ import App from '@@@/App.svelte'
 
 const rootEl = document.getElementById('root')!
 const fun = rootEl.hasChildNodes() ? hydrate : mount
-fun(App, { target: document.getElementById('root')!, props: {} })
+fun(App, { target: rootEl, props: {} })

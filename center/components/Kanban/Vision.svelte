@@ -93,7 +93,6 @@
       bind:cols={kanbanState}
       containerCols={6}
       renderItem={renderKanbanItem}
-      onAddItem={handleAddItem}
       renderAddItem={renderKanbanAddItem}
     />
   </div>
@@ -104,7 +103,6 @@
         bind:cols={kanbanState}
         containerCols={4}
         renderItem={renderKanbanItem}
-        onAddItem={handleAddItem}
         renderAddItem={renderKanbanAddItem}
       />
     </div>

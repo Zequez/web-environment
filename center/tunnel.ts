@@ -1,5 +1,6 @@
 import { SERVER_TUNNEL_PORT } from '@/center/ports'
 import type { Repo } from '@/mainframe/servers/git-server/messages'
+import type { PagesUpdate } from '@/substrates/toroid-web/components/App.svelte'
 
 type ApiMap = {
   'substrates/toroid-web/tunnel.ts/setFile': (params: {
@@ -13,6 +14,10 @@ type ApiMap = {
     file: string
     content: string
   }) => number
+  'substrates/toroid-web/tunnel.ts/setAppNav': (params: {
+    updates: PagesUpdate
+    repo: string
+  }) => boolean
   'mainframe/tunnels/building.ts/buildRepo': (repo: string) => {
     success: boolean
     error?: string

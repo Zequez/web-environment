@@ -10,6 +10,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte'
 import ViteYaml from '@modyfi/vite-plugin-yaml'
 import { mdsvex } from 'mdsvex'
 import AutoImport from 'unplugin-auto-import/vite'
+import { hmrGate } from './hmr-gate'
 // import react from '@vitejs/plugin-react'
 
 // Utils
@@ -124,7 +125,14 @@ export async function generateViteConfig(C: ViteMetaConfig) {
                 input: $path(`substrates/${substrate}/prerender.ts`),
               },
             }
-          : undefined,
+          : {
+              rollupOptions: {
+                input: {
+                  main: $path(`substrates/${substrate}/index.html`),
+                  editor: $path(`substrates/${substrate}/editor.html`),
+                },
+              },
+            },
 
     // ██████╗ ██╗     ██╗   ██╗ ██████╗ ██╗███╗   ██╗███████╗
     // ██╔══██╗██║     ██║   ██║██╔════╝ ██║████╗  ██║██╔════╝
@@ -134,6 +142,7 @@ export async function generateViteConfig(C: ViteMetaConfig) {
     // ╚═╝     ╚══════╝ ╚═════╝  ╚═════╝ ╚═╝╚═╝  ╚═══╝╚══════╝
 
     plugins: [
+      hmrGate(),
       // Public Web Plugin
       autoImportConfig,
       svelte({

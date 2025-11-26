@@ -17,15 +17,6 @@
     PageWrapper: Component
   } = $props()
 
-  // Check if all pages exist
-  for (let nav of props.nav) {
-    for (let page of nav) {
-      if (!props.pages[page]) {
-        throw new Error(`Page "${page}" not found`)
-      }
-    }
-  }
-
   setContext('preview-page-mode', true)
   let container: HTMLDivElement
   let columns = $derived(props.nav.length)

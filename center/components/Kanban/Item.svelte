@@ -57,9 +57,7 @@
 >
   <div
     bind:this={el}
-    class={[
-      'bg-gray-500 shadow-[inset_0_0_0_1.5px] shadow-gray-800 rounded-1 relative',
-    ]}
+    class={['relative']}
     style={DRAG.dragging
       ? `transform: translate(${DRAG.dragging.x}px, ${DRAG.dragging.y}px); pointer-events: none;`
       : ''}
