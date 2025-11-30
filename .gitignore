@@ -178,6 +178,7 @@ dist
 land/*
 www/*
 repos/*
+repos_bak/*
 
 back/electron/dist
 projections

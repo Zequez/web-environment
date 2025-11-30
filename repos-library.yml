@@ -1,0 +1,31 @@
+# This is a list of projects that run on the Web Environment
+# and are shown on the Library section of the mainframe to clone from
+
+ezequiel:
+  url: https://github.com/Zequez/ezequielschwartzman.org
+  web: https://ezequielschwartzman.org
+webenv:
+  url: https://github.com/Zequez/web-env-web
+  web: https://webenv.ezequielschwartzman.org
+casa-nami:
+  url: https://github.com/Zequez/casa-nami
+  web: https://casanami.mdp.nodos.lat
+mogotes:
+  url: https://github.com/Zequez/mogotes
+  web: https://mogotes.mdp.nodos.lat
+agroeco:
+  url: https://github.com/Zequez/agroeco
+  web: https://agroeco.mdp.nodos.lat
+toroid-web:
+  url: https://github.com/Zequez/toroid-web
+  web: https://toroid.webenv.ezequielschwartzman.org
+foo:
+  url: https://github.com/Zequez/foo
+  web:
+  description: This is just a barebones empty test project
+nodos.lat:
+  url: https://github.com/Zequez/nodos.lat
+  web: https://nodos.lat
+coral-sandbox:
+  url: https://github.com/Zequez/coral-sandbox
+  web: https://coral.ezequielschwartzman.org

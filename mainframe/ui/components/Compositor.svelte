@@ -36,15 +36,15 @@
     FrontMsg as ViteSpinnerFrontMsg,
   } from '@/mainframe/servers/vite-spinner/start.ts'
 
-  import GitRemoteDisplay from './common/GitRemoteDisplay.svelte'
+  import ArrowLeftIcon from '~icons/fa6-solid/arrow-left'
   import { tunnel } from '@/center/tunnel'
   import { lsState } from '@/center/utils/runes.svelte'
   import NiftyBtn from './common/NiftyBtn.svelte'
-  import { openOnFileExplorer } from '../electron-bridge'
   import CompRepo from './SubRepo/SubRepo.svelte'
   import ThreeDots from '@/center/components/ThreeDots.svelte'
   import FieldRepo from './FieldRepo.svelte'
 
+  let initialLoaded = $state(false)
   let repos: Repo[] = $state<Repo[]>([])
   let gitSocket = $state<WebSocket>(null!)
   let publishingSocket = $state<WebSocket>(null!)
@@ -98,6 +98,7 @@
         console.log('[GIT] 🔻', data)
         switch (data[0]) {
           case 'repos-list': {
+            initialLoaded = true
             data[1].forEach((repo: Repo) => {
               if (!repo.name) return
               let found = false
@@ -361,60 +362,81 @@
       <div class="flex-grow"></div>
     </div>
 
-    <div class=" flex flex-col space-y-3 p3 bg-slate-600 b-t b-black/20">
+    <div
+      class=" flex flex-col bg-slate-700 b-t b-black/5 shadow-[0_-2px_5px_0px_#0003]"
+    >
       <AddRepoInput
         takenNames={repos.filter((r) => r.name).map((r) => r.name!)}
         onConfirm={(name) => cmd('add-repo', name)}
       />
-      <div class="b-t b-dashed b-white/50"></div>
-      <div class="flex w-full space-x-3">
-        <NiftyBtn expand={true} onclick={() => cmd('analyze-all')}
-          >Analyze All</NiftyBtn
+      <div class=" bg-black/10 p3 b-t b-black/10">
+        <div class="font-mono lh-12 -mt3 uppercase text-shadow-[0_1px_0_#0008]"
+          >Mass actions</div
         >
-        <NiftyBtn expand={true} onclick={() => cmd('fetch-all')}
-          >Fetch All</NiftyBtn
-        >
+        <div class="flex space-x-3">
+          <NiftyBtn expand={true} onclick={() => cmd('analyze-all')}
+            >Analyze All</NiftyBtn
+          >
+          <NiftyBtn expand={true} onclick={() => cmd('fetch-all')}
+            >Fetch All</NiftyBtn
+          >
+        </div>
       </div>
     </div>
   </div>
   <!-- REPOS LIST -->
   <div class="flex-grow flex overflow-auto bg-slate-800">
-    {#each reposOrder.v as col, i (i)}
-      <div
-        class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5"
-        aria-label="Column {i}"
-      >
-        {#each col as repoName, j (j)}
-          {@const repo = subRepos.find((r) => r.name === repoName)}
-          {#if repo}
-            {@const name = repo.name!}
-            <CompRepo
-              {repo}
-              isRunning={runningViteServers[name]}
-              onToggleBoot={() => {
-                if (runningViteServers[name]) {
-                  cmd('stop-vite', name)
-                } else {
-                  cmd('start-vite', name)
-                }
-              }}
-              buildStatus={buildStatus[name] || { status: 'never' }}
-              publishingStatus={publishingStatus[name] || { status: 'never' }}
-              onRename={(newName) => cmd('rename-repo', name, newName)}
-              onRemoveRemote={() => cmd('remove-remote', name)}
-              onDuplicate={() => cmd('duplicate-repo', name)}
-              onRemove={() => cmd('remove-repo', name)}
-              onCommit={(msg) => cmd('commit', name, msg)}
-              onAddRemote={(url) => cmd('add-remote', name, url)}
-              onFetch={() => cmd('fetch', name)}
-              onSync={() => cmd('sync', name)}
-              onBuild={() => cmd('build', name)}
-              onPublish={() => cmd('publish', name)}
-              onMove={(direction) => moveRepo(name, direction)}
-            />
-          {/if}
-        {/each}
+    {#if !initialLoaded}
+      <div class="w-full h-full flexcc text-white text-8">
+        Loading<ThreeDots />
       </div>
-    {/each}
+    {:else if !subRepos.length}
+      <div class="p6 flexes size-full">
+        <div class="bg-white/10 rounded-2 flexcc text-white px6 py3">
+          <div>
+            <div>No projects found on /repos</div>
+            <div><ArrowLeftIcon class="inline" /> Try adding one with this</div>
+          </div>
+        </div>
+      </div>
+    {:else}
+      {#each reposOrder.v as col, i (i)}
+        <div
+          class="flex flex-col w-320px flex-shrink-0 space-y-1.5 p1.5"
+          aria-label="Column {i}"
+        >
+          {#each col as repoName, j (j)}
+            {@const repo = subRepos.find((r) => r.name === repoName)}
+            {#if repo}
+              {@const name = repo.name!}
+              <CompRepo
+                {repo}
+                isRunning={runningViteServers[name]}
+                onToggleBoot={() => {
+                  if (runningViteServers[name]) {
+                    cmd('stop-vite', name)
+                  } else {
+                    cmd('start-vite', name)
+                  }
+                }}
+                buildStatus={buildStatus[name] || { status: 'never' }}
+                publishingStatus={publishingStatus[name] || { status: 'never' }}
+                onRename={(newName) => cmd('rename-repo', name, newName)}
+                onRemoveRemote={() => cmd('remove-remote', name)}
+                onDuplicate={() => cmd('duplicate-repo', name)}
+                onRemove={() => cmd('remove-repo', name)}
+                onCommit={(msg) => cmd('commit', name, msg)}
+                onAddRemote={(url) => cmd('add-remote', name, url)}
+                onFetch={() => cmd('fetch', name)}
+                onSync={() => cmd('sync', name)}
+                onBuild={() => cmd('build', name)}
+                onPublish={() => cmd('publish', name)}
+                onMove={(direction) => moveRepo(name, direction)}
+              />
+            {/if}
+          {/each}
+        </div>
+      {/each}
+    {/if}
   </div>
 </div>

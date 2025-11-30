@@ -20,7 +20,7 @@
   aria-label="Open {P.url} in browser"
   class={[
     P.class,
-    'flexcs font-mono text-3 bg-gray-100 group rounded-.5 px1 text-black shadow-[0_1px_0_0_#0006]',
+    'flexcs font-mono cursor-pointer text-3 lh-6 overflow-hidden w-full bg-gray-100 hover:bg-white group rounded-.5 px1 text-black shadow-[0_1px_0_0_#0006]',
   ]}
 >
   {#if host === 'github'}
@@ -30,7 +30,7 @@
   {/if}
 
   <span
-    class="underline underline-(dashed black/50) group-hover:(underline-solid underline-black/100)"
+    class="text-left underline underline-(dashed black/50) group-hover:(underline-solid underline-black/100) overflow-hidden text-ellipsis flex-grow"
     >{path}</span
   >
 </button>

@@ -33,7 +33,7 @@
     color,
     'h6 -translate-y-1.5px flexcc px2 rounded-1 shadow-[0_1px_0_0.5px]',
     'text-3 font-mono text-white uppercase text-shadow-[0_1px_0_#0004] ',
-    'hover:brightness-110',
+    'hover:brightness-110 cursor-pointer',
     'disabled:(saturate-0 hover:brightness-100 opacity-50)',
     {
       'w-full': P.expand,
