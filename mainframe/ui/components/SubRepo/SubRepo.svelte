@@ -98,7 +98,7 @@
 
 <div
   aria-label={name}
-  class="bg-gray-200 p-0 w-full rounded-1 shadow-[0_0_0_1px_#0006]"
+  class="bg-gray-200 p-0 w-full rounded-1 shadow-[0_0_0_1px_#0006] relative"
 >
   <!-- HEADER -->
   <div
@@ -160,51 +160,51 @@
     >
       <EllipsisVerticalIcon />
     </button>
-    {#if headerMenuOpen}
-      <div
-        class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
-        id="ellipsis-menu"
-      >
-        {#if repo.status[0] === 'git-full'}
+  </div>
+  {#if headerMenuOpen}
+    <div
+      class="absolute flex flex-col whitespace-nowrap font-mono text-3 top-0 py1 text-black/75 left-full -ml1 mt1 bg-gray-200 b b-black/10 rounded-sm shadow-md z-100"
+      id="ellipsis-menu"
+    >
+      {#if repo.status[0] === 'git-full'}
+        <button
+          onclick={() => p.onRemoveRemote()}
+          class="block text-left px1.5 hover:bg-black/10"
+        >
+          Remove Remote
+        </button>
+        {#if repo.status[1].match(/github/)}
           <button
-            onclick={() => p.onRemoveRemote()}
+            onclick={() =>
+              openInBrowser(
+                repo.status[1]!.replace(/.git$/, '') + '/settings/pages',
+              )}
             class="block text-left px1.5 hover:bg-black/10"
           >
-            Remove Remote
+            Github Pages
           </button>
-          {#if repo.status[1].match(/github/)}
-            <button
-              onclick={() =>
-                openInBrowser(
-                  repo.status[1]!.replace(/.git$/, '') + '/settings/pages',
-                )}
-              class="block text-left px1.5 hover:bg-black/10"
-            >
-              Github Pages
-            </button>
-          {/if}
         {/if}
-        <button
-          onclick={() => startRenaming(repo.name!)}
-          class="block text-left px1.5 hover:bg-black/10"
-        >
-          Rename
-        </button>
-        <button
-          onclick={() => p.onDuplicate()}
-          class="block text-left px1.5 hover:bg-black/10"
-        >
-          Duplicate
-        </button>
-        <button
-          onclick={() => p.onRemove()}
-          class="block text-left px1.5 hover:bg-black/10"
-        >
-          Delete
-        </button>
-      </div>
-    {/if}
-  </div>
+      {/if}
+      <button
+        onclick={() => startRenaming(repo.name!)}
+        class="block text-left px1.5 hover:bg-black/10"
+      >
+        Rename
+      </button>
+      <button
+        onclick={() => p.onDuplicate()}
+        class="block text-left px1.5 hover:bg-black/10"
+      >
+        Duplicate
+      </button>
+      <button
+        onclick={() => p.onRemove()}
+        class="block text-left px1.5 hover:bg-black/10"
+      >
+        Delete
+      </button>
+    </div>
+  {/if}
   {#if p.isRunning || versioningToggled.v || webPublishingToggled.v}
     <div class="flex flex-col space-y-3 p1.5 text-black">
       <!-- VITE CONTROL -->
